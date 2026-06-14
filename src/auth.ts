@@ -53,7 +53,7 @@ declare module "next-auth" {
 // }
 
 const isProd = process.env.NODE_ENV === "production";
-const cookieDomain = isProd ? ".dentalsaas.com" : ".localhost";
+const cookieDomain = isProd ? ".dentalsaas.com" : ".app.local";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -67,7 +67,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         sameSite: "lax",
         path: "/",
         secure: isProd,
-        domain: cookieDomain,
+        domain:  cookieDomain,
       },
     },
   },
@@ -143,35 +143,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         error: undefined,
       }
     },
-
-    // // session -> shapes what useSession() / auth() returns to your app
-    // async session({ session, token }) {
-    //   session.user.id = token.userId
-    //   session.user.email = token.email
-    //   session.user.tenantId = token.tenantId
-    //   session.user.tenantSlug = token.tenantSlug
-    //   session.user.role = token.role
-    //   session.accessToken = token.accessToken
-    //   session.refreshToken = token.refreshToken
-    //   session.accessTokenExpiresAt = token.accessTokenExpiresAt
-    //   session.error = token.error
-    //   return session
-    // },
   },
 })
-
-  // authorized({
-  //   auth,
-  //   request,
-  // }) {
-  //   const p =
-  //     request.nextUrl.pathname
-
-  //   if (
-  //     p.startsWith("/login")
-  //   ) {
-  //     return true
-  //   }
-
-  //   return !!auth
-  // },

@@ -8,7 +8,13 @@ const { auth } = NextAuth(authConfig)
 
 // Route classification
 /** Paths that never require authentication */
-const PUBLIC_PATHS = ["/login", "/register", "/forgot-password"]
+const PUBLIC_PATHS = [
+  "/login",
+  "/register",
+  "/forgot-password",
+
+  "/redirect-to-tenant",
+]
 
 /** Static assets and Next.js internals — skip middleware entirely */
 const SKIP_PREFIXES = ["/_next", "/favicon", "/api/auth"]
@@ -25,14 +31,14 @@ function shouldSkip(pathname: string): boolean {
 /**
  * Derive subdomain from the request hostname.
  * Production:  clinic-a.buddhadental.com  →  "clinic-a"
- * Development: clinic-a.localhost:3000    →  "clinic-a"
+ * Development: clinic-a.app.local:3000    →  "clinic-a"
  */
 function getSubdomain(hostname: string): string | null {
   // Strip port
   const host = hostname.split(":")[0]
 
   const isProd = host.endsWith(".dentalsaas.com")
-  const isDev = host.endsWith(".localhost")
+  const isDev = host.endsWith(".app.local")
 
   if (isProd) {
     const sub = host.replace(".dentalsaas.com", "")
@@ -40,7 +46,7 @@ function getSubdomain(hostname: string): string | null {
   }
 
   if (isDev) {
-    const sub = host.replace(".localhost", "")
+    const sub = host.replace(".app.local", "")
     return sub || null
   }
 
@@ -50,16 +56,29 @@ function getSubdomain(hostname: string): string | null {
 function buildDashboardUrl(tenantSlug: string, request: NextRequest): string {
   const isDev = process.env.NODE_ENV === "development"
   const base = isDev
-    ? `http://${tenantSlug}.localhost:3000`
+    ? `http://${tenantSlug}.app.local:3000`
     : `https://${tenantSlug}.dentalsaas.com`
   return `${base}/dashboard`
 }
 
 function buildLoginUrl(request: NextRequest): string {
-  const isDev = process.env.NODE_ENV === "development"
-  const base = isDev ? "http://localhost:3000" : "https://dentalsaas.com"
-  const callbackUrl = encodeURIComponent(request.url)
-  return `${base}/login?callbackUrl=${callbackUrl}`
+  const base =
+    process.env.NODE_ENV ===
+    "development"
+      ? "http://app.local:3000"
+      : "https://dentalsaas.com"
+  const url = new URL("/login", base)
+
+  const pathname = request.nextUrl.pathname
+  const alreadyLogin = pathname.startsWith("/login")
+
+  if (!alreadyLogin) {
+    url.searchParams.set(
+      "callbackUrl",
+      request.url
+    )
+  }
+  return url.toString()
 }
 
 
@@ -72,6 +91,13 @@ export default auth(function proxy(request) {
   const isAuthenticated = !!session && !session.error
 
   // 1. Skip Next.js internals and static files
+  if (
+    pathname ===
+    "/redirect-to-tenant"
+  ) {
+    return NextResponse.next()
+  }
+
   if (shouldSkip(pathname)) {
     return NextResponse.next()
   }
@@ -111,8 +137,7 @@ export default auth(function proxy(request) {
   }
 
   // 4. Tenant subdomain logic
-
-  // Unauthenticated on a tenant subdomain → back to login
+  // Unauthenticated on a tenant subdomain -> back to login
   if (!isAuthenticated) {
     return NextResponse.redirect(buildLoginUrl(request))
   }
@@ -125,7 +150,7 @@ export default auth(function proxy(request) {
     )
   }
 
-  // All good — attach tenant context as headers so server components and
+  // All good: attach tenant context as headers so server components and
   // API route handlers can read them without parsing the session again.
   const requestHeaders = new Headers(request.headers)
   requestHeaders.set("x-tenant-slug", session.user.tenantSlug)

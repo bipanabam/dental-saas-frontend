@@ -46,7 +46,6 @@ export default function LoginForm() {
         // Don't let NextAuth redirect — we handle it ourselves so we can
         // send the user to their tenant subdomain, not just "/dashboard".
         redirect: false,
-        redirectTo: "/",
       })
 
       if (result?.error) {
@@ -55,23 +54,11 @@ export default function LoginForm() {
         return
       }
 
-      // Fetch the session to get tenantSlug, then redirect to the subdomain.
-      // The middleware will take over from here on every subsequent request.
-      const sessionRes = await fetch("/api/auth/session")
-      const session = await sessionRes.json()
-      const tenantSlug = session?.user?.tenantSlug
-
-      if (!tenantSlug) {
-        setServerError("Could not determine your clinic. Please try again.")
-        return
+      if (process.env.NODE_ENV === "development") {
+        window.location.href = `http://app.local:3000/redirect-to-tenant`
+      } else {
+        window.location.href = `https://dentalsaas.com/redirect-to-tenant`
       }
-
-      const host =
-        process.env.NODE_ENV === "development"
-          ? `${tenantSlug}.localhost:3000`
-          : `${tenantSlug}.buddhadental.com`
-
-      window.location.href = `http://${host}/dashboard`
     } finally {
       setIsPending(false)
     }
@@ -89,7 +76,13 @@ export default function LoginForm() {
 
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              void form.handleSubmit(onSubmit)(e)
+            }}
+            className="space-y-5"
+          >
             <FormField
               control={form.control}
               name="username"

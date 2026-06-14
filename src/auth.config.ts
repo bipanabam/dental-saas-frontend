@@ -22,5 +22,5 @@ export const authConfig: NextAuthConfig = {
       return session
     },
   },
-  providers: [], // required by NextAuth — credentials go in auth.ts only
+  providers: [], // required by NextAuth -> credentials go in auth.ts only
 }

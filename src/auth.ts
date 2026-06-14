@@ -1,40 +1,50 @@
 import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
-import { authConfig } from "./auth.config"
+import { authConfig } from "./auth.config";
 
-import { LoginSchema } from "@/lib/schemas/auth";
 import { refreshAccessToken } from "./lib/auth/refresh-token";
 import { decodeJwtPayload } from "./lib/auth/jwt";
 
+import { LoginSchema } from "@/lib/schemas/auth";
+import type { UserRole } from "@/lib/auth/types";
+import { isUserRole } from "@/lib/auth/types";
+
 import { loginForAccessTokenApiV1AuthTokenPost } from "@/lib/api/sdk.gen";
 
-
-// Teaching TypeScript about custom fields
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string
-      email: string
-      tenantId: string
-      tenantSlug: string
-      role: string
-    } & DefaultSession["user"]
-    accessToken: string
-    refreshToken: string
-    accessTokenExpiresAt: number   // unix ms
-    error?: "RefreshTokenExpired"
+      id: string;
+      email: string;
+
+      tenantId: string;
+      tenantName: string;
+      tenantSlug: string;
+
+      role: UserRole;
+    } & DefaultSession["user"];
+
+    accessToken: string;
+    refreshToken: string;
+    accessTokenExpiresAt: number;
+
+    error?: "RefreshTokenExpired";
   }
 
   interface User {
-    id: string
-    email: string
-    tenantId: string
-    tenantSlug: string
-    role: string
-    accessToken: string
-    refreshToken: string
-    accessTokenExpiresAt: number
+    id: string;
+    email: string;
+
+    tenantId: string;
+    tenantName: string;
+    tenantSlug: string;
+
+    role: UserRole;
+
+    accessToken: string;
+    refreshToken: string;
+    accessTokenExpiresAt: number;
   }
 }
 
@@ -59,15 +69,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   cookies: {
     sessionToken: {
-      name: isProd
-        ? "__Secure-authjs.session-token"
-        : "authjs.session-token",
+      name: isProd ? "__Secure-authjs.session-token" : "authjs.session-token",
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
         secure: isProd,
-        domain:  cookieDomain,
+        domain: cookieDomain,
       },
     },
   },
@@ -79,31 +87,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const parsed = LoginSchema.safeParse(credentials)
-        if (!parsed.success) return null
+        const parsed = LoginSchema.safeParse(credentials);
+        if (!parsed.success) return null;
 
         const { data, error } = await loginForAccessTokenApiV1AuthTokenPost({
           body: {
             username: parsed.data.username,
             password: parsed.data.password,
           },
-        })
+        });
 
-        if (error || !data) return null
+        if (error || !data) return null;
 
-        const payload = decodeJwtPayload(data.access_token)
-        if (!payload) return null
+        const payload = decodeJwtPayload(data.access_token);
+        if (!payload) return null;
+
+        if (!isUserRole(payload.role)) {
+          return null;
+        }
 
         return {
           id: payload.sub,
           email: parsed.data.username,
           tenantId: payload.tenant_id,
+          tenantName: payload.tenant_name,
           tenantSlug: data.tenant_slug,
           role: payload.role,
           accessToken: data.access_token,
           refreshToken: data.refresh_token,
           accessTokenExpiresAt: Date.now() + data.expires_in * 1000,
-        }
+        };
       },
     }),
   ],
@@ -111,28 +124,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig.callbacks,
     async jwt({ token, user }) {
       if (user) {
-        const payload = decodeJwtPayload(user.accessToken)
-        token.userId = payload?.sub ?? ""
-        token.email = user.email ?? ""
-        token.tenantId = payload?.tenant_id ?? ""
-        token.tenantSlug = user.tenantSlug
-        token.role = payload?.role ?? ""
-        token.accessToken = user.accessToken
-        token.refreshToken = user.refreshToken
-        token.accessTokenExpiresAt = user.accessTokenExpiresAt
-        return token
+        const payload = decodeJwtPayload(user.accessToken);
+        token.userId = payload?.sub ?? "";
+        token.email = user.email ?? "";
+        token.tenantId = payload?.tenant_id ?? "";
+        token.tenantName = payload?.tenant_name ?? "";
+        token.tenantSlug = user.tenantSlug;
+        token.role = payload?.role ?? "";
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
+        token.accessTokenExpiresAt = user.accessTokenExpiresAt;
+        return token;
       }
 
       if (Date.now() < token.accessTokenExpiresAt - 60_000) {
-        return token
+        return token;
       }
 
-      const refreshed = await refreshAccessToken(token.refreshToken)
+      const refreshed = await refreshAccessToken(token.refreshToken);
       if (refreshed.error) {
-        return { ...token, error: refreshed.error }
+        return { ...token, error: refreshed.error };
       }
 
-      const payload = decodeJwtPayload(refreshed.accessToken!)
+      const payload = decodeJwtPayload(refreshed.accessToken!);
       return {
         ...token,
         accessToken: refreshed.accessToken!,
@@ -141,7 +155,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         tenantSlug: payload?.tenant_slug ?? token.tenantSlug,
         role: payload?.role ?? token.role,
         error: undefined,
-      }
+      };
     },
   },
-})
+});

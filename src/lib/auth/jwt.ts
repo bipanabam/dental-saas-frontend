@@ -1,6 +1,7 @@
 export type AccessTokenPayload = {
   sub: string
   tenant_id: string
+  tenant_name: string
   tenant_slug: string
   role: string
 }

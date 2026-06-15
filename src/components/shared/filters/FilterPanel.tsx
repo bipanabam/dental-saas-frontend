@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, SlidersHorizontal } from "lucide-react";
+import { RotateCcw, SlidersHorizontal, Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,10 +34,16 @@ const FilterPanel = ({ fields, values, onChange, onReset}: Props) => {
             />
           ))}
 
-          <Button variant="outline" onClick={onReset}>
-            <RotateCcw className="mr-2 h-4 w-4"/>
-            Reset
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Change limit of query */}
+            <Button variant="outline" onClick={() => {}}>
+              <Settings className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" onClick={onReset}>
+              <RotateCcw className="mr-1 h-4 w-4"/>
+              Reset
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -11,6 +11,10 @@ export const patientFilters: FilterField[] = [
         value: "ALL",
       },
       {
+        label: "Vip",
+        value: "VIP",
+      },
+      {
         label: "Regular",
         value: "REGULAR",
       },

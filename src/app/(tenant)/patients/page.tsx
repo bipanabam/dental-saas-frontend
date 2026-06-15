@@ -3,7 +3,15 @@
 import { useEffect, useMemo } from "react";
 import { toast } from "sonner";
 
-import { Users, LayoutGrid, Loader } from "lucide-react";
+import {
+  Users, 
+  LayoutGrid, 
+  Loader,
+  UserPlus,
+  Activity,
+  ShieldAlert,
+  Asterisk
+} from "lucide-react";
 
 import PatientDataTable from "@/components/patients/PatientDataTable";
 import PatientFormSheet from "@/components/patients/PatientFormSheet";
@@ -14,9 +22,19 @@ import { EmptyState } from "@/components/shared/page/EmptyState";
 import FilterPanel from "@/components/shared/filters/FilterPanel";
 import { useFilters } from "@/components/shared/filters/useFilters";
 import { patientFilters } from "@/types/patients";
+import AnalyticsCard from "@/components/shared/analytics/AnalyticsCard";
+import AnalyticsGrid from "@/components/shared/analytics/AnalyticsGrid";
+
+import {
+  DataTable,
+} from "@/components/shared/data-table/DataTable";
+import DataTableEmpty from "@/components/shared/data-table/DataTableEmpty";
+
+import { patientColumns } from "@/components/patients/patient-columns";
 
 import { usePatients } from "@/hooks/patients/use-patients";
 import { getApiError } from "@/lib/utils/get-api-error";
+
 
 const PatientsPage = () => {
   const { data, isLoading, error } = usePatients({limit: 20});
@@ -52,18 +70,18 @@ const PatientsPage = () => {
   useEffect(() => {
     if (!error) return;
     toast.error(
-        getApiError(
-            error
-        ))
+      getApiError(
+        error
+      ))
   }, [error]);
 
   if (isLoading) {
     return (
-        <EmptyState
-            icon={Loader}
-            title="Loading"
-            description=""
-        />
+      <EmptyState
+        icon={Loader}
+        title="Loading"
+        description=""
+      />
     );
   }
 
@@ -81,10 +99,56 @@ const PatientsPage = () => {
       {/* Page Header */}
       <PageHeader
         title="Patient Registry"
-        description={`Total Registry: ${filteredPatients.length} records`}
+        description="Centralized database for clinical health records and patient administration."
         icon={Users}
         actions={<PatientFormSheet />}
       />
+
+      {/* Analytics */}
+      <AnalyticsGrid>
+        <AnalyticsCard
+          title="Total Patients"
+          value={data?.total ?? 0}
+          icon={Users}
+          trend={{
+            value: "+2.4%",
+            direction: "up",
+          }}
+          description="vs last month"
+        />
+        <AnalyticsCard
+          title="New This Month"
+          value={342}
+          icon={UserPlus}
+          trend={{
+            value: "12 today",
+            direction: "up",
+          }}
+        />
+        <AnalyticsCard
+          title="Active Patients"
+          value={221}
+          icon={Activity}
+          description="Currently in treatment"
+        />
+        <AnalyticsCard
+          title="Emergency"
+          value={12}
+          icon={Asterisk}
+          description="Action required"
+          priority="critical"
+        />
+        <AnalyticsCard
+          title="Flagged"
+          value={12}
+          icon={ShieldAlert}
+          trend={{
+            value: "-3",
+            direction: "down",
+          }}
+          priority="high"
+        />
+      </AnalyticsGrid>
 
       {/* Filter Interactive Segment */}
       <FilterPanel
@@ -100,12 +164,22 @@ const PatientsPage = () => {
           <LayoutGrid className="h-3.5 w-3.5" />
           Registry Records Ledger Output
         </div>
-        <PatientDataTable data={filteredPatients} />
+        <DataTable
+          data={filteredPatients}
+          columns={patientColumns}
+          rowKey={(p) => p.id}
+          empty={
+            <DataTableEmpty
+              title="No patients found"
+              description="Adjust filters"
+            />
+          }
+        />
       </div>
 
-      {!isLoading && filteredPatients.length === 0 && (
+      {/* {!isLoading && filteredPatients.length === 0 && (
         <EmptyState title="No patients found" description="Adjust filters" />
-      )}
+      )} */}
     </div>
   );
 };

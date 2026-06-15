@@ -1,6 +1,7 @@
 "use client";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent } from "../ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, ShieldAlert } from "lucide-react";
@@ -21,17 +22,19 @@ const PatientDataTable = ({ data }: PatientDataTableProps) => {
     }
 
     return (
-        <div className="bg-white border border-slate-100 rounded-2xl shadow-sm overflow-hidden">
+        <Card className="overflow-hidden rounded-2xl bg-white border border-slate-100 p-0">
+            <CardContent className="p-0">
             <Table>
                 <TableHeader className="bg-slate-50/70">
-                    <TableRow>
+                    <TableRow className="uppercase">
                         <TableHead className="font-semibold text-slate-600 w-30">Code</TableHead>
                         <TableHead className="font-semibold text-slate-600">Full Name</TableHead>
-                        <TableHead className="font-semibold text-slate-600">Contact Matrix</TableHead>
+                        <TableHead className="font-semibold text-slate-600">Age/Gender</TableHead>
+                        <TableHead className="font-semibold text-slate-600">Contact</TableHead>
                         <TableHead className="font-semibold text-slate-600">Biometrics</TableHead>
-                        <TableHead className="font-semibold text-slate-600">System Tag</TableHead>
+                        <TableHead className="font-semibold text-slate-600">Category</TableHead>
                         <TableHead className="font-semibold text-slate-600">Status</TableHead>
-                        <TableHead className="text-right font-semibold text-slate-600">Action Frame</TableHead>
+                        <TableHead className="text-right font-semibold text-slate-600">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -84,7 +87,8 @@ const PatientDataTable = ({ data }: PatientDataTableProps) => {
                     ))}
                 </TableBody>
             </Table>
-        </div>
+        </CardContent>
+        </Card>
     );
 }
 

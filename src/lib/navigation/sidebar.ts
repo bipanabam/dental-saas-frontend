@@ -22,7 +22,7 @@ export type SidebarItem = {
 export const sidebarItems: SidebarItem[] = [
   {
     title: "Dashboard",
-    url: "/",
+    url: "/dashboard",
     icon: LayoutDashboard,
     roles: ["admin", "receptionist"],
   },

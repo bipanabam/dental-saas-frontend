@@ -5,6 +5,7 @@ import { TenantProvider } from "@/providers/tenant-provider";
 
 import AppSidebar from "@/components/base/app-sidebar";
 import TopBar from "@/components/base/topbar";
+
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default async function DashboardLayout({

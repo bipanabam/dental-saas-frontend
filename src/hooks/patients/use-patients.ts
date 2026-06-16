@@ -3,7 +3,9 @@
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 
-import { listPatientsApiV1PatientsGetOptions, getPatientApiV1PatientsPatientIdGetOptions } from "@/lib/api/@tanstack/react-query.gen";
+import { listPatientsApiV1PatientsGetOptions, 
+  getPatientApiV1PatientsPatientIdGetOptions 
+} from "@/lib/api/@tanstack/react-query.gen";
 
 import {
   PatientStatusEnum,

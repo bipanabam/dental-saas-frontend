@@ -5,6 +5,7 @@ import { authConfig } from "./auth.config";
 
 import { refreshAccessToken } from "./lib/auth/refresh-token";
 import { decodeJwtPayload } from "./lib/auth/jwt";
+import { getRefreshedToken } from "./lib/auth/refresh-cache";
 
 import { LoginSchema } from "@/lib/schemas/auth";
 import type { UserRole } from "@/lib/auth/types";
@@ -46,21 +47,20 @@ declare module "next-auth" {
     refreshToken: string;
     accessTokenExpiresAt: number;
   }
-}
 
-// declare module "next-auth/jwt" {
-//   interface JWT {
-//     userId: string
-//     email: string
-//     tenantId: string
-//     tenantSlug: string
-//     role: string
-//     accessToken: string
-//     refreshToken: string
-//     accessTokenExpiresAt: number
-//     error?: "RefreshTokenExpired"
-//   }
-// }
+  interface JWT {
+    userId: string
+    email: string
+    tenantId: string
+    tenantName: string
+    tenantSlug: string
+    role: string
+    accessToken: string
+    refreshToken: string
+    accessTokenExpiresAt: number
+    error?: "RefreshTokenExpired"
+  }
+}
 
 const isProd = process.env.NODE_ENV === "production";
 const cookieDomain = isProd ? ".dentalsaas.com" : ".app.local";
@@ -141,21 +141,37 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return token;
       }
 
-      const refreshed = await refreshAccessToken(token.refreshToken);
-      if (refreshed.error) {
-        return { ...token, error: refreshed.error };
+      console.log("[jwt] attempting refresh for user:", token.userId)
+
+      const refreshed = await getRefreshedToken(
+        token?.userId,
+        token.refreshToken,
+        async () => {
+          const result = await refreshAccessToken(token.refreshToken)
+          if (result.error) return null
+
+          const payload = decodeJwtPayload(result.accessToken!)
+          return {
+            accessToken: result.accessToken!,
+            refreshToken: result.refreshToken!,
+            accessTokenExpiresAt: result.accessTokenExpiresAt!,
+            tenantSlug: payload?.tenant_slug ?? token.tenantSlug,
+            role: payload?.role ?? token.role,
+          }
+        }
+      )
+
+      if (!refreshed) {
+        console.log("[jwt] refresh failed for user:", token.userId)
+        return { ...token, error: "RefreshTokenExpired" as const }
       }
 
-      const payload = decodeJwtPayload(refreshed.accessToken!);
+      console.log("[jwt] refresh success for user:", token.userId)
       return {
         ...token,
-        accessToken: refreshed.accessToken!,
-        refreshToken: refreshed.refreshToken!,
-        accessTokenExpiresAt: refreshed.accessTokenExpiresAt!,
-        tenantSlug: payload?.tenant_slug ?? token.tenantSlug,
-        role: payload?.role ?? token.role,
+        ...refreshed,
         error: undefined,
-      };
+      }
     },
   },
 });

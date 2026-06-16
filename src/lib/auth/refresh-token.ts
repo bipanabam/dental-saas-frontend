@@ -3,21 +3,26 @@ export async function refreshAccessToken(
 ) {
   // Token refresh helper -> calls /auth/refresh endpoint
   try {
+    const API_URL = process.env.API_URL ?? process.env.NEXT_PUBLIC_API_URL;
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh`,
+      `${API_URL}/api/v1/auth/refresh`,
       {
         method: "POST",
 
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${refreshToken}`,
+          // Authorization: `Bearer ${refreshToken}`,
         },
+         body: JSON.stringify({
+          refresh_token: refreshToken,
+        }),
       }
     )
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}))
-      throw new Error(error?.detail ?? "RefreshTokenExpired")
+      const body = await response.json().catch(() => ({}))
+      console.error("[refresh] failed:", response.status, body)
+      throw new Error(body?.detail ?? "RefreshTokenExpired")
     }
 
     const tokens = await response.json()
@@ -31,10 +36,8 @@ export async function refreshAccessToken(
         tokens.expires_in * 1000,
       error: undefined,
     }
-  } catch {
-    return {
-      error:
-        "RefreshTokenExpired" as const,
-    }
+  } catch (e) {
+    console.error("[refresh] exception:", e)
+    return { error: "RefreshTokenExpired" as const }
   }
 }

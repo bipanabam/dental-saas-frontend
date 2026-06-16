@@ -3,7 +3,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 
-// UI Components from shadcn
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,8 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Charts from Tremor
-import { AreaChart, DonutChart, Legend } from "@tremor/react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+// import { AreaChart, DonutChart, Legend } from "@tremor/react";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, AreaChart, Legend } from "recharts";
 
 import DashboardHeader from "./dashboard-header";
 import StatsGrid from "./stats-grid";

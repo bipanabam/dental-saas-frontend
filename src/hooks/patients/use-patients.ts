@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 
-import { listPatientsApiV1PatientsGetOptions } from "@/lib/api/@tanstack/react-query.gen";
+import { listPatientsApiV1PatientsGetOptions, getPatientApiV1PatientsPatientIdGetOptions } from "@/lib/api/@tanstack/react-query.gen";
 
 import {
   PatientStatusEnum,
@@ -43,5 +43,20 @@ export function usePatients(params?: {
     enabled: status === "authenticated",
 
     retry: false,
+  });
+}
+
+
+export function usePatientDetail(
+  id: string,
+) {
+  return useQuery({
+    ...getPatientApiV1PatientsPatientIdGetOptions({
+      path: {
+        patient_id: id,
+      },
+    }),
+
+    enabled: !!id,
   });
 }

@@ -72,9 +72,9 @@ const AnalyticsCard = ({
           </div>
 
           <div className="rounded-xl bg-brand-50 p-2">
-                <Icon className={cn("h-5 w-5 text-primary",
-                priorityStyles[priority ?? "normal"],
-                )} />
+            <Icon className={cn("h-5 w-5 text-primary",
+            priorityStyles[priority ?? "normal"],
+            )} />
           </div>
         </div>
 

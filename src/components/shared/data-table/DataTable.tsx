@@ -23,10 +23,11 @@ interface Column<T> {
 
 interface DataTableProps<T> {
   data: T[];
-
   columns: Column<T>[];
-  empty?: ReactNode;
   rowKey: (row: T) => string;
+
+  empty?: ReactNode;
+  onRowClick?: (row: T) => void;
 }
 
 export function DataTable<T>({
@@ -34,6 +35,7 @@ export function DataTable<T>({
   columns,
   rowKey,
   empty,
+  onRowClick,
 }: DataTableProps<T>) {
   if (!data.length) {
     return empty;
@@ -58,7 +60,15 @@ export function DataTable<T>({
 
           <TableBody>
             {data.map((row) => (
-              <TableRow key={rowKey(row)}>
+              <TableRow
+                key={rowKey(row)}
+                onClick={() => onRowClick?.(row)}
+                className={
+                  onRowClick
+                    ? "cursor-pointer hover:bg-slate-50"
+                    : ""
+                }
+              >
                 {columns.map((column) => {
                   const value = row[column.key as keyof T];
 

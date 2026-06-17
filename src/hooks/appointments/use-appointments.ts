@@ -21,10 +21,15 @@ export function useAppointments(params?: {
 
   doctor_id?: string;
 
+  date_range?: string;
+
+  date_start?: string;
+  date_end?: string;
+
   status?: AppointmentStatusEnum;
   appointment_type?: AppointmentTypeEnum;
   source?: AppointmentSourceEnum;
-}) {
+}, options?: { enabled?: boolean }) {  
   const { status: authStatus } = useSession();
 
   return useQuery({
@@ -34,16 +39,19 @@ export function useAppointments(params?: {
         limit: params?.limit,
 
         doctor_id: params?.doctor_id,
+        
+        date_range: params?.date_range,
+
+        date_start: params?.date_start,
+        date_end: params?.date_end,
 
         status: params?.status,
-
         appointment_type: params?.appointment_type,
-
         source: params?.source,
       },
     }),
 
-    enabled: authStatus === "authenticated",
+    enabled: authStatus === "authenticated" && (options?.enabled ?? true),
 
     retry: false,
   });
@@ -52,7 +60,7 @@ export function useAppointments(params?: {
 export function useTodaysAppointments(params?: {
   skip?: number;
   limit?: number;
-}) {
+}, options?: { enabled?: boolean }) {
   const { status } = useSession();
 
   return useQuery({
@@ -63,7 +71,7 @@ export function useTodaysAppointments(params?: {
       },
     }),
 
-    enabled: status === "authenticated",
+    enabled: status === "authenticated" && (options?.enabled ?? true),
 
     retry: false,
   });

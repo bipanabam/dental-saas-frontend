@@ -10,6 +10,7 @@ import PatientActionsCard from "@/components/patients/PatientActionsCard";
 import ActivityTimelineCard from "@/components/patients/ActivityTimelineCard";
 
 import { EmptyState } from "@/components/shared/page/EmptyState";
+import { FullPageLoader } from "@/components/base/loading-view";
 
 import { usePatientDetail } from "@/hooks/patients/use-patients";
 
@@ -21,7 +22,7 @@ export default function PatientDetailPage() {
   console.log(patient)
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <FullPageLoader />;
   }
 
   if (!patient) {

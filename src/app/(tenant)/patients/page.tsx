@@ -13,7 +13,6 @@ import {
   Asterisk
 } from "lucide-react";
 
-import PatientDataTable from "@/components/patients/PatientDataTable";
 import PatientFormSheet from "@/components/patients/PatientFormSheet";
 
 import PageHeader from "@/components/shared/page/PageHeader";

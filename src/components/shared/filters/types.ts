@@ -8,8 +8,6 @@ export interface FilterField {
   label: string
 
   placeholder?: string
-
   options: FilterOption[]
-
   width?: string
 }

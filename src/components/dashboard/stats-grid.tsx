@@ -9,6 +9,6 @@ const StatsGrid = ({ stats }: { stats: any }) => {
       ))}
     </div>
   );
-}
+};
 
 export default StatsGrid;

@@ -43,7 +43,7 @@ export const sidebarItems: SidebarItem[] = [
 
   {
     title: "Queue",
-    url: "/doctor/clinical-workspace",
+    url: "/queue",
     icon: ListOrdered,
     roles: ["admin", "doctor"],
   },

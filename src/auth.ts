@@ -2,6 +2,7 @@ import NextAuth, { type DefaultSession } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 import { authConfig } from "./auth.config";
+import { appConfig } from "@/lib/config/app";
 
 import { refreshAccessToken } from "./lib/auth/refresh-token";
 import { decodeJwtPayload } from "./lib/auth/jwt";
@@ -69,8 +70,11 @@ declare module "@auth/core/jwt" {
   }
 }
 
-const isProd = process.env.NODE_ENV === "production";
-const cookieDomain = isProd ? ".dentalsaas.com" : ".app.local";
+const isProd =
+  appConfig.isProd;
+
+const cookieDomain =
+  appConfig.cookieDomain;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,

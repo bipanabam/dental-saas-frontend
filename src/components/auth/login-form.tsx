@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
@@ -27,13 +27,13 @@ import { Button } from "@/components/ui/button";
 import { Mail, Lock, Loader2, ShieldCheck } from "lucide-react";
 
 export default function LoginForm() {
-  const [isPending, setIsPending] = useState(false)
-  const [serverError, setServerError] = useState<string | null>(null)
+  const [isPending, setIsPending] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema),
     defaultValues: { username: "", password: "" },
-  })
+  });
 
   async function onSubmit(values: LoginInput) {
     setServerError(null);
@@ -46,21 +46,17 @@ export default function LoginForm() {
         // Don't let NextAuth redirect — we handle it ourselves so we can
         // send the user to their tenant subdomain, not just "/dashboard".
         redirect: false,
-      })
+      });
 
       if (result?.error) {
         // NextAuth maps authorize()'s null return to "CredentialsSignin"
-        setServerError("Invalid email or password")
-        return
+        setServerError("Invalid email or password");
+        return;
       }
 
-      if (process.env.NODE_ENV === "development") {
-        window.location.href = `http://app.local:3000/redirect-to-tenant`
-      } else {
-        window.location.href = `https://dentalsaas.com/redirect-to-tenant`
-      }
+      window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/redirect-to-tenant`;
     } finally {
-      setIsPending(false)
+      setIsPending(false);
     }
   }
 
@@ -78,8 +74,8 @@ export default function LoginForm() {
         <Form {...form}>
           <form
             onSubmit={(e) => {
-              e.preventDefault()
-              void form.handleSubmit(onSubmit)(e)
+              e.preventDefault();
+              void form.handleSubmit(onSubmit)(e);
             }}
             className="space-y-5"
           >
@@ -143,5 +139,5 @@ export default function LoginForm() {
         </Form>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -13,12 +13,17 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import { ReactNode } from "react";
 
-interface Column<T> {
+export interface Column<T> {
   key: keyof T | string;
 
   title: string;
+
   className?: string;
-  render?: (value: unknown, row: T) => ReactNode;
+
+  render?: (
+    value: T[keyof T] | undefined,
+    row: T
+  ) => ReactNode;
 }
 
 interface DataTableProps<T> {

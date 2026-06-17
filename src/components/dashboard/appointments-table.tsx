@@ -1,10 +1,12 @@
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Table } from "../ui/table";
 
+import { AppointmentListItem } from "@/lib/api";
+
 const AppointmentTable = ({
   appointments,
 }: {
-  appointments: Appointment[];
+    appointments: AppointmentListItem[];
 }) => {
   return (
     <Card>

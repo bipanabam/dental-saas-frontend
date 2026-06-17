@@ -11,14 +11,24 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Charts from Tremor
 // import { AreaChart, DonutChart, Legend } from "@tremor/react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, AreaChart, Legend } from "recharts";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
 
 import DashboardHeader from "./dashboard-header";
 import StatsGrid from "./stats-grid";
 
 const COLORS = ["#4f46e5", "#06b6d4", "#f59e0b", "#f43f5e", "#10b981"];
 
-// Icons from lucide-react
 import {
   Users,
   CalendarDays,
@@ -39,10 +49,8 @@ const AdminLayout = ({ userName = "Admin User" }: AdminDashboardClientProps) => 
   const router = useRouter();
   const [trendPeriod, setTrendPeriod] = React.useState<"daily" | "weekly" | "monthly">("weekly");
 
-  // ==========================================
-  //               DUMMY DATA
-  // ==========================================
-  
+
+  // DUMMY DATA
   const dummyStats = {
     totalPatients: 1420,
     newPatientsLast30Days: 124,
@@ -116,10 +124,8 @@ const AdminLayout = ({ userName = "Admin User" }: AdminDashboardClientProps) => 
     { name: "Orthopedics", amount: 140 },
   ];
 
-  // ==========================================
-  //            COMPONENT CONFIG
-  // ==========================================
 
+  //            COMPONENT CONFIG
   const statCards = [
     {
       title: "Total Patients",
@@ -232,7 +238,7 @@ const AdminLayout = ({ userName = "Admin User" }: AdminDashboardClientProps) => 
                 <CardDescription>Visual intake metrics across window timeframes</CardDescription>
               </div>
               <Tabs value={trendPeriod} onValueChange={(v: any) => setTrendPeriod(v)} className="w-auto">
-                <TabsList className="grid grid-cols-3 w-[240px]">
+                <TabsList className="grid grid-cols-3 w-60">
                   <TabsTrigger value="daily" className="text-xs">Daily</TabsTrigger>
                   <TabsTrigger value="weekly" className="text-xs">Weekly</TabsTrigger>
                   <TabsTrigger value="monthly" className="text-xs">Monthly</TabsTrigger>
@@ -240,16 +246,26 @@ const AdminLayout = ({ userName = "Admin User" }: AdminDashboardClientProps) => 
               </Tabs>
             </CardHeader>
             <CardContent className="pt-2">
-              <AreaChart
-                className="h-72 mt-4"
-                data={trendDataMap[trendPeriod]}
-                index="name"
-                categories={["Registrations"]}
-                colors={["indigo"]}
-                valueFormatter={(number: number) => `${number} Patients`}
-                showLegend={false}
-                yAxisWidth={40}
-              />
+              <div className="h-72 mt-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={trendDataMap[trendPeriod]}>
+                    <CartesianGrid strokeDasharray="3 3" />
+
+                    <XAxis dataKey="name" />
+
+                    <YAxis width={40} />
+
+                    <Tooltip
+                      formatter={(value) => [`${value} Patients`, "Registrations"]}
+                    />
+
+                    <Area
+                      type="monotone"
+                      dataKey="Registrations"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -334,12 +350,23 @@ const AdminLayout = ({ userName = "Admin User" }: AdminDashboardClientProps) => 
                     </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="mt-6 w-full">
-                <Legend
-                  categories={donutData.map((d) => d.name)}
-                  colors={["indigo", "cyan", "amber", "rose", "emerald"]}
-                  className="max-w-xs mx-auto"
-                />
+              <div className="mt-6 flex flex-wrap gap-3 justify-center">
+                {donutData.map((d, i) => (
+                  <div
+                    key={d.name}
+                    className="flex items-center gap-2 text-xs"
+                  >
+                    <span
+                      className="h-3 w-3 rounded-full"
+                      style={{
+                        backgroundColor:
+                          COLORS[i % COLORS.length],
+                      }}
+                    />
+
+                    {d.name}
+                  </div>
+                ))}
               </div>
               
               <Separator className="my-4 bg-slate-100" />

@@ -24,6 +24,15 @@ const nextConfig: NextConfig = {
       ],
     }
   },
+  reactCompiler: true,
+  // experimental: {
+  //   turbopackFileSystemCacheForDev: true,
+  // },
+  images: {
+    unoptimized: true,
+  },
+  compress: true,
+  poweredByHeader: false,
 }
 
 export default nextConfig;

@@ -47,18 +47,25 @@ declare module "next-auth" {
     refreshToken: string;
     accessTokenExpiresAt: number;
   }
+}
 
+declare module "@auth/core/jwt" {
   interface JWT {
-    userId: string
-    email: string
-    tenantId: string
-    tenantName: string
-    tenantSlug: string
-    role: string
-    accessToken: string
-    refreshToken: string
-    accessTokenExpiresAt: number
-    error?: "RefreshTokenExpired"
+    userId: string;
+    email: string;
+
+    tenantId: string;
+    tenantName: string;
+    tenantSlug: string;
+
+    role: string;
+
+    accessToken: string;
+    refreshToken: string;
+
+    accessTokenExpiresAt: number;
+
+    error?: "RefreshTokenExpired";
   }
 }
 

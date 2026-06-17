@@ -1,19 +1,21 @@
 import { useRouter } from "next/navigation";
+import { Eye } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import { Eye } from "lucide-react";
-
 import { getAge } from "@/lib/utils/get-age";
 
-export const patientColumns = [
+import type { PatientListItem } from "@/lib/api";
+import { Column } from "../shared/data-table/DataTable";
+
+export const patientColumns: Column<PatientListItem>[] = [
   {
     key: "patient_code",
     title: "Code",
     className: "uppercase font-semibold text-slate-600 w-30",
 
-    render: (value: string) => (
+    render: (value) => (
       <span className=" font-mono text-xs text-brand-500 font-bold">
         {value}
       </span>
@@ -86,7 +88,7 @@ export const patientColumns = [
     title: "Category",
     className: "uppercase font-semibold text-slate-600",
 
-    render: (value: string) => (
+    render: (value) => (
       <Badge
         variant="secondary"
         className={`rounded-md text-[10px] uppercase font-bold tracking-wide ${
@@ -107,7 +109,7 @@ export const patientColumns = [
     title: "Status",
     className: "uppercase font-semibold text-slate-600",
 
-    render: (value: string) => (
+    render: (value) => (
       <>
         <span
           className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${

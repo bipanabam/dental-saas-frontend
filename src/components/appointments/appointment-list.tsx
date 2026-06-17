@@ -5,47 +5,16 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Clock, User } from "lucide-react";
 
-interface Appointment {
-  appointment: {
-    id: string;
-
-    assigned_doctor_id?: string;
-    doctor: {
-      id: string;
-      email: string;
-    }
-
-    patient_id: string;
-    patient: {
-      id: string;
-      first_name: string;
-      last_name: string;
-      patient_code: string;
-    }
-
-    chief_complaint?: string;
-    appointment_date: string;
-    appointment_type: string;
-    payment_status: string;
-    source: string;
-    status: string;
-  };
-
-  queue?: {
-    id: string;
-    token_number?: number;
-    status?: string;
-  } | null;
-}
+import type { TodaysAppointmentListItem } from "@/lib/api";
 
 interface Props {
-  appointments: Appointment[];
+  appointments: TodaysAppointmentListItem[];
 
   selectedId?: string;
   isLoading: boolean;
 
   onSelect: (
-    item: Appointment
+    item: TodaysAppointmentListItem
   ) => void;
 }
 
@@ -111,7 +80,7 @@ const AppointmentList = ({
 
               <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                 <span className="font-semibold text-brand-700 flex items-center gap-1">
-                  <User className="h-3 w-3" /> {appt.doctor.email}
+                  <User className="h-3 w-3" /> {appt.doctor?.email}
                 </span>
               </div>
             </div>

@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
     "*.app.local",
   ],
   async rewrites() {
-    // if (process.env.NODE_ENV !== "development") return []
+    // Subdomain rewrites only work with a custom domain
+    if (!appConfig.hasCustomDomain) return { beforeFiles: [] };
     return {
       beforeFiles: [
         {

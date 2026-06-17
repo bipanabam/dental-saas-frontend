@@ -9,10 +9,12 @@ const port =
     ? `:${process.env.APP_PORT}`
     : "";
 
+const hasCustomDomain = !!process.env.CUSTOM_DOMAIN;
+
 export const appConfig = {
   protocol,
-
   domain,
+  hasCustomDomain,
 
   cookieDomain:
     process.env.COOKIE_DOMAIN ??
@@ -22,6 +24,10 @@ export const appConfig = {
     `${protocol}://${domain}${port}`,
 
   tenantUrl(slug: string) {
+    if (!hasCustomDomain) {
+      // No wildcard subdomain support — stay on root domain
+      return `${protocol}://${domain}${port}`;
+    }
     return `${protocol}://${slug}.${domain}${port}`;
   },
 

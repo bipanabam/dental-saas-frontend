@@ -50,8 +50,6 @@ function getSubdomain(hostname: string): string | null {
   const sub = host.replace(suffix, "");
 
   return sub === "www" ? null : sub;
-
-  return null;
 }
 
 function buildDashboardUrl(tenantSlug: string) {

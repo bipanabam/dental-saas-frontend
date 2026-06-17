@@ -15,7 +15,8 @@ export const appConfig = {
   domain,
 
   cookieDomain:
-    process.env.COOKIE_DOMAIN,
+    process.env.COOKIE_DOMAIN ??
+    (process.env.BASE_DOMAIN ? `.${process.env.BASE_DOMAIN}` : undefined),
 
   rootUrl:
     `${protocol}://${domain}${port}`,

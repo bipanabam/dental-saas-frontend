@@ -1,7 +1,7 @@
 import type { NextConfig } from "next"
+import { appConfig } from "@/lib/config/app";
 
-const rootDomain =
-  process.env.BASE_DOMAIN ?? "app.local";
+const rootDomain = appConfig.domain;
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: [

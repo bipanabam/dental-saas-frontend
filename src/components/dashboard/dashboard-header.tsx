@@ -1,8 +1,18 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useTenant } from "@/providers/tenant-provider";
+
 import { Button } from "@/components/ui/button";
 
 import { Plus, ArrowRight } from "lucide-react";
 
-const DashboardHeader = ({ userName } : any ) => {
+const DashboardHeader = () => {
+    const router = useRouter();
+    const { session } = useTenant();
+
+    const userEmail = session?.user.email
+
   return (
     <div
       className="flex justify-between items-center"
@@ -16,12 +26,12 @@ const DashboardHeader = ({ userName } : any ) => {
             Clinic overview and activity
             </p> */}
             <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">
-                Welcome back, {userName} • {new Date().toLocaleDateString("en-US", { weekday: 'long', month: 'long', day: 'numeric' })}
+                  Welcome back, {userEmail.split("@")[0]} • {new Date().toLocaleDateString("en-US", { weekday: 'long', month: 'long', day: 'numeric' })}
             </p>
         </div>
 
         <div className="flex gap-3">
-            <Button variant="outline">
+            <Button variant="outline" onClick={() => router.push("/patients")}>
                 <ArrowRight />
                 Patients
             </Button>

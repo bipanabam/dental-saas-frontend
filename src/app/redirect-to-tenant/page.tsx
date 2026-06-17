@@ -11,7 +11,15 @@ export default async function RedirectPage() {
         redirect("/login")
     }
 
-    const url = appConfig.tenantUrl(session.user.tenantSlug);
+    // const url = appConfig.tenantUrl(session.user.tenantSlug);
+    // redirect(`${url}/dashboard`);
+    const isProd = process.env.NODE_ENV === "production" && !!process.env.BASE_DOMAIN;
 
-    redirect(`${url}/dashboard`);
+    if (isProd) {
+        const url = appConfig.tenantUrl(session.user.tenantSlug);
+        redirect(`${url}/dashboard`);
+    } else {
+        // Vercel preview fallback — stays on same host
+        redirect(`/dashboard`);
+    }
 }

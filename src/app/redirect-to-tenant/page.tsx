@@ -1,6 +1,8 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 
+import { appConfig } from "@/lib/config/app"
+
 export default async function RedirectPage() {
     const session =
         await auth()
@@ -9,13 +11,7 @@ export default async function RedirectPage() {
         redirect("/login")
     }
 
-    const host =
-        process.env.NODE_ENV ===
-            "development"
-            ? `${session.user.tenantSlug}.app.local:3000`
-            : `${session.user.tenantSlug}.dentalsaas.com`
+    const url = appConfig.tenantUrl(session.user.tenantSlug);
 
-    redirect(
-        `http://${host}/dashboard`
-    )
+    redirect(`${url}/dashboard`);
 }

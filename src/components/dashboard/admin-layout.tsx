@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import AppointmentTable from "./appointments-table";
+
 // Charts from Tremor
 // import { AreaChart, DonutChart, Legend } from "@tremor/react";
 import {
@@ -125,7 +127,7 @@ const AdminLayout = ({ userName = "Admin User" }: AdminDashboardClientProps) => 
   ];
 
 
-  //            COMPONENT CONFIG
+  // COMPONENT CONFIG
   const statCards = [
     {
       title: "Total Patients",
@@ -170,65 +172,7 @@ const AdminLayout = ({ userName = "Admin User" }: AdminDashboardClientProps) => 
         <div className="lg:col-span-2 space-y-6">
           
           {/* Today's Schedule Table */}
-          <Card className="border-slate-100 shadow-sm bg-white">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="text-lg font-bold flex items-center gap-2 text-slate-800">
-                  <CalendarDays className="h-5 w-5 text-indigo-600" /> Today's Schedule
-                </CardTitle>
-                <CardDescription>Live tracking overview of daily clinic appointments</CardDescription>
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => router.push("/appointments")}>
-                View All
-              </Button>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border border-slate-100 overflow-hidden">
-                <Table>
-                  <TableHeader className="bg-slate-50">
-                    <TableRow>
-                      <TableHead className="font-semibold text-slate-600">Patient</TableHead>
-                      <TableHead className="font-semibold text-slate-600">Time / Provider</TableHead>
-                      <TableHead className="font-semibold text-slate-600">Status</TableHead>
-                      <TableHead className="text-right font-semibold text-slate-600">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {dummyAppointments.map((appt) => (
-                      <TableRow key={appt.id} className="hover:bg-slate-50/50">
-                        <TableCell className="font-medium">
-                          <div>
-                            <p className="text-sm text-slate-900">{appt.patient.fullName}</p>
-                            <p className="text-xs text-slate-400">{appt.patient.phone}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="text-sm text-slate-700">{appt.timeSlot}</p>
-                            <p className="text-xs text-indigo-600">Dr. {appt.doctor.fullName}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
-                            appt.status === "Confirmed" ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
-                            appt.status === "In Progress" ? "bg-blue-50 text-blue-700 border-blue-100" :
-                            "bg-amber-50 text-amber-700 border-amber-100"
-                          }`}>
-                            {appt.status}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button size="sm" variant="ghost" onClick={() => router.push(`/appointments?id=${appt.id}`)}>
-                            Edit
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+          <AppointmentTable />
 
           {/* Registration Analytics: Time-Series Area Chart */}
           <Card className="border-slate-100 shadow-sm bg-white">

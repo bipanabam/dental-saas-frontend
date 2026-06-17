@@ -1,71 +1,33 @@
 "use client";
 
-import { useMemo } from "react";
-
 import AnalyticsGrid from "../shared/analytics/AnalyticsGrid";
 import AnalyticsCard from "../shared/analytics/AnalyticsCard";
 
-import {
-  CalendarDays,
-  CheckCircle2,
-  UserCheck,
-  Activity,
-} from "lucide-react";
+import { CalendarDays, CheckCircle2, UserCheck, Activity } from "lucide-react";
+
+import type { AppointmentStats as AppointmentStatsType } from "@/lib/api";
 
 interface Props {
-  appointments?: any[];
+  data?: AppointmentStatsType;
 }
 
-const AppointmentStats = ({
-  appointments = [],
-}: Props) => {
-  const stats = useMemo(() => {
-    const total = appointments.length;
-
-    const confirmed =
-      appointments.filter(
-        (a) =>
-          a.appointment.status ===
-          "CONFIRMED"
-      ).length;
-
-    const checkedIn =
-      appointments.filter(
-        (a) =>
-          a.appointment?.status ===
-          "CHECKED_IN"
-      ).length;
-
-    const inProgress =
-      appointments.filter(
-        (a) =>
-          a.appointment?.status ===
-          "IN_PROGRESS"
-      ).length;
-
-    return {
-      total,
-      confirmed,
-      checkedIn,
-      inProgress,
-
-      confirmationRate:
-        total > 0
-          ? Math.round(
-            (confirmed / total) * 100
-          )
-          : 0,
-    };
-  }, [appointments]);
+const AppointmentStats = ({ data }: Props) => {
+  const booked = data?.booked ?? 0;
+  const confirmed = data?.confirmed ?? 0;
+  const checkedIn = data?.checked_in ?? 0;
+  const inProgress = data?.in_progress ?? 0;
+  const total = data?.total ?? 0;
+  const confirmationRate =
+    total > 0 ? Math.round((confirmed / total) * 100) : 0;
 
   return (
     <AnalyticsGrid>
       <AnalyticsCard
         title="Booked"
-        value={stats.total}
+        value={booked}
         icon={CalendarDays}
         trend={{
-          value: `${stats.total} today`,
+          value: `${booked} appointments`,
           direction: "up",
         }}
         className="border-l-4 border-brand-500 bg-white"
@@ -73,15 +35,15 @@ const AppointmentStats = ({
 
       <AnalyticsCard
         title="Confirmed"
-        value={stats.confirmed}
+        value={confirmed}
         icon={CheckCircle2}
-        description={`${stats.confirmationRate}% rate`}
+        description={`${confirmationRate}% rate`}
         className="border-l-4 border-emerald-500 bg-white"
       />
 
       <AnalyticsCard
         title="Checked In"
-        value={stats.checkedIn}
+        value={checkedIn}
         icon={UserCheck}
         description="Waiting room"
         className="border-l-4 border-cyan-500 bg-white"
@@ -89,12 +51,11 @@ const AppointmentStats = ({
 
       <AnalyticsCard
         title="In Progress"
-        value={stats.inProgress}
+        value={inProgress}
         icon={Activity}
         description="Active treatment"
         className="border-l-4 border-brand-600 bg-white"
       />
-
     </AnalyticsGrid>
   );
 };

@@ -100,14 +100,14 @@ export default auth(function proxy(request) {
     // Authenticated user on login page -> redirect to their tenant dashboard
     if (isAuthenticated && isPublicPath(pathname)) {
       return NextResponse.redirect(
-        buildDashboardUrl(session.user.tenantSlug, request),
+        buildDashboardUrl(session.user.tenantSlug),
       );
     }
 
     // Authenticated user at root "/" → redirect to their tenant dashboard
     if (isAuthenticated && pathname === "/") {
       return NextResponse.redirect(
-        buildDashboardUrl(session.user.tenantSlug, request),
+        buildDashboardUrl(session.user.tenantSlug),
       );
     }
 
@@ -129,7 +129,7 @@ export default auth(function proxy(request) {
   // This prevents tenant A's token from accessing tenant B's subdomain.
   if (session.user.tenantSlug !== subdomain) {
     return NextResponse.redirect(
-      buildDashboardUrl(session.user.tenantSlug, request),
+      buildDashboardUrl(session.user.tenantSlug),
     );
   }
 

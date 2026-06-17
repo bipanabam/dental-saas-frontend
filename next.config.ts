@@ -1,6 +1,7 @@
 import type { NextConfig } from "next"
 
-const rootDomain = process.env.NODE_ENV === "production" ? "dentalsaas.com" : "app.local";
+const rootDomain =
+  process.env.BASE_DOMAIN ?? "app.local";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: [
@@ -16,7 +17,7 @@ const nextConfig: NextConfig = {
           has: [
             { 
               type: "host", 
-              value: `(?<slug>.+)\\.${rootDomain}`,
+              value: `(?<slug>[^.]+)\\.${rootDomain}`,
             }
           ],
           destination: "/:path*",

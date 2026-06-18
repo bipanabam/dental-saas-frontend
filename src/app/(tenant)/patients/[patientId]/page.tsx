@@ -8,6 +8,7 @@ import PatientOverview from "@/components/patients/overview/PatientOverview";
 import PatientNavigation from "@/components/patients/PatientNavigation";
 import PatientActionsCard from "@/components/patients/PatientActionsCard";
 import ActivityTimelineCard from "@/components/patients/ActivityTimelineCard";
+import NextActionsCard from "@/components/patients/NextActionsCard";
 
 import { EmptyState } from "@/components/shared/page/EmptyState";
 import { FullPageLoader } from "@/components/base/loading-view";
@@ -24,7 +25,7 @@ export default function PatientDetailPage() {
   const { data: summary } =
     usePatientSummary(patientId as string);
 
-  console.log(patient)
+  console.log(summary)
 
   if (isLoading) {
     return <FullPageLoader />;
@@ -59,8 +60,20 @@ export default function PatientDetailPage() {
         </div>
         {/* Right */}
         <aside className="lg:col-span-1 space-y-6 sticky top-20 h-fit">
-          <PatientActionsCard patient={patient} />
-          <ActivityTimelineCard patient={patient} summary={summary} />
+          {!!summary?.next_actions?.length && (
+            <NextActionsCard
+              actions={summary.next_actions}
+            />
+          )}
+
+          <PatientActionsCard
+            patient={patient}
+          />
+          <ActivityTimelineCard
+            patient={patient}
+            summary={summary}
+          />
+
         </aside>
       </div>
 

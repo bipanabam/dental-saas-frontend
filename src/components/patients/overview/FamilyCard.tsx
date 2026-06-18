@@ -70,7 +70,7 @@ const FamilyCard = ({ patientId }: Props) => {
         }
 
         {/* EMPTY STATE */}
-        {!data?.length || !!isLoading && (
+        {!isLoading && !data?.length && (
           <div className="py-12 text-center border border-dashed border-slate-200/70 rounded-xl bg-slate-50/30 px-4">
             <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 border border-brand-100/50 text-brand-700 shadow-3xs">
               <Users className="h-5 w-5 stroke-[2.2]" />
@@ -86,6 +86,7 @@ const FamilyCard = ({ patientId }: Props) => {
         )}
 
         {/* POPULATED LIST */}
+
         <div className="space-y-2">
           {data?.map((member: any) => (
             <div

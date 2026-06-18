@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Calendar, User, Heart, Activity, Pill, UserCheck } from "lucide-react";
+import { Calendar, User, Heart, Activity, Stethoscope, UserCheck } from "lucide-react";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,18 +14,16 @@ interface Props {
     blood_group?: string;
     visit_count?: number;
     last_visit_at?: Date;
-    medical_record?: {
-      current_medications?: string;
-    };
   };
   summary?: {
     primary_doctor_name?: string;
+    current_diagnosis?: string[];
   };
 }
 
 const ClinicalSnapshotCard = ({ patient, summary }: Props) => {
   const age = getAge(patient.date_of_birth);
-  const medications = patient.medical_record?.current_medications;
+  const diagnoses = summary?.current_diagnosis || [];
 
   return (
     <Card className="overflow-hidden border border-slate-100 shadow-sm bg-white rounded-2xl">
@@ -39,12 +37,12 @@ const ClinicalSnapshotCard = ({ patient, summary }: Props) => {
 
       <CardContent className="p-4 space-y-4">
         {/* 1. CORE VITALS DECK PANEL */}
-        <div className="grid grid-cols-3 gap-2 bg-slate-50/60 p-2.5 rounded-xl border border-slate-100/80 text-center">
+        <div className="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 text-center">
           <div className="space-y-0.5">
             <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block">Age</span>
             <span className="text-sm font-black text-slate-800 tracking-tight">{age ? `${age} yrs` : "—"}</span>
           </div>
-          <div className="space-y-0.5 border-x border-slate-200/60">
+          <div className="space-y-0.5 border-x border-slate-200">
             <span className="text-[9px] font-black uppercase tracking-wider text-slate-400 block">Gender</span>
             <span className="text-sm font-black text-slate-800 tracking-tight capitalize">{patient.gender?.toLowerCase() || "—"}</span>
           </div>
@@ -84,25 +82,34 @@ const ClinicalSnapshotCard = ({ patient, summary }: Props) => {
               <Calendar className="h-3.5 w-3.5 text-slate-400 stroke-2" /> Last Encounter
             </span>
             <span className="font-bold text-slate-700 font-mono text-[11px]">
-              {patient.last_visit_at ? new Date(patient.last_visit_at,).toLocaleString() : "New Registration"}
+              {patient.last_visit_at ? new Date(patient.last_visit_at).toLocaleString() : "New Registration"}
             </span>
           </div>
         </div>
 
-        {/* 3. CURRENT ACTIVE THERAPY BLOCK */}
-        <div className="border-t border-slate-100/80 pt-3">
-          <div className="rounded-xl border border-slate-100 bg-slate-50/30 p-2.5 space-y-1.5">
+        {/* 3. LATEST ENCOUNTER DIAGNOSIS DECK */}
+        <div className="border-t border-slate-100 pt-3">
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-2.5 space-y-2">
             <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1">
-              <Pill className="h-3 w-3 text-brand-600 stroke-[2.5]" />
-              Active Medical Prescriptions
+              <Stethoscope className="h-3 w-3 text-brand-600 stroke-[2.5]" />
+              Latest Encounter Diagnosis
             </span>
-            {medications ? (
-              <p className="text-xs font-semibold text-slate-600 leading-relaxed bg-white p-2 rounded-lg border border-slate-100 shadow-3xs line-clamp-3">
-                {medications}
-              </p>
+
+            {diagnoses.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                {diagnoses.map((condition, idx) => (
+                  <Badge
+                    key={`${condition}-${idx}`}
+                    variant="outline"
+                    className="bg-white text-slate-700 border-slate-200/80 font-bold text-[11px] px-2 py-1 rounded-lg shadow-3xs leading-tight tracking-tight normal-case text-left h-auto max-w-full block"
+                  >
+                    {condition}
+                  </Badge>
+                ))}
+              </div>
             ) : (
-              <div className="text-[11px] italic text-slate-400 px-0.5">
-                No active continuous medications registered.
+              <div className="text-[11px] italic text-slate-400 px-0.5 pt-0.5">
+                No active diagnoses recorded from past visits.
               </div>
             )}
           </div>

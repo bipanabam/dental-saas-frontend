@@ -53,8 +53,7 @@ function Item({
               </p>
 
               <p className="text-sm text-slate-500 line-clamp-2">
-                {appointment.chief_complaint ||
-                  "No complaint recorded"}
+                {appointment.chief_complaint || "No complaint recorded"}
               </p>
             </>
           ) : (

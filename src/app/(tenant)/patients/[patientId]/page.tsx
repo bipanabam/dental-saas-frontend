@@ -4,11 +4,17 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 
 import PatientHeader from "@/components/patients/PatientHeader";
-import PatientOverview from "@/components/patients/overview/PatientOverview";
 import PatientNavigation from "@/components/patients/PatientNavigation";
 import PatientActionsCard from "@/components/patients/PatientActionsCard";
 import ActivityTimelineCard from "@/components/patients/ActivityTimelineCard";
 import NextActionsCard from "@/components/patients/NextActionsCard";
+
+import PatientOverview from "@/components/patients/overview/PatientOverview";
+import PatientMedicalHistory from "@/components/patients/medical-history/PatientMedicalHistory";
+import PatientAppointment from "@/components/patients/appointments/PatientAppointment";
+import PatientClientEncounter from "@/components/patients/encounters/PatientClientEncounter";
+import PatientTreatmentPlan from "@/components/patients/treatment-plans/PatientTreatmentPlan";
+import PatientProcedures from "@/components/patients/procedures/PatientProcedures";
 
 import { EmptyState } from "@/components/shared/page/EmptyState";
 import { FullPageLoader } from "@/components/base/loading-view";
@@ -24,8 +30,6 @@ export default function PatientDetailPage() {
 
   const { data: summary } =
     usePatientSummary(patientId as string);
-
-  console.log(summary)
 
   if (isLoading) {
     return <FullPageLoader />;
@@ -54,6 +58,20 @@ export default function PatientDetailPage() {
             patient={patient}
             summary={summary}
           />}
+          {tab === "medical-history" && (
+            <PatientMedicalHistory patientId={patientId as string} />
+          )}
+          {tab === "appointments" &&
+            <PatientAppointment patientId={patientId as string} />}
+          {tab === "encounters" &&
+            <PatientClientEncounter patientId={patientId as string}
+            />}
+          {tab === "treatment-plans" &&
+            <PatientTreatmentPlan patientId={patientId as string}
+            />}
+          {tab === "procedures" &&
+            <PatientProcedures patientId={patientId as string}
+            />}
           {tab == null && (
             <EmptyState title="Something went wrong" description="Try refreshing.." />
           )}

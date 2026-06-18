@@ -1,9 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
-import { listPatientsApiV1PatientsGetOptions, 
+import { 
+  listPatientsApiV1PatientsGetOptions, 
   getPatientApiV1PatientsPatientIdGetOptions ,
   getPatientSummaryApiV1PatientsPatientIdSummaryGetOptions,
   searchPatientsApiV1PatientsSearchGetOptions,

@@ -5,7 +5,7 @@ import { ListOrdered, RefreshCw } from "lucide-react";
 import { useTodaysQueue, useDoctorQueue } from "@/hooks/queues/use-queue";
 import { normalizeTodaysItem, normalizeDoctorItem } from "@/lib/queue/normalize-queue";
 
-import DoctorQueueFilter from "@/components/queue/DoctorQueueFilter";
+import DoctorFilter from "@/components/shared/DoctorFilter";
 import QueueOverview from "@/components/queue/QueueOverview";
 import QueueBoard from "@/components/queue/QueueBoard";
 import QueueSidebar from "@/components/queue/QueueSidebar";
@@ -50,7 +50,7 @@ const QueuePage = () => {
                 </div>
 
                 <div className="flex items-center gap-3 self-end sm:self-auto">
-                    <DoctorQueueFilter value={doctorId} onChange={setDoctorId} />
+                    <DoctorFilter value={doctorId} onChange={setDoctorId} />
                     <Button
                         variant="outline"
                         size="icon"

@@ -126,3 +126,16 @@ export const patientFilters: FilterField[] = [
     ],
   },
 ];
+
+export const ACTION_PERMISSIONS = {
+  edit_patient: "patients.update",
+  delete_patient: "patients.delete",
+  restore_patient: "patients.update",
+  assign_doctor: "patients.update",
+  print_patient: "patients.read",
+} as const;
+
+export const useHasPermission = (userPermissions: string[]) => {
+  return (permission: string) =>
+    userPermissions.includes("*") || userPermissions.includes(permission);
+};

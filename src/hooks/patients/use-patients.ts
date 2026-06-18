@@ -3,9 +3,13 @@
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
 
-import { listPatientsApiV1PatientsGetOptions, 
-  getPatientApiV1PatientsPatientIdGetOptions 
+import { 
+  listPatientsApiV1PatientsGetOptions, 
+  getPatientApiV1PatientsPatientIdGetOptions ,
+  getPatientSummaryApiV1PatientsPatientIdSummaryGetOptions,
+  searchPatientsApiV1PatientsSearchGetOptions,
 } from "@/lib/api/@tanstack/react-query.gen";
+
 
 import {
   PatientStatusEnum,
@@ -43,7 +47,6 @@ export function usePatients(params?: {
     }),
 
     enabled: status === "authenticated",
-
     retry: false,
   });
 }
@@ -60,5 +63,56 @@ export function usePatientDetail(
     }),
 
     enabled: !!id,
+
+  });
+}
+
+export function usePatientSummary(
+  id: string,
+) {
+  const { status } =
+    useSession();
+
+  return useQuery({
+    ...getPatientSummaryApiV1PatientsPatientIdSummaryGetOptions({
+      path: {
+        patient_id: id,
+      },
+    }),
+
+    enabled:
+      status ===
+        "authenticated" &&
+      !!id,
+
+    staleTime:
+      1000 * 60 * 5,
+
+    gcTime:
+      1000 * 60 * 10,
+  });
+}
+
+
+export function useSearchPatients(
+  query: string,
+  enabled = true,
+) {
+  return useQuery({
+    ...searchPatientsApiV1PatientsSearchGetOptions({
+      query: {
+        query: query,
+      },
+    }),
+
+    enabled:
+      enabled &&
+      !!query &&
+      query.length >= 2,
+
+    staleTime:
+      1000 *
+      60 *
+      2,
   });
 }

@@ -195,12 +195,12 @@ export type AppointmentListItem = {
      * Patient Id
      */
     patient_id: string;
-    patient: AppSchemasAppointmentPatientMini;
+    patient: PatientMini;
     /**
      * Assigned Doctor Id
      */
     assigned_doctor_id: string | null;
-    doctor: AppSchemasAppointmentDoctorMini | null;
+    doctor: AppSchemasCommonDoctorMini | null;
     /**
      * Appointment Date
      */
@@ -250,7 +250,7 @@ export type AppointmentMini = {
      * Id
      */
     id: string;
-    patient: AppSchemasQueuePatientMini;
+    patient: PatientMini;
     doctor?: AppSchemasQueueDoctorMini | null;
     appointment_type: AppointmentTypeEnum;
     /**
@@ -697,7 +697,7 @@ export type DoctorQueueListItem = {
      */
     token_number: number;
     status: QueueStatusEnum;
-    patient: AppSchemasQueuePatientMini;
+    patient: PatientMini;
     /**
      * Appointment Id
      */
@@ -824,6 +824,28 @@ export type EncounterDetail = {
      * Procedures
      */
     procedures?: Array<ProcedureSummary>;
+};
+
+/**
+ * EncounterMini
+ */
+export type EncounterMini = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Encounter Date
+     */
+    encounter_date: string;
+    /**
+     * Diagnosis
+     */
+    diagnosis: string | null;
+    /**
+     * Treatment Items
+     */
+    treatment_items?: Array<TreatmentItemMini>;
 };
 
 /**
@@ -1297,6 +1319,164 @@ export type MembershipSummary = {
 };
 
 /**
+ * PaginatedResponse[PatientEncounterListItem]
+ */
+export type PaginatedResponsePatientEncounterListItem = {
+    /**
+     * Items
+     */
+    items: Array<PatientEncounterListItem>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+    /**
+     * Has More
+     */
+    has_more: boolean;
+};
+
+/**
+ * PaginatedResponse[PatientMedicalHistoryItem]
+ */
+export type PaginatedResponsePatientMedicalHistoryItem = {
+    /**
+     * Items
+     */
+    items: Array<PatientMedicalHistoryItem>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+    /**
+     * Has More
+     */
+    has_more: boolean;
+};
+
+/**
+ * PaginatedResponse[PatientProcedureListItem]
+ */
+export type PaginatedResponsePatientProcedureListItem = {
+    /**
+     * Items
+     */
+    items: Array<PatientProcedureListItem>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+    /**
+     * Has More
+     */
+    has_more: boolean;
+};
+
+/**
+ * PaginatedResponse[PatientTreatmentPlanListItem]
+ */
+export type PaginatedResponsePatientTreatmentPlanListItem = {
+    /**
+     * Items
+     */
+    items: Array<PatientTreatmentPlanListItem>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+    /**
+     * Has More
+     */
+    has_more: boolean;
+};
+
+/**
+ * PatientAppointmentListItem
+ */
+export type PatientAppointmentListItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Assigned Doctor Id
+     */
+    assigned_doctor_id: string | null;
+    doctor: AppSchemasCommonDoctorMini | null;
+    /**
+     * Appointment Date
+     */
+    appointment_date: string;
+    appointment_type: AppointmentTypeEnum;
+    status: AppointmentStatusEnum;
+    payment_status: PaymentStatusEnum;
+    /**
+     * Chief Complaint
+     */
+    chief_complaint: string | null;
+    source: AppointmentSourceEnum;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * PatientAppointmentListResponse
+ */
+export type PatientAppointmentListResponse = {
+    /**
+     * Items
+     */
+    items: Array<PatientAppointmentListItem>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+    stats: AppointmentStats;
+};
+
+/**
  * PatientAppointmentMini
  */
 export type PatientAppointmentMini = {
@@ -1425,6 +1605,49 @@ export type PatientDetail = {
 };
 
 /**
+ * PatientEncounterListItem
+ */
+export type PatientEncounterListItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Appointment Id
+     */
+    appointment_id: string;
+    /**
+     * Status
+     */
+    status: string;
+    doctor: AppSchemasCommonDoctorMini | null;
+    /**
+     * Chief Complaint
+     */
+    chief_complaint: string | null;
+    /**
+     * Diagnosis Count
+     */
+    diagnosis_count: number;
+    /**
+     * Procedure Count
+     */
+    procedure_count: number;
+    /**
+     * Treatment Plan Status
+     */
+    treatment_plan_status: string | null;
+    /**
+     * Started At
+     */
+    started_at: string;
+    /**
+     * Closed At
+     */
+    closed_at: string | null;
+};
+
+/**
  * PatientListItem
  */
 export type PatientListItem = {
@@ -1486,6 +1709,100 @@ export type PatientListResponse = {
      * Limit
      */
     limit: number;
+};
+
+/**
+ * PatientMedicalHistoryItem
+ */
+export type PatientMedicalHistoryItem = {
+    /**
+     * Encounter Id
+     */
+    encounter_id: string;
+    /**
+     * Encounter Date
+     */
+    encounter_date: string;
+    /**
+     * Conditions
+     */
+    conditions: Array<string>;
+    /**
+     * Allergy Flags
+     */
+    allergy_flags: Array<string>;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * PatientMini
+ */
+export type PatientMini = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Patient Code
+     */
+    patient_code: string;
+    /**
+     * First Name
+     */
+    first_name: string;
+    /**
+     * Last Name
+     */
+    last_name: string;
+    /**
+     * Phone
+     */
+    phone: string | null;
+};
+
+/**
+ * PatientProcedureListItem
+ */
+export type PatientProcedureListItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Encounter Id
+     */
+    encounter_id: string;
+    /**
+     * Procedure Catalog Id
+     */
+    procedure_catalog_id: string | null;
+    /**
+     * Procedure Name
+     */
+    procedure_name: string | null;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Tooth Numbers
+     */
+    tooth_numbers: Array<number> | null;
+    /**
+     * Final Cost
+     */
+    final_cost: number | null;
+    /**
+     * Performed By Id
+     */
+    performed_by_id: string | null;
+    /**
+     * Procedure Date
+     */
+    procedure_date: string | null;
 };
 
 /**
@@ -1570,9 +1887,9 @@ export type PatientSummaryResponse = {
     /**
      * Email
      */
-    email?: string | null;
+    email: string | null;
     gender: GenderEnum;
-    blood_group?: BloodGroupEnum | null;
+    blood_group: BloodGroupEnum | null;
     /**
      * Date Of Birth
      */
@@ -1585,25 +1902,88 @@ export type PatientSummaryResponse = {
     /**
      * Last Visit At
      */
-    last_visit_at?: string | null;
-    /**
-     * Allergies
-     */
-    allergies?: string | null;
-    /**
-     * Systemic Conditions
-     */
-    systemic_conditions?: string | null;
-    /**
-     * Current Medications
-     */
-    current_medications?: string | null;
+    last_visit_at: string | null;
     /**
      * Primary Doctor Name
      */
-    primary_doctor_name?: string | null;
+    primary_doctor_name: string | null;
+    /**
+     * Allergies
+     */
+    allergies?: Array<string>;
+    /**
+     * Systemic Conditions
+     */
+    systemic_conditions?: Array<string>;
+    /**
+     * Clinical Flags
+     */
+    clinical_flags?: Array<string>;
+    /**
+     * Current Medications
+     */
+    current_medications: string | null;
+    latest_vitals: VitalSnapshot | null;
     latest_appointment: PatientAppointmentMini | null;
     upcoming_appointment: PatientAppointmentMini | null;
+    /**
+     * Critical Alerts
+     */
+    critical_alerts?: Array<string>;
+    /**
+     * Current Diagnosis
+     */
+    current_diagnosis?: Array<string>;
+    /**
+     * Recent Encounters
+     */
+    recent_encounters?: Array<EncounterMini>;
+    /**
+     * Next Actions
+     */
+    next_actions?: Array<string>;
+    /**
+     * Risk Score
+     */
+    risk_score: string | null;
+};
+
+/**
+ * PatientTreatmentPlanListItem
+ */
+export type PatientTreatmentPlanListItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Encounter Id
+     */
+    encounter_id: string;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Estimated Total Cost
+     */
+    estimated_total_cost: number | null;
+    /**
+     * Total Items
+     */
+    total_items: number;
+    /**
+     * Completed Items
+     */
+    completed_items: number;
+    /**
+     * Pending Items
+     */
+    pending_items: number;
+    /**
+     * Created At
+     */
+    created_at: string;
 };
 
 /**
@@ -2076,6 +2456,21 @@ export type Token = {
 };
 
 /**
+ * TreatmentItemMini
+ */
+export type TreatmentItemMini = {
+    /**
+     * Procedure Name
+     */
+    procedure_name: string;
+    /**
+     * Visit Number
+     */
+    visit_number: number;
+    status: TreatmentPlanItemStatusEnum;
+};
+
+/**
  * TreatmentPlanCreate
  *
  * POST /encounters/{id}/treatment-plan
@@ -2189,6 +2584,11 @@ export type TreatmentPlanItemPerformCreate = {
      */
     performed_duration_minutes?: number | null;
 };
+
+/**
+ * TreatmentPlanItemStatusEnum
+ */
+export type TreatmentPlanItemStatusEnum = 'PENDING' | 'DONE' | 'DEFERRED' | 'CANCELLED' | 'CHANGED';
 
 /**
  * TreatmentPlanOut
@@ -2389,9 +2789,39 @@ export type ValidationError = {
 };
 
 /**
+ * VitalSnapshot
+ */
+export type VitalSnapshot = {
+    /**
+     * Bp Systolic
+     */
+    bp_systolic?: number | null;
+    /**
+     * Bp Diastolic
+     */
+    bp_diastolic?: number | null;
+    /**
+     * Pulse Rate
+     */
+    pulse_rate?: number | null;
+    /**
+     * Temperature
+     */
+    temperature?: number | null;
+    /**
+     * Weight Kg
+     */
+    weight_kg?: number | null;
+    /**
+     * Spo2
+     */
+    spo2?: number | null;
+};
+
+/**
  * DoctorMini
  */
-export type AppSchemasAppointmentDoctorMini = {
+export type AppSchemasCommonDoctorMini = {
     /**
      * Id
      */
@@ -2400,28 +2830,6 @@ export type AppSchemasAppointmentDoctorMini = {
      * Email
      */
     email: string;
-};
-
-/**
- * PatientMini
- */
-export type AppSchemasAppointmentPatientMini = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * First Name
-     */
-    first_name: string;
-    /**
-     * Last Name
-     */
-    last_name: string;
-    /**
-     * Patient Code
-     */
-    patient_code: string;
 };
 
 /**
@@ -2436,32 +2844,6 @@ export type AppSchemasQueueDoctorMini = {
      * Username
      */
     username: string;
-};
-
-/**
- * PatientMini
- */
-export type AppSchemasQueuePatientMini = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * Patient Code
-     */
-    patient_code: string;
-    /**
-     * First Name
-     */
-    first_name: string;
-    /**
-     * Last Name
-     */
-    last_name: string;
-    /**
-     * Phone
-     */
-    phone: string | null;
 };
 
 export type RegisterTenantApiV1AuthRegisterTenantPostData = {
@@ -3351,10 +3733,166 @@ export type ListPatientAppointmentsApiV1PatientsPatientIdAppointmentsGetResponse
     /**
      * Successful Response
      */
-    200: AppointmentListResponse;
+    200: PatientAppointmentListResponse;
 };
 
 export type ListPatientAppointmentsApiV1PatientsPatientIdAppointmentsGetResponse = ListPatientAppointmentsApiV1PatientsPatientIdAppointmentsGetResponses[keyof ListPatientAppointmentsApiV1PatientsPatientIdAppointmentsGetResponses];
+
+export type ListPatientEncountersApiV1PatientsPatientIdEncountersGetData = {
+    body?: never;
+    path: {
+        /**
+         * Patient Id
+         */
+        patient_id: string;
+    };
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/patients/{patient_id}/encounters';
+};
+
+export type ListPatientEncountersApiV1PatientsPatientIdEncountersGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListPatientEncountersApiV1PatientsPatientIdEncountersGetError = ListPatientEncountersApiV1PatientsPatientIdEncountersGetErrors[keyof ListPatientEncountersApiV1PatientsPatientIdEncountersGetErrors];
+
+export type ListPatientEncountersApiV1PatientsPatientIdEncountersGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: PaginatedResponsePatientEncounterListItem;
+};
+
+export type ListPatientEncountersApiV1PatientsPatientIdEncountersGetResponse = ListPatientEncountersApiV1PatientsPatientIdEncountersGetResponses[keyof ListPatientEncountersApiV1PatientsPatientIdEncountersGetResponses];
+
+export type ListPatientMedicalHistoryApiV1PatientsPatientIdMedicalHistoryGetData = {
+    body?: never;
+    path: {
+        /**
+         * Patient Id
+         */
+        patient_id: string;
+    };
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/patients/{patient_id}/medical-history';
+};
+
+export type ListPatientMedicalHistoryApiV1PatientsPatientIdMedicalHistoryGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListPatientMedicalHistoryApiV1PatientsPatientIdMedicalHistoryGetError = ListPatientMedicalHistoryApiV1PatientsPatientIdMedicalHistoryGetErrors[keyof ListPatientMedicalHistoryApiV1PatientsPatientIdMedicalHistoryGetErrors];
+
+export type ListPatientMedicalHistoryApiV1PatientsPatientIdMedicalHistoryGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: PaginatedResponsePatientMedicalHistoryItem;
+};
+
+export type ListPatientMedicalHistoryApiV1PatientsPatientIdMedicalHistoryGetResponse = ListPatientMedicalHistoryApiV1PatientsPatientIdMedicalHistoryGetResponses[keyof ListPatientMedicalHistoryApiV1PatientsPatientIdMedicalHistoryGetResponses];
+
+export type ListPatientTreatmentPlansApiV1PatientsPatientIdTreatmentPlansGetData = {
+    body?: never;
+    path: {
+        /**
+         * Patient Id
+         */
+        patient_id: string;
+    };
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/patients/{patient_id}/treatment-plans';
+};
+
+export type ListPatientTreatmentPlansApiV1PatientsPatientIdTreatmentPlansGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListPatientTreatmentPlansApiV1PatientsPatientIdTreatmentPlansGetError = ListPatientTreatmentPlansApiV1PatientsPatientIdTreatmentPlansGetErrors[keyof ListPatientTreatmentPlansApiV1PatientsPatientIdTreatmentPlansGetErrors];
+
+export type ListPatientTreatmentPlansApiV1PatientsPatientIdTreatmentPlansGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: PaginatedResponsePatientTreatmentPlanListItem;
+};
+
+export type ListPatientTreatmentPlansApiV1PatientsPatientIdTreatmentPlansGetResponse = ListPatientTreatmentPlansApiV1PatientsPatientIdTreatmentPlansGetResponses[keyof ListPatientTreatmentPlansApiV1PatientsPatientIdTreatmentPlansGetResponses];
+
+export type ListPatientProceduresApiV1PatientsPatientIdProceduresGetData = {
+    body?: never;
+    path: {
+        /**
+         * Patient Id
+         */
+        patient_id: string;
+    };
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/patients/{patient_id}/procedures';
+};
+
+export type ListPatientProceduresApiV1PatientsPatientIdProceduresGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListPatientProceduresApiV1PatientsPatientIdProceduresGetError = ListPatientProceduresApiV1PatientsPatientIdProceduresGetErrors[keyof ListPatientProceduresApiV1PatientsPatientIdProceduresGetErrors];
+
+export type ListPatientProceduresApiV1PatientsPatientIdProceduresGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: PaginatedResponsePatientProcedureListItem;
+};
+
+export type ListPatientProceduresApiV1PatientsPatientIdProceduresGetResponse = ListPatientProceduresApiV1PatientsPatientIdProceduresGetResponses[keyof ListPatientProceduresApiV1PatientsPatientIdProceduresGetResponses];
 
 export type GetPatientSummaryApiV1PatientsPatientIdSummaryGetData = {
     body?: never;
@@ -4767,7 +5305,7 @@ export type CancelTreatmentPlanItemApiV1EncountersEncounterIdTreatmentPlanItemsI
 
 export type CancelTreatmentPlanItemApiV1EncountersEncounterIdTreatmentPlanItemsItemIdCancelPatchResponse = CancelTreatmentPlanItemApiV1EncountersEncounterIdTreatmentPlanItemsItemIdCancelPatchResponses[keyof CancelTreatmentPlanItemApiV1EncountersEncounterIdTreatmentPlanItemsItemIdCancelPatchResponses];
 
-export type GetProcedureApiV1ProceduresProceduresProcedureIdGetData = {
+export type GetProcedureApiV1ProceduresProcedureIdGetData = {
     body?: never;
     path: {
         /**
@@ -4776,28 +5314,28 @@ export type GetProcedureApiV1ProceduresProceduresProcedureIdGetData = {
         procedure_id: string;
     };
     query?: never;
-    url: '/api/v1/procedures/procedures/{procedure_id}';
+    url: '/api/v1/procedures/{procedure_id}';
 };
 
-export type GetProcedureApiV1ProceduresProceduresProcedureIdGetErrors = {
+export type GetProcedureApiV1ProceduresProcedureIdGetErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type GetProcedureApiV1ProceduresProceduresProcedureIdGetError = GetProcedureApiV1ProceduresProceduresProcedureIdGetErrors[keyof GetProcedureApiV1ProceduresProceduresProcedureIdGetErrors];
+export type GetProcedureApiV1ProceduresProcedureIdGetError = GetProcedureApiV1ProceduresProcedureIdGetErrors[keyof GetProcedureApiV1ProceduresProcedureIdGetErrors];
 
-export type GetProcedureApiV1ProceduresProceduresProcedureIdGetResponses = {
+export type GetProcedureApiV1ProceduresProcedureIdGetResponses = {
     /**
      * Successful Response
      */
     200: ProcedureOut;
 };
 
-export type GetProcedureApiV1ProceduresProceduresProcedureIdGetResponse = GetProcedureApiV1ProceduresProceduresProcedureIdGetResponses[keyof GetProcedureApiV1ProceduresProceduresProcedureIdGetResponses];
+export type GetProcedureApiV1ProceduresProcedureIdGetResponse = GetProcedureApiV1ProceduresProcedureIdGetResponses[keyof GetProcedureApiV1ProceduresProcedureIdGetResponses];
 
-export type UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchData = {
+export type UpdateProcedureApiV1ProceduresProcedureIdPatchData = {
     body: ProcedureUpdate;
     path: {
         /**
@@ -4806,28 +5344,28 @@ export type UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchData = {
         procedure_id: string;
     };
     query?: never;
-    url: '/api/v1/procedures/procedures/{procedure_id}';
+    url: '/api/v1/procedures/{procedure_id}';
 };
 
-export type UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchErrors = {
+export type UpdateProcedureApiV1ProceduresProcedureIdPatchErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchError = UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchErrors[keyof UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchErrors];
+export type UpdateProcedureApiV1ProceduresProcedureIdPatchError = UpdateProcedureApiV1ProceduresProcedureIdPatchErrors[keyof UpdateProcedureApiV1ProceduresProcedureIdPatchErrors];
 
-export type UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchResponses = {
+export type UpdateProcedureApiV1ProceduresProcedureIdPatchResponses = {
     /**
      * Successful Response
      */
     200: ProcedureOut;
 };
 
-export type UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchResponse = UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchResponses[keyof UpdateProcedureApiV1ProceduresProceduresProcedureIdPatchResponses];
+export type UpdateProcedureApiV1ProceduresProcedureIdPatchResponse = UpdateProcedureApiV1ProceduresProcedureIdPatchResponses[keyof UpdateProcedureApiV1ProceduresProcedureIdPatchResponses];
 
-export type CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostData = {
+export type CancelProcedureApiV1ProceduresProcedureIdCancelPostData = {
     body?: never;
     path: {
         /**
@@ -4836,26 +5374,26 @@ export type CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostData = 
         procedure_id: string;
     };
     query?: never;
-    url: '/api/v1/procedures/procedures/{procedure_id}/cancel';
+    url: '/api/v1/procedures/{procedure_id}/cancel';
 };
 
-export type CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostErrors = {
+export type CancelProcedureApiV1ProceduresProcedureIdCancelPostErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostError = CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostErrors[keyof CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostErrors];
+export type CancelProcedureApiV1ProceduresProcedureIdCancelPostError = CancelProcedureApiV1ProceduresProcedureIdCancelPostErrors[keyof CancelProcedureApiV1ProceduresProcedureIdCancelPostErrors];
 
-export type CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostResponses = {
+export type CancelProcedureApiV1ProceduresProcedureIdCancelPostResponses = {
     /**
      * Successful Response
      */
     200: ProcedureOut;
 };
 
-export type CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostResponse = CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostResponses[keyof CancelProcedureApiV1ProceduresProceduresProcedureIdCancelPostResponses];
+export type CancelProcedureApiV1ProceduresProcedureIdCancelPostResponse = CancelProcedureApiV1ProceduresProcedureIdCancelPostResponses[keyof CancelProcedureApiV1ProceduresProcedureIdCancelPostResponses];
 
 export type GetTaxonomyApiV1TaxonomyGetData = {
     body?: never;

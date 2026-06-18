@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
-import { configureApiClient } from "@/lib/api/configure-client";
+import { configureApiClient } from "@/lib/tanstack-client/configure-client";
 
 const ApiProvider = ({
   children,

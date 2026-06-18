@@ -20,33 +20,35 @@ const DiagnosisSummaryCard = ({ patient }: any) => {
 
   return (
     <Card className="border hover:border-primary">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="flex items-center gap-2 text-brand-600 text-base">
-                <Stethoscope size={18} />
-                Diagnosis Summary
-            </CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <CardTitle className="flex items-center gap-2 text-brand-600 text-base">
+          <Stethoscope size={18} />
+          Diagnosis Summary
+        </CardTitle>
 
-            <Button variant="ghost" className="text-brand-600">ICD-10</Button>
-        </CardHeader>
+        <Button variant="ghost" className="text-brand-600">
+          ICD-10
+        </Button>
+      </CardHeader>
 
-        <CardContent className="space-y-5 flex-1">
-            {diagnosis.map((item) => (
-            <div
-                key={item.code}
-                className="border-b pb-5 last:border-0 border-brand-100"
-            >
-                <div className="flex justify-between">
-                <div>
-                    <p className="font-semibold">{item.title}</p>
+      <CardContent className="space-y-5 flex-1">
+        {diagnosis.map((item) => (
+          <div
+            key={item.code}
+            className="border-b pb-5 last:border-0 border-brand-100"
+          >
+            <div className="flex justify-between">
+              <div>
+                <p className="font-semibold">{item.title}</p>
 
-                    <p className="text-sm text-muted-foreground">{item.code}</p>
-                </div>
+                <p className="text-sm text-muted-foreground">{item.code}</p>
+              </div>
 
-                <Badge>{item.priority}</Badge>
-                </div>
+              <Badge>{item.priority}</Badge>
             </div>
-            ))}
-        </CardContent>
+          </div>
+        ))}
+      </CardContent>
     </Card>
   );
 };

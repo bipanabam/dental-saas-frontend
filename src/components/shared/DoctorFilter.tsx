@@ -19,7 +19,7 @@ interface Props {
 
 const ALL = "all";
 
-const DoctorQueueFilter = ({ value, onChange }: Props) => {
+const DoctorFilter = ({ value, onChange }: Props) => {
     const { data, isLoading } = useDoctors();
     const doctors = data ?? [];
 
@@ -45,4 +45,4 @@ const DoctorQueueFilter = ({ value, onChange }: Props) => {
   );
 } 
 
-export default DoctorQueueFilter;
+export default DoctorFilter;

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 
 import PatientHeader from "@/components/patients/PatientHeader";
-import PatientOverview from "@/components/patients/PatientOverview";
+import PatientOverview from "@/components/patients/overview/PatientOverview";
 import PatientNavigation from "@/components/patients/PatientNavigation";
 import PatientActionsCard from "@/components/patients/PatientActionsCard";
 import ActivityTimelineCard from "@/components/patients/ActivityTimelineCard";
@@ -12,13 +12,18 @@ import ActivityTimelineCard from "@/components/patients/ActivityTimelineCard";
 import { EmptyState } from "@/components/shared/page/EmptyState";
 import { FullPageLoader } from "@/components/base/loading-view";
 
-import { usePatientDetail } from "@/hooks/patients/use-patients";
+import { usePatientDetail, usePatientSummary } from "@/hooks/patients/use-patients";
 
 export default function PatientDetailPage() {
   const { patientId } = useParams();
   const [tab, setTab] = useState("overview");
 
-  const { data: patient, isLoading } = usePatientDetail(patientId as string);
+  const { data: patient, isLoading } =
+    usePatientDetail(patientId as string);
+
+  const { data: summary } =
+    usePatientSummary(patientId as string);
+
   console.log(patient)
 
   if (isLoading) {
@@ -32,7 +37,10 @@ export default function PatientDetailPage() {
   return (
     <div className="space-y-6 max-w-400 mx-auto w-full">
       {/* Hero */}
-      <PatientHeader patient={patient} />
+      <PatientHeader
+        patient={patient}
+        summary={summary}
+      />
       <PatientNavigation
         active={tab}
         onChange={setTab}
@@ -40,7 +48,11 @@ export default function PatientDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         {/* Left */}
         <div className="lg:col-span-3 space-y-6">
-          {tab === "overview" && <PatientOverview patient={patient} />}
+          {tab === "overview" && 
+          <PatientOverview
+            patient={patient}
+            summary={summary}
+          />}
           {tab == null && (
             <EmptyState title="Something went wrong" description="Try refreshing.." />
           )}
@@ -48,7 +60,7 @@ export default function PatientDetailPage() {
         {/* Right */}
         <aside className="lg:col-span-1 space-y-6 sticky top-20 h-fit">
           <PatientActionsCard patient={patient} />
-          <ActivityTimelineCard patient={patient} />
+          <ActivityTimelineCard patient={patient} summary={summary} />
         </aside>
       </div>
 

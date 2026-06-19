@@ -6,17 +6,28 @@ import {
   Receipt,
   ChartNoAxesCombined,
   Settings,
+  ClipboardPlus,
+  BookOpen,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 import type { UserRole } from "@/lib/auth/types";
 
-export type SidebarItem = {
+
+export type SidebarChild = {
   title: string;
   url: string;
+};
 
-  icon: any;
+export type SidebarItem = {
+  title: string;
+  url?: string;
+
+  icon: LucideIcon;
 
   roles: UserRole[];
+
+  children?: SidebarChild[];
 };
 
 export const sidebarItems: SidebarItem[] = [
@@ -42,6 +53,13 @@ export const sidebarItems: SidebarItem[] = [
   },
 
   {
+    title: "Encounters",
+    url: "/encounters",
+    icon: ClipboardPlus,
+    roles: ["admin", "doctor"],
+  },
+
+  {
     title: "Queue",
     url: "/queue",
     icon: ListOrdered,
@@ -63,10 +81,26 @@ export const sidebarItems: SidebarItem[] = [
   },
 
   {
+    title: "Guidelines",
+    icon: BookOpen,
+    roles: ["admin", "doctor"],
+
+    children: [
+      {
+        title: "Clinical Taxonomy",
+        url: "/taxonomy",
+      },
+      {
+        title: "Procedure Catalog",
+        url: "/procedure-catalog",
+      },
+    ],
+  },
+
+  {
     title: "Settings",
     url: "/settings",
     icon: Settings,
-    roles: ["admin", "doctor"],
+    roles: ["admin"],
   },
 ];
-

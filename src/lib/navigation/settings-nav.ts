@@ -29,11 +29,11 @@ export const settingsNav = [
     icon: Users,
   },
 
-  {
-    title: "Roles",
-    href: "/settings/roles",
-    icon: Shield,
-  },
+  // {
+  //   title: "Roles",
+  //   href: "/settings/roles",
+  //   icon: Shield,
+  // },
 
   {
     title: "Doctors",
@@ -42,16 +42,16 @@ export const settingsNav = [
   },
 
   {
-    title: "Procedures",
-    href: "/settings/procedures",
+    title: "Procedure Catalog",
+    href: "/settings/procedure-catalog",
     icon: ClipboardList,
   },
 
-  {
-    title: "Taxonomy",
-    href: "/settings/taxonomy",
-    icon: FolderTree,
-  },
+  // {
+  //   title: "Taxonomy",
+  //   href: "/settings/taxonomy",
+  //   icon: FolderTree,
+  // },
 
 //   {
 //     title: "Preferences",

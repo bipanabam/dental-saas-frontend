@@ -148,6 +148,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return token;
       }
 
+      // Already known dead — don't retry a refresh we know will fail.
+      // The session-side error flag + middleware redirect will handle
+      // forcing re-login; further refresh attempts here just spam the
+      // backend with 401s.
+      if (token.error === "RefreshTokenExpired") {
+        return token;
+      }
+
       if (Date.now() < token.accessTokenExpiresAt - 60_000) {
         return token;
       }

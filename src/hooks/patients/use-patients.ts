@@ -18,22 +18,27 @@ import {
   BloodGroupEnum,
 } from "@/lib/api";
 
-export function usePatients(params?: {
-  skip?: number;
-  limit?: number;
+interface QueryParams {
+  skip?: number,
+  limit?: number,
 
-  category?: PatientCategoryEnum;
-  status?: PatientStatusEnum;
+  category?: PatientCategoryEnum,
+  status?: PatientStatusEnum,
 
-  gender?: GenderEnum;
+  gender?: GenderEnum,
 
-  blood_group?: BloodGroupEnum;
-}) {
+  blood_group?: BloodGroupEnum,
+}
+
+export function patientQueryOptions(query?: QueryParams) {
+  return listPatientsApiV1PatientsGetOptions({query});
+}
+
+export function usePatients(params?: QueryParams) {
   const { status } = useSession();
 
   return useQuery({
-    ...listPatientsApiV1PatientsGetOptions({
-      query: {
+    ...patientQueryOptions({
         skip: params?.skip,
         limit: params?.limit,
 
@@ -43,8 +48,7 @@ export function usePatients(params?: {
         gender: params?.gender,
 
         blood_group: params?.blood_group,
-      },
-    }),
+      }),
 
     enabled: status === "authenticated",
     retry: false,

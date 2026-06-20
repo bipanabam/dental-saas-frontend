@@ -10,6 +10,7 @@ import {
   HeartPulse,
   HelpCircle,
   LogOut,
+  ChevronDown
 } from "lucide-react";
 
 import {
@@ -22,6 +23,12 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 
 const AppSidebar = () => {
@@ -62,23 +69,77 @@ const AppSidebar = () => {
 
         <SidebarMenu className="gap-1">
           {items.map((item) => {
-            const active = item.url === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname.startsWith(item.url);
             const Icon = item.icon;
+            if (item.children) {
+              const isChildActive = item.children.some((child) => pathname.startsWith(child.url));
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <DropdownMenu>
+
+                    <DropdownMenuTrigger asChild className="hover:bg-brand-600 hover:text-white p-0">
+                      <SidebarMenuButton
+                        className={`w-full h-11 rounded-xl text-sm font-medium transition-all duration-200 px-3 flex items-center justify-between group cursor-pointer
+                          ${isChildActive
+                            ? "bg-brand-800/60 text-white font-semibold"
+                            : "text-brand-200/80 hover:bg-brand-800/50 hover:text-white"
+                          }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <Icon className={`h-4 w-4 shrink-0 transition-transform duration-200 ${isChildActive ? "text-white" : "text-brand-300 group-hover:text-white"}`} />
+                          <span>{item.title}</span>
+                        </div>
+                        <ChevronDown className={`h-3.5 w-3.5 opacity-60 transition-transform duration-200 ${isChildActive ? "text-white opacity-100" : "text-brand-400 group-hover:text-white"}`} />
+                      </SidebarMenuButton>
+
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      align="start"
+                      sideOffset={8}
+                      className="w-56 rounded-xl border-brand-800 bg-brand-800/20 backdrop-blur-md shadow-xl text-xs font-semibold p-1.5 space-y-0.5 text-brand-200"
+                    >
+
+                      {item.children.map((child) => {
+                        const isThisUrlActive = pathname === child.url;
+                        return (
+                          <DropdownMenuItem
+                            key={child.url}
+                            asChild
+                            className={`rounded-lg cursor-pointer px-3 py-2 text-xs font-medium transition-colors
+                              ${isThisUrlActive
+                                ? "bg-brand-600 text-white font-bold focus:bg-brand-600 focus:text-white"
+                                : "hover:bg-brand-800/60 text-brand-white focus:bg-brand-800/60 focus:text-white"
+                              }`}
+                          >
+                            <Link href={child.url}>
+                              {child.title}
+                            </Link>
+                          </DropdownMenuItem>
+                        )
+                      })}
+
+                    </DropdownMenuContent>
+
+                  </DropdownMenu>
+                </SidebarMenuItem>
+              );
+            }
+            const active =
+              item.url === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(item.url!);
 
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
                   asChild
                   className={`h-11 rounded-xl text-sm transition-all duration-200 px-3
-                ${
-                  active
-                    ? "bg-brand-600 text-white shadow-sm font-medium hover:bg-brand-600 hover:text-white"
-                    : "text-brand-200/80 hover:bg-brand-800 hover:text-white"
-                }`}
+                ${active
+                      ? "bg-brand-600 text-white shadow-sm font-medium hover:bg-brand-600 hover:text-white"
+                      : "text-brand-200/80 hover:bg-brand-800 hover:text-white"
+                    }`}
                 >
-                  <Link href={item.url}>
+                  <Link href={item.url!}>
                     <Icon className={`h-4 w-4 shrink-0 transition-transform duration-200 ${active ? "scale-105" : "text-brand-300"}`} />
                     <span>{item.title}</span>
                   </Link>

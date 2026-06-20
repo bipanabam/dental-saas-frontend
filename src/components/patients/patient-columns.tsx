@@ -1,13 +1,10 @@
-import { useRouter } from "next/navigation";
-import { Eye } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 import { getAge } from "@/lib/utils/get-age";
 
 import type { PatientListItem } from "@/lib/api";
 import { Column } from "../shared/data-table/DataTable";
+import { PatientTableActions } from "./PatientActions";
 
 export const patientColumns: Column<PatientListItem>[] = [
   {
@@ -74,11 +71,11 @@ export const patientColumns: Column<PatientListItem>[] = [
 
     render: (_: unknown, patient: any) => (
       <>
-        {patient.blood_group && (
+        {patient.blood_group ? (
           <span className="bg-red-50 text-red-700 border border-red-100 px-1.5 py-0.5 rounded font-bold text-[10px]">
             {patient.blood_group.replace("_POS", "+").replace("_NEG", "-")}
           </span>
-        )}
+        ) : <span className="text-xs text-slate-400">N/A</span>}
       </>
     ),
   },
@@ -129,21 +126,9 @@ export const patientColumns: Column<PatientListItem>[] = [
     title: "Actions",
     className: "uppercase font-semibold text-slate-600",
 
-    render: (_: unknown, patient: any) => {
-      const router = useRouter();
-      return (
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={(e) => {
-            e.stopPropagation();
 
-            router.push(`/patients/${patient.id}`);
-          }}
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
-      );
-    },
+    render: (_: unknown, patient) => (
+      <PatientTableActions patient={patient} />
+    ),
   },
 ];

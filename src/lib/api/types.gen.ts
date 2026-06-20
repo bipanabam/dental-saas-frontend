@@ -1319,6 +1319,28 @@ export type MembershipSummary = {
 };
 
 /**
+ * NextAction
+ */
+export type NextAction = {
+    /**
+     * Type
+     */
+    type: string;
+    /**
+     * Label
+     */
+    label: string;
+    /**
+     * Count
+     */
+    count?: number | null;
+    /**
+     * Target Id
+     */
+    target_id?: string | null;
+};
+
+/**
  * PaginatedResponse[PatientEncounterListItem]
  */
 export type PaginatedResponsePatientEncounterListItem = {
@@ -1941,7 +1963,7 @@ export type PatientSummaryResponse = {
     /**
      * Next Actions
      */
-    next_actions?: Array<string>;
+    next_actions?: Array<NextAction>;
     /**
      * Risk Score
      */
@@ -1980,6 +2002,14 @@ export type PatientTreatmentPlanListItem = {
      * Pending Items
      */
     pending_items: number;
+    /**
+     * Deferred Items
+     */
+    deferred_items: number;
+    /**
+     * Cancelled Items
+     */
+    cancelled_items: number;
     /**
      * Created At
      */
@@ -2731,6 +2761,20 @@ export type UserListItem = {
 };
 
 /**
+ * UserListResponse
+ */
+export type UserListResponse = {
+    /**
+     * Count
+     */
+    count: number;
+    /**
+     * Users
+     */
+    users: Array<UserListItem>;
+};
+
+/**
  * UserUpdate
  */
 export type UserUpdate = {
@@ -2816,6 +2860,14 @@ export type VitalSnapshot = {
      * Spo2
      */
     spo2?: number | null;
+    /**
+     * Recorded At
+     */
+    recorded_at?: string | null;
+    /**
+     * Encounter Id
+     */
+    encounter_id: string;
 };
 
 /**
@@ -3022,8 +3074,10 @@ export type GetUsersApiV1UsersGetResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: UserListResponse;
 };
+
+export type GetUsersApiV1UsersGetResponse = GetUsersApiV1UsersGetResponses[keyof GetUsersApiV1UsersGetResponses];
 
 export type CreateUserApiV1UsersPostData = {
     body: UserCreate;

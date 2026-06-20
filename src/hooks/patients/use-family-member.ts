@@ -39,33 +39,33 @@ export function useLinkFamilyMember(patientId: string) {
   const query = familyQueryOptions(patientId);
 
   return useMutation({
-    mutationFn: (payload: {
+    mutationFn: async (payload: {
       family_member_id: string;
 
       relationship_type: FamilyRelationshipEnum;
-    }) =>
-      addFamilyMemberApiV1PatientsPatientIdFamilyPost({
+    }) => {
+      const result = await addFamilyMemberApiV1PatientsPatientIdFamilyPost({
         path: {
           patient_id: patientId,
         },
-
         body: payload,
-      }),
-
-    async onSuccess(response) {
-        if (response.error) {
-            toast.error(getApiError(response.error))
-        } else {
-            toast.success("Family member linked");
-        }
-
-      await qc.invalidateQueries({
-        queryKey: query.queryKey,
       });
+
+      if (result.error) {
+        throw result.error;
+      }
+      return result.data;
     },
 
-    onError(error) {
-      toast.error(getApiError(error));
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: query.queryKey,
+      });
+      toast.success("Family member linked");
+    },
+
+    onError: (err: any) => {
+      toast.error(err?.detail ?? "Failed to link member");
     },
   });
 }

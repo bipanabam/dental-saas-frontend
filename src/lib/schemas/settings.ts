@@ -11,4 +11,4 @@ export const ClinicIdentitySchema = z.object({
 
 })
 
-export type PatientCreateInput = z.infer<typeof ClinicIdentitySchema>;
+export type ClinicIdentityInput = z.infer<typeof ClinicIdentitySchema>;

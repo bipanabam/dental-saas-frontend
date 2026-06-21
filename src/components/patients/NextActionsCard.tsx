@@ -32,7 +32,7 @@ const actionMap: any = {
 
 type Props = {
   patientId: string;
-  actions: string[];
+  actions: any;
 };
 
 const NextActionsCard = ({ patientId, actions = [] }: Props) => {

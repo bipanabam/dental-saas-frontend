@@ -1,23 +1,26 @@
 export function getAge(dateOfBirth?: string | Date | null): number | null {
-  if (!dateOfBirth) return null;
+    if (!dateOfBirth) return null;
 
-  const dob = new Date(dateOfBirth);
+    const birth = new Date(dateOfBirth);
 
-  if (Number.isNaN(dob.getTime())) {
-    return null;
-  }
+    if (Number.isNaN(birth.getTime())) {
+        return null;
+    }
 
-  const today = new Date();
+    const today = new Date();
 
-  let age = today.getFullYear() - dob.getFullYear();
+    let age =
+        today.getFullYear() -
+        birth.getFullYear();
 
-  const hasBirthdayPassed =
-    today.getMonth() > dob.getMonth() ||
-    (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
+    const beforeBirthday =
+        today.getMonth() < birth.getMonth() ||
+        (
+            today.getMonth() === birth.getMonth() &&
+            today.getDate() < birth.getDate()
+        );
 
-  if (!hasBirthdayPassed) {
-    age -= 1;
-  }
+    if (beforeBirthday) age--;
 
-  return age;
+    return age >= 0 ? age : null;
 }

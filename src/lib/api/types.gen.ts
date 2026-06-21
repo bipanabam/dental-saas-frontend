@@ -2086,6 +2086,48 @@ export type ProcedureCatalogMini = {
 };
 
 /**
+ * ProcedureCatalogRead
+ */
+export type ProcedureCatalogRead = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Tenant Id
+     */
+    tenant_id: string | null;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Code
+     */
+    code?: string | null;
+    /**
+     * Category
+     */
+    category?: string | null;
+    /**
+     * Description
+     */
+    description?: string | null;
+    /**
+     * Default Cost
+     */
+    default_cost?: number | null;
+    /**
+     * Default Duration Minutes
+     */
+    default_duration_minutes?: number | null;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+};
+
+/**
  * ProcedureCategoryEnum
  */
 export type ProcedureCategoryEnum = 'DIAGNOSTIC' | 'PREVENTIVE' | 'RESTORATIVE' | 'SURGICAL' | 'COSMETIC' | 'ORTHODONTIC' | 'ENDODONTIC' | 'PERIODONTIC' | 'PROSTHODONTIC' | 'OTHER';
@@ -3272,6 +3314,104 @@ export type UpdateUserRoleApiV1UsersUserIdRolePutResponses = {
      */
     200: unknown;
 };
+
+export type ListCatalogApiV1ProcedureCatalogGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/procedure-catalog/';
+};
+
+export type ListCatalogApiV1ProcedureCatalogGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListCatalogApiV1ProcedureCatalogGetError = ListCatalogApiV1ProcedureCatalogGetErrors[keyof ListCatalogApiV1ProcedureCatalogGetErrors];
+
+export type ListCatalogApiV1ProcedureCatalogGetResponses = {
+    /**
+     * Response List Catalog Api V1 Procedure Catalog  Get
+     *
+     * Successful Response
+     */
+    200: Array<ProcedureCatalogRead>;
+};
+
+export type ListCatalogApiV1ProcedureCatalogGetResponse = ListCatalogApiV1ProcedureCatalogGetResponses[keyof ListCatalogApiV1ProcedureCatalogGetResponses];
+
+export type SearchCatalogApiV1ProcedureCatalogSearchGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Q
+         */
+        q?: string;
+        /**
+         * Limit
+         */
+        limit?: number;
+    };
+    url: '/api/v1/procedure-catalog/search';
+};
+
+export type SearchCatalogApiV1ProcedureCatalogSearchGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type SearchCatalogApiV1ProcedureCatalogSearchGetError = SearchCatalogApiV1ProcedureCatalogSearchGetErrors[keyof SearchCatalogApiV1ProcedureCatalogSearchGetErrors];
+
+export type SearchCatalogApiV1ProcedureCatalogSearchGetResponses = {
+    /**
+     * Response Search Catalog Api V1 Procedure Catalog Search Get
+     *
+     * Successful Response
+     */
+    200: Array<ProcedureCatalogRead>;
+};
+
+export type SearchCatalogApiV1ProcedureCatalogSearchGetResponse = SearchCatalogApiV1ProcedureCatalogSearchGetResponses[keyof SearchCatalogApiV1ProcedureCatalogSearchGetResponses];
+
+export type GetCatalogApiV1ProcedureCatalogCatalogIdGetData = {
+    body?: never;
+    path: {
+        /**
+         * Catalog Id
+         */
+        catalog_id: string;
+    };
+    query?: never;
+    url: '/api/v1/procedure-catalog/{catalog_id}';
+};
+
+export type GetCatalogApiV1ProcedureCatalogCatalogIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetCatalogApiV1ProcedureCatalogCatalogIdGetError = GetCatalogApiV1ProcedureCatalogCatalogIdGetErrors[keyof GetCatalogApiV1ProcedureCatalogCatalogIdGetErrors];
+
+export type GetCatalogApiV1ProcedureCatalogCatalogIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ProcedureCatalogRead;
+};
+
+export type GetCatalogApiV1ProcedureCatalogCatalogIdGetResponse = GetCatalogApiV1ProcedureCatalogCatalogIdGetResponses[keyof GetCatalogApiV1ProcedureCatalogCatalogIdGetResponses];
 
 export type ListPatientsApiV1PatientsGetData = {
     body?: never;

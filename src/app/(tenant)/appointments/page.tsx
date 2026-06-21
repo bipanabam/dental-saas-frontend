@@ -2,34 +2,71 @@
 
 import { useState, useEffect, useMemo } from "react";
 
-import { useTodaysAppointments, useAppointmentDetail, useAppointments } from "@/hooks/appointments/use-appointments";
+import { useRouter } from "next/navigation";
 
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+    AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, Plus } from "lucide-react";
 
-import PageHeader from "@/components/shared/page/PageHeader";
-import AppointmentStats from "@/components/appointments/appointment-stats";
-import AppointmentSidebar from "@/components/appointments/appointment-sidebar";
-import AppointmentList from "@/components/appointments/appointment-list";
-import AppointmentInspector from "@/components/appointments/appointment-inspector";
-import AppointmentTable from "@/components/appointments/appointment-table";
-
 import { useFilters } from "@/components/shared/filters/useFilters";
 import FilterPanel from "@/components/shared/filters/FilterPanel";
 import { SectionLoader } from "@/components/base/loading-view";
+
+import PageHeader from "@/components/shared/page/PageHeader";
+import VisitFlowStats from "@/components/appointments/VisitFlowStats";
+import AppointmentQueue from "@/components/appointments/AppointmentQueue";
+import QueueLayout from "@/components/appointments/QueueLayout";
+import VisitWorkflowPanel from "@/components/appointments/VisitWorkFlowPanel";
+import RescheduleDialog from "@/components/appointments/RescheduleDialog";
+import FollowUpDialog from "@/components/appointments/FollowUpDialog";
+import AppointmentSidebar from "@/components/appointments/appointment-sidebar";
+import AppointmentTable from "@/components/appointments/appointment-table";
 
 import type {
     AppointmentStatusEnum,
     AppointmentSourceEnum,
     AppointmentTypeEnum,
 } from "@/lib/api";
+import type { TodaysAppointmentListItem } from "@/lib/api";
+import {
+    useTodaysAppointments,
+    useAppointmentDetail,
+    useAppointments,
+} from "@/hooks/appointments/use-appointments";
+import {
+    useConfirmAppointment,
+    useCheckInAppointment,
+    useStartAppointment,
+    useCompleteAppointment,
+    useMarkNoShow,
+} from "@/hooks/appointments/use-appointment-workflow";
+
 import { appointmentFilters } from "@/types/appointments";
 
 import getDateRange, { type Range } from "@/lib/utils/get-date";
+import { type WorkflowAction, getPrimaryWorkflowAction, type AppointmentItem } from "@/lib/utils/appointment-workflow";
+
+type RescheduleTarget = {
+    id: string;
+    assigned_doctor_id?: string | null;
+};
 
 const AppointmentsPage = () => {
+    const router = useRouter();
     const [range, setRange] = useState<Range>("today");
+    const [rescheduleTarget, setRescheduleTarget] = useState<RescheduleTarget>();
+    const [followUpTarget, setFollowUpTarget] = useState<string>();
+    const [noShowTarget, setNoShowTarget] = useState<string>();
     const [selectedId, setSelectedId] = useState<string | undefined>();
     const { filters, update, reset } = useFilters({
         status: "ALL",
@@ -37,17 +74,12 @@ const AppointmentsPage = () => {
         appointment_type: "ALL",
     });
 
-    const rangeFilter = useMemo(
-        () => getDateRange(range),
-        [range]
-    );
+    const rangeFilter = useMemo(() => getDateRange(range), [range]);
 
     // Queries
     const queryParams = useMemo(
         () => ({
-            ...(range !== "today"
-                ? rangeFilter
-                : {}),
+            ...(range !== "today" ? rangeFilter : {}),
 
             status:
                 filters.status !== "ALL"
@@ -65,19 +97,15 @@ const AppointmentsPage = () => {
                     : undefined,
         }),
 
-        [range, rangeFilter, filters]
+        [range, rangeFilter, filters],
     );
 
-    const rangedQuery = useAppointments(
-        queryParams,
-        {
-            enabled: range !== "today",
-        }
-    );
-    const todaysQuery = useTodaysAppointments(
-        undefined,
-        { enabled: range === "today" }
-    );
+    const rangedQuery = useAppointments(queryParams, {
+        enabled: range !== "today",
+    });
+    const todaysQuery = useTodaysAppointments(undefined, {
+        enabled: range === "today",
+    });
 
     const todaysAppointments = todaysQuery.data?.items ?? [];
     const rangedAppointments = rangedQuery.data?.items ?? [];
@@ -86,20 +114,16 @@ const AppointmentsPage = () => {
     const isLoadingRanged = rangedQuery.isLoading;
 
     // stats
-    const todaysStats =
-        todaysQuery.data?.stats;
+    const todaysStats = todaysQuery.data?.stats;
+    const rangedStats = rangedQuery.data?.stats;
 
-    const rangedStats =
-        rangedQuery.data?.stats;
+    const stats = range === "today" ? todaysStats : rangedStats;
 
-    const stats =
-        range === "today"
-            ? todaysStats
-            : rangedStats;
-
-    const { data: selectedAppointment, isLoading: detailLoading, error } = useAppointmentDetail(
-        selectedId
-    );
+    const {
+        data: selectedAppointment,
+        isLoading: detailLoading,
+        error,
+    } = useAppointmentDetail(selectedId);
 
     useEffect(() => {
         // Clear inspector when switching tabs
@@ -112,17 +136,70 @@ const AppointmentsPage = () => {
         }
     }, [range, todaysAppointments, selectedId]);
 
+    const confirmMutation = useConfirmAppointment();
+    const checkInMutation = useCheckInAppointment();
+    const startMutation = useStartAppointment();
+    const completeMutation = useCompleteAppointment();
+    const noShowMutation = useMarkNoShow();
+
+    const pendingAction = confirmMutation.isPending || (confirmMutation.isSuccess && todaysQuery.isFetching)
+        ? { id: confirmMutation.variables, action: "confirm" as const }
+        : checkInMutation.isPending || (checkInMutation.isSuccess && todaysQuery.isFetching)
+            ? { id: checkInMutation.variables, action: "check_in" as const }
+            : startMutation.isPending || (startMutation.isSuccess && todaysQuery.isFetching)
+                ? { id: startMutation.variables, action: "start" as const }
+                : completeMutation.isPending || (completeMutation.isSuccess && todaysQuery.isFetching)
+                    ? { id: completeMutation.variables, action: "complete" as const }
+                    : undefined;
+
+    const handleWorkflow = async (
+        action: WorkflowAction,
+        item: AppointmentItem,
+    ) => {
+        switch (action) {
+            case "confirm":
+                await confirmMutation.mutateAsync(item.id);
+                break;
+            case "check_in":
+                await checkInMutation.mutateAsync(item.id);
+                break;
+            case "start":
+                await startMutation.mutateAsync(item.id);
+                router.push(`/appointments/${item.id}/encounter`);
+                break;
+            case "complete":
+                await completeMutation.mutateAsync(item.id);
+                break;
+            case "open":
+                router.push(`/appointments/${item.id}/encounter`);
+                break;
+        }
+    };
+    const handleSecondaryAction = (
+        action: "reschedule" | "follow_up" | "no_show",
+        item: TodaysAppointmentListItem,
+    ) => {
+        const a = item.appointment;
+
+        if (action === "reschedule") {
+            setRescheduleTarget({
+                id: a.id,
+                assigned_doctor_id: a.assigned_doctor_id,
+            });
+        }
+        if (action === "follow_up") setFollowUpTarget(a.id);
+        if (action === "no_show") setNoShowTarget(a.id);
+    };
+
     if (isLoadingRanged) {
-        return (
-            <SectionLoader message="Fetching appointments...." />
-        )
+        return <SectionLoader message="Fetching appointments...." />;
     }
 
     // Filter actions layout configuration pass-through matching image headers
     const headerActions = (
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-            <Tabs 
-                value={range} 
+            <Tabs
+                value={range}
                 onValueChange={(v) => setRange(v as Range)}
                 className="w-full sm:w-auto"
             >
@@ -145,63 +222,116 @@ const AppointmentsPage = () => {
     );
 
     return (
-        <div className="space-y-6 max-w-[1600px] mx-auto w-full p-1">
-            <PageHeader
-                title="Appointment Management"
-                description={`Active Operations Queue • Last synchronized: Just now`}
-                icon={CalendarDays}
-                actions={headerActions}
+        <>
+            <div className="space-y-6 max-w-[1600px] mx-auto w-full p-1">
+                <PageHeader
+                    title="Appointment Management"
+                    description={`Active Operations Queue • Last synchronized: Just now`}
+                    icon={CalendarDays}
+                    actions={headerActions}
+                />
+
+                {/* Top Analytics Stats Grid */}
+                <VisitFlowStats data={stats} />
+
+                {range !== "today" && (
+                    <FilterPanel
+                        fields={appointmentFilters}
+                        values={filters}
+                        onChange={update}
+                        onReset={reset}
+                    />
+                )}
+
+                {range === "today" ? (
+                    <QueueLayout
+                        queue={
+                            <AppointmentQueue
+                                appointments={todaysAppointments}
+                                selectedId={selectedId}
+                                loading={isLoadingToday}
+                                onSelect={(a) => setSelectedId(a.appointment.id)}
+                                onAction={(item) =>
+                                    handleWorkflow(getPrimaryWorkflowAction(item.appointment.status), { id: item.appointment.id })
+                                }
+                                onSecondaryAction={handleSecondaryAction}
+                                pendingId={pendingAction?.id}
+                            />
+                        }
+                        workflow={
+                            <VisitWorkflowPanel
+                                appointment={selectedAppointment}
+                                loading={detailLoading}
+                                onAction={handleWorkflow}
+                                onSecondaryAction={(action, appointment) => {
+                                    if (action === "reschedule") {
+                                        setRescheduleTarget({
+                                            id: appointment.id,
+                                            assigned_doctor_id: appointment.assigned_doctor_id,
+                                        });
+                                    }
+                                    if (action === "follow_up") setFollowUpTarget(appointment.id);
+                                    if (action === "no_show") setNoShowTarget(appointment.id);
+                                }}
+                                pendingAction={
+                                    pendingAction?.id === selectedAppointment?.id
+                                        ? pendingAction?.action
+                                        : undefined
+                                }
+                            />
+                        }
+                    />
+                )
+                : (
+                    <AppointmentTable
+                        appointments={rangedAppointments}
+                        stats={rangedQuery.data?.stats}
+                        isLoading={isLoadingRanged}
+                        range={range}
+                    />
+                )}
+            </div>
+            <RescheduleDialog
+                appointmentId={rescheduleTarget?.id}
+                currentDoctorId={rescheduleTarget?.assigned_doctor_id ?? undefined}
+                open={!!rescheduleTarget}
+                onOpenChange={(open) => !open && setRescheduleTarget(undefined)}
             />
 
-            {/* Top Analytics Stats Grid */}
-            <AppointmentStats data={stats} />
+            <FollowUpDialog
+                appointmentId={followUpTarget}
+                open={!!followUpTarget}
+                onOpenChange={(open) => !open && setFollowUpTarget(undefined)}
+            />
 
-            {range !== "today" && (
-                <FilterPanel
-                    fields={appointmentFilters}
-                    values={filters}
-                    onChange={update}
-                    onReset={reset}
-                />
-            )}
-
-            {range === "today" ? (
-                <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-12 gap-6 items-start">
-                    <div className="md:col-span-1 lg:col-span-3">
-                        <AppointmentSidebar />
-                    </div>
-                    <div className="md:col-span-2 lg:col-span-4">
-                        <AppointmentList
-                            appointments={todaysAppointments}
-                            selectedId={selectedId}
-                            isLoading={isLoadingToday}
-                            onSelect={(appt) => setSelectedId(appt.appointment.id)}
-                        />
-                    </div>
-                    <div className="md:col-span-1 lg:col-span-5">
-                        <AppointmentInspector
-                            appointment={selectedAppointment}
-                            loading={detailLoading}
-                        />
-                    </div>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                    <div className="lg:col-span-3">
-                        <AppointmentSidebar />
-                    </div>
-                    <div className="lg:col-span-9">
-                        <AppointmentTable
-                            appointments={rangedAppointments}
-                            stats={rangedQuery.data?.stats}
-                            isLoading={isLoadingRanged}
-                            range={range}
-                        />
-                    </div>
-                </div>
-            )}
-        </div>
+            <AlertDialog
+                open={!!noShowTarget}
+                onOpenChange={(open) => !open && setNoShowTarget(undefined)}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Mark as No-Show?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will mark the appointment as a no-show and remove it from the
+                            active queue. This can't easily be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={async () => {
+                                if (noShowTarget)
+                                    await noShowMutation.mutateAsync(noShowTarget);
+                                setNoShowTarget(undefined);
+                            }}
+                        >
+                            Confirm No-Show
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
-}
+};
 
 export default AppointmentsPage;

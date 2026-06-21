@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Controller, UseFormSetValue, useWatch } from "react-hook-form";
 import {
   Trash2,

@@ -15,8 +15,8 @@ import {
   AppointmentSourceEnum,
 } from "@/lib/api";
 
-export function useAppointments(params?: {
-  skip?: number;
+interface QueryParams {
+    skip?: number;
   limit?: number;
 
   doctor_id?: string;
@@ -29,12 +29,17 @@ export function useAppointments(params?: {
   status?: AppointmentStatusEnum;
   appointment_type?: AppointmentTypeEnum;
   source?: AppointmentSourceEnum;
-}, options?: { enabled?: boolean }) {  
+}
+
+export function appointmentQueryOptions(query?: QueryParams) {
+  return listAppointmentsApiV1AppointmentsGetOptions({query});
+}
+
+export function useAppointments(params?: QueryParams, options?: { enabled?: boolean }) {  
   const { status: authStatus } = useSession();
 
   return useQuery({
-    ...listAppointmentsApiV1AppointmentsGetOptions({
-      query: {
+    ...appointmentQueryOptions({
         skip: params?.skip,
         limit: params?.limit,
 
@@ -48,7 +53,6 @@ export function useAppointments(params?: {
         status: params?.status,
         appointment_type: params?.appointment_type,
         source: params?.source,
-      },
     }),
 
     enabled: authStatus === "authenticated" && (options?.enabled ?? true),

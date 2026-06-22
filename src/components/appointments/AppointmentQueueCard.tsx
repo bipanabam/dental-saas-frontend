@@ -43,7 +43,7 @@ const ACTIONS = {
     BOOKED: "Confirm",
     CONFIRMED: "Check In",
     CHECKED_IN: "Start Encounter",
-    IN_PROGRESS: "Open Encounter",
+    IN_PROGRESS: "Close Encounter",
     COMPLETED: "Completed",
 };
 

@@ -141,7 +141,7 @@ export default function VisitWorkflowPanel({
     ];
 
     return (
-        <Card className="sticky top-6 rounded-2xl border-slate-200 shadow-md overflow-hidden bg-white w-full p-0">
+        <Card className="sticky top-6 rounded-2xl border-slate-200 shadow-md overflow-hidden bg-white max-w-2xl w-full p-0">
             {/* Header */}
             <CardHeader className="bg-slate-50 border-b border-slate-100 p-5">
                 <div className="flex items-center justify-between gap-4">
@@ -153,9 +153,9 @@ export default function VisitWorkflowPanel({
                             <CardDescription className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                                 Appointment Detail:
                             </CardDescription>
-                            <CardTitle className="text-lg font-bold text-slate-800 truncate mt-0.5">
+                            {/* <CardTitle className="text-lg font-bold text-slate-800 truncate mt-0.5">
                                 {appointment.patient?.name || "Unnamed Patient"}
-                            </CardTitle>
+                            </CardTitle> */}
                         </div>
                     </div>
 
@@ -446,7 +446,7 @@ const StatusBadge = ({ status }: any) => {
 
 const EmptyState = () => {
     return (
-        <Card className="rounded-2xl border-2 border-dashed border-slate-200 bg-white max-w-md w-full">
+        <Card className="rounded-2xl border-2 border-dashed border-slate-200 bg-white w-full">
             <CardContent className="p-12 text-center flex flex-col items-center justify-center min-h-87.5">
                 <div className="h-14 w-14 rounded-full bg-slate-50 flex items-center justify-center mb-4">
                     <Workflow className="h-7 w-7 text-slate-400 stroke-[1.5]" />

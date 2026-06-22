@@ -73,6 +73,37 @@ export type AppointmentCreate = {
 };
 
 /**
+ * AppointmentCreateResponse
+ */
+export type AppointmentCreateResponse = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Appointment Date
+     */
+    appointment_date: string;
+    status: AppointmentStatusEnum;
+    /**
+     * Patient Id
+     */
+    patient_id: string;
+    /**
+     * Assigned Doctor Id
+     */
+    assigned_doctor_id: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Procedures Count
+     */
+    procedures_count: number;
+};
+
+/**
  * AppointmentCreateWalkIn
  */
 export type AppointmentCreateWalkIn = {
@@ -393,6 +424,21 @@ export type AppointmentStats = {
  * AppointmentStatusEnum
  */
 export type AppointmentStatusEnum = 'BOOKED' | 'CONFIRMED' | 'CHECKED_IN' | 'IN_PROGRESS' | 'COMPLETED' | 'NO_SHOW' | 'CANCELLED';
+
+/**
+ * AppointmentStatusUpdate
+ */
+export type AppointmentStatusUpdate = {
+    /**
+     * Id
+     */
+    id: string;
+    status: AppointmentStatusEnum;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
 
 /**
  * AppointmentTypeEnum
@@ -2663,6 +2709,16 @@ export type TreatmentPlanItemPerformCreate = {
 export type TreatmentPlanItemStatusEnum = 'PENDING' | 'DONE' | 'DEFERRED' | 'CANCELLED' | 'CHANGED';
 
 /**
+ * TreatmentPlanItemsBulkCreate
+ */
+export type TreatmentPlanItemsBulkCreate = {
+    /**
+     * Items
+     */
+    items: Array<TreatmentPlanItemCreate>;
+};
+
+/**
  * TreatmentPlanOut
  */
 export type TreatmentPlanOut = {
@@ -2905,7 +2961,7 @@ export type VitalSnapshot = {
     /**
      * Recorded At
      */
-    recorded_at?: string | null;
+    recorded_at: string | null;
     /**
      * Encounter Id
      */
@@ -4200,7 +4256,7 @@ export type CreateAppointmentApiV1AppointmentsPostResponses = {
     /**
      * Successful Response
      */
-    201: AppointmentListItem;
+    201: AppointmentCreateResponse;
 };
 
 export type CreateAppointmentApiV1AppointmentsPostResponse = CreateAppointmentApiV1AppointmentsPostResponses[keyof CreateAppointmentApiV1AppointmentsPostResponses];
@@ -4379,7 +4435,7 @@ export type ConfirmAppointmentApiV1AppointmentsAppointmentIdConfirmPostResponses
     /**
      * Successful Response
      */
-    200: AppointmentListItem;
+    200: AppointmentStatusUpdate;
 };
 
 export type ConfirmAppointmentApiV1AppointmentsAppointmentIdConfirmPostResponse = ConfirmAppointmentApiV1AppointmentsAppointmentIdConfirmPostResponses[keyof ConfirmAppointmentApiV1AppointmentsAppointmentIdConfirmPostResponses];
@@ -4499,7 +4555,7 @@ export type MarkNoShowApiV1AppointmentsAppointmentIdNoShowPostResponses = {
     /**
      * Successful Response
      */
-    200: AppointmentListItem;
+    200: AppointmentStatusUpdate;
 };
 
 export type MarkNoShowApiV1AppointmentsAppointmentIdNoShowPostResponse = MarkNoShowApiV1AppointmentsAppointmentIdNoShowPostResponses[keyof MarkNoShowApiV1AppointmentsAppointmentIdNoShowPostResponses];
@@ -5396,6 +5452,36 @@ export type CreateTreatmentPlanApiV1EncountersEncounterIdTreatmentPlanPostRespon
 };
 
 export type CreateTreatmentPlanApiV1EncountersEncounterIdTreatmentPlanPostResponse = CreateTreatmentPlanApiV1EncountersEncounterIdTreatmentPlanPostResponses[keyof CreateTreatmentPlanApiV1EncountersEncounterIdTreatmentPlanPostResponses];
+
+export type AddTreatmentPlanItemsApiV1EncountersEncounterIdTreatmentPlanItemsPostData = {
+    body: TreatmentPlanItemsBulkCreate;
+    path: {
+        /**
+         * Encounter Id
+         */
+        encounter_id: string;
+    };
+    query?: never;
+    url: '/api/v1/encounters/{encounter_id}/treatment-plan/items';
+};
+
+export type AddTreatmentPlanItemsApiV1EncountersEncounterIdTreatmentPlanItemsPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AddTreatmentPlanItemsApiV1EncountersEncounterIdTreatmentPlanItemsPostError = AddTreatmentPlanItemsApiV1EncountersEncounterIdTreatmentPlanItemsPostErrors[keyof AddTreatmentPlanItemsApiV1EncountersEncounterIdTreatmentPlanItemsPostErrors];
+
+export type AddTreatmentPlanItemsApiV1EncountersEncounterIdTreatmentPlanItemsPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: TreatmentPlanOut;
+};
+
+export type AddTreatmentPlanItemsApiV1EncountersEncounterIdTreatmentPlanItemsPostResponse = AddTreatmentPlanItemsApiV1EncountersEncounterIdTreatmentPlanItemsPostResponses[keyof AddTreatmentPlanItemsApiV1EncountersEncounterIdTreatmentPlanItemsPostResponses];
 
 export type PerformTreatmentPlanItemApiV1EncountersEncounterIdTreatmentPlanItemsItemIdPerformPostData = {
     body: TreatmentPlanItemPerformCreate;

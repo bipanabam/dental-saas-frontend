@@ -23,6 +23,7 @@ import { useFilters } from "@/components/shared/filters/useFilters";
 import { patientFilters } from "@/types/patients";
 import AnalyticsCard from "@/components/shared/analytics/AnalyticsCard";
 import AnalyticsGrid from "@/components/shared/analytics/AnalyticsGrid";
+import { SectionLoader } from "@/components/base/loading-view";
 
 import {
   DataTable,
@@ -32,39 +33,50 @@ import DataTableEmpty from "@/components/shared/data-table/DataTableEmpty";
 import { patientColumns } from "@/components/patients/patient-columns";
 
 import { usePatients } from "@/hooks/patients/use-patients";
+import type { 
+  PatientStatusEnum, 
+  PatientCategoryEnum, 
+  GenderEnum, 
+  BloodGroupEnum 
+} from "@/lib/api";
 import { getApiError } from "@/lib/utils/get-api-error";
 
 
 const PatientsPage = () => {
-  const { data, isLoading, error } = usePatients({limit: 20});
-
-  const patients = data?.items ?? [];
-
-  const { filters, update, reset } = useFilters({
+  const {
+    filters,
+    update,
+    reset,
+  } = useFilters({
     category: "ALL",
     status: "ALL",
     gender: "ALL",
     blood_group: "ALL",
   });
 
-  const filteredPatients = useMemo(() => {
-    return patients.filter((p) => {
-      if (filters.category !== "ALL" && p.category !== filters.category)
-        return false;
+  const {
+    data: allPatients,
+    isLoading: activeLoading,
+  } = usePatients({
+    limit: 20,
+      });
 
-      if (filters.status !== "ALL" && p.status !== filters.status) return false;
+  const {
+    data: filteredPatients,
+    isLoading: filteredDataLoading,
+    isFetching,
+    error,
+  } = usePatients({
+    limit: 20,
 
-      if (filters.gender !== "ALL" && p.gender !== filters.gender) return false;
+    category: filters.category !== "ALL" ? filters.category as PatientCategoryEnum : undefined,
+    status: filters.status !== "ALL" ? filters.status as PatientStatusEnum: undefined ,
+    gender: filters.gender !== "ALL" ? filters.gender as GenderEnum : undefined,
+    blood_group: filters.blood_group !== "ALL" ? filters.blood_group as BloodGroupEnum : undefined,
+  });
 
-      if (
-        filters.blood_group !== "ALL" &&
-        p.blood_group !== filters.blood_group
-      )
-        return false;
-
-      return true;
-    });
-  }, [patients, filters]);
+  const patients =
+    filteredPatients?.items ?? [];
 
   useEffect(() => {
     if (!error) return;
@@ -74,7 +86,7 @@ const PatientsPage = () => {
       ))
   }, [error]);
 
-  if (isLoading) {
+  if (activeLoading) {
     return (
       <EmptyState
         icon={Loader}
@@ -107,7 +119,7 @@ const PatientsPage = () => {
       <AnalyticsGrid>
         <AnalyticsCard
           title="Total Patients"
-          value={data?.total ?? 0}
+          value={allPatients?.total ?? 0}
           icon={Users}
           trend={{
             value: "+2.4%",
@@ -163,17 +175,26 @@ const PatientsPage = () => {
           <LayoutGrid className="h-3.5 w-3.5" />
           Registry Records Ledger Output
         </div>
-        <DataTable
-          data={filteredPatients}
-          columns={patientColumns}
-          rowKey={(p) => p.id}
-          empty={
-            <DataTableEmpty
-              title="No patients found"
-              description="Adjust filters"
-            />
-          }
-        />
+        <div className="relative">
+
+          <DataTable
+            data={patients}
+            columns={patientColumns}
+            rowKey={(p) => p.id}
+            empty={
+              <>
+              { isFetching ? (
+                <SectionLoader message="" />
+              ) :
+                <DataTableEmpty
+                  title="No patients found"
+                  description="Adjust filters"
+                />
+              }
+              </>
+            }
+          />
+        </div>
       </div>
 
       {/* {!isLoading && filteredPatients.length === 0 && (

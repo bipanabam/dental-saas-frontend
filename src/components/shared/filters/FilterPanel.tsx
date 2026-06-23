@@ -13,9 +13,14 @@ interface Props {
   values: Record<string, string>;
 
   onChange: (field: string, value: string) => void;
+
   onReset: () => void;
+
   onSettingsClick?: () => void;
+
   title?: string;
+
+  compact?: boolean;
 }
 
 const FilterPanel = ({
@@ -25,59 +30,72 @@ const FilterPanel = ({
   onReset,
   onSettingsClick,
   title = "Filter Context Controls",
+  compact = false,
 }: Props) => {
-  const columnCount = fields.length + 1;
-
   return (
-    <Card className="rounded-2xl border border-slate-100 shadow-sm bg-white overflow-hidden w-full">
-      <CardContent className="p-4 space-y-3.5">
-        <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-slate-400 tracking-widest">
-          <SlidersHorizontal className="h-3.5 w-3.5 text-brand-600 stroke-[2.5]" />
-          <span>{title}</span>
-        </div>
+    <Card className="overflow-hidden rounded-2xl border border-slate-100 shadow-sm bg-white">
+      <CardContent className={compact ? "p-4" : "p-5"}>
+        <div className="space-y-4">
+          {/* Header */}
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+            <SlidersHorizontal className="h-3.5 w-3.5 text-brand-600" />
+            {title}
+          </div>
 
-        <div
-          className="grid gap-2.5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-none items-end"
-          style={{
-            gridTemplateColumns: `repeat(auto-fit, minmax(200px, 1fr))`
-          }}
-        >
-          {fields.map((field) => (
-            <div key={field.field} className="flex flex-col gap-1.5 w-full">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wide px-0.5">
-                {field.label}
-              </label>
-              <FilterSelect
-                field={field}
-                value={values[field.field] || ""}
-                onChange={(value) => onChange(field.field, value)}
-              />
+          {/* Main Layout */}
+          <div className="flex flex-col xl:flex-row gap-4">
+            {/* Dynamic Filters */}
+            <div className="flex-1">
+              <div
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 gap-3"
+              >
+                {fields.map((field) => (
+                  <div key={field.field} className="space-y-1.5 min-w-0">
+                    <label
+                      className="px-1 text-[10px] font-bold uppercase tracking-wide text-slate-400"
+                    >
+                      {field.label}
+                    </label>
+
+                    <FilterSelect
+                      field={field}
+                      value={values[field.field] ?? ""}
+                      onChange={(value) => onChange(field.field, value)}
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
 
-          <div className="flex items-center gap-2 w-full mt-2 sm:mt-0">
-            {/* Change limit of query */}
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-10 w-10 shrink-0 rounded-xl border-slate-200 text-slate-500 hover:bg-slate-50 transition-colors"
-              onClick={onSettingsClick}
+            {/* Actions */}
+            <div
+              className="flex xl:w-auto gap-2 xl:self-end"
             >
-              <Settings className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              className="h-10 rounded-xl border-slate-200 text-slate-600 font-semibold text-xs tracking-wide hover:bg-slate-50 transition-all flex-1 gap-1.5"
-              onClick={onReset}
-            >
-              <RotateCcw className="h-3.5 w-3.5 stroke-[2.5]" />
-              Reset Filters
-            </Button>
+              {onSettingsClick && (
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={onSettingsClick}
+                  className="h-10 w-10 rounded-xl border-slate-200 shrink-0"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              )}
+
+              <Button
+                variant="outline"
+                onClick={onReset}
+                className="h-10 min-w-40 rounded-xl border-slate-200 font-semibold gap-2"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Reset Filters
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
     </Card>
   );
-}
+};
 
 export default FilterPanel;

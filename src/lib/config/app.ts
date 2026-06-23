@@ -1,45 +1,41 @@
-const protocol =
-  process.env.APP_PROTOCOL ?? "http";
+const protocol = process.env.APP_PROTOCOL ?? "http";
+const domain   = process.env.APP_DOMAIN ?? "app.local";
+const port     = process.env.APP_PORT ? `:${process.env.APP_PORT}` : "";
 
-const domain =
-  process.env.BASE_DOMAIN ?? "app.local";
+const hasSubdomainRouting =
+  process.env.APP_SUBDOMAIN_ROUTING === "true";
 
-const port =
-  process.env.APP_PORT
-    ? `:${process.env.APP_PORT}`
-    : "";
-
-const hasCustomDomain = !!process.env.CUSTOM_DOMAIN;
+// Derive isProd from APP_ENV
+const isProd =
+  process.env.APP_ENV === "production";
 
 export const appConfig = {
   protocol,
   domain,
-  hasCustomDomain,
+  port,
+  hasSubdomainRouting,
+  isProd,
 
+  // Cookie domain must be the eTLD+1 with a leading dot for subdomain sharing.
+  // Explicitly undefined → NextAuth defaults to host-only (breaks subdomains).
   cookieDomain:
-    process.env.COOKIE_DOMAIN ??
-    (process.env.BASE_DOMAIN ? `.${process.env.BASE_DOMAIN}` : undefined),
+    process.env.AUTH_COOKIE_DOMAIN ??
+    (domain ? `.${domain}` : undefined),
 
-  rootUrl:
-    `${protocol}://${domain}${port}`,
+  get rootUrl() {
+    return `${protocol}://${domain}${port}`;
+  },
 
   tenantUrl(slug: string) {
-    if (!hasCustomDomain) {
-      // No wildcard subdomain support — stay on root domain
-      return `${protocol}://${domain}${port}`;
-    }
+    if (!hasSubdomainRouting) return this.rootUrl;
     return `${protocol}://${slug}.${domain}${port}`;
   },
 
   loginUrl() {
-    return `${protocol}://${domain}${port}/login`;
+    return `${this.rootUrl}/login`;
   },
 
   redirectUrl() {
-    return `${protocol}://${domain}${port}/redirect-to-tenant`;
+    return `${this.rootUrl}/redirect-to-tenant`;
   },
-
-  isProd:
-    process.env.NODE_ENV ===
-    "production",
-};
+} as const;

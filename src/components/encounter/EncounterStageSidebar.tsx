@@ -1,12 +1,10 @@
 "use client";
 
 import { Check } from "lucide-react";
-
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
 import { ENCOUNTER_STAGES, isStageComplete, type EncounterStage } from "@/lib/utils/encounter-stages";
 import type { EncounterDetail } from "@/lib/api";
 
@@ -18,9 +16,16 @@ type Props = {
 
 const EncounterStageSidebar = ({ encounter, stage, onStageChange }: Props) => {
     return (
-        <Card className="rounded-2xl border-slate-200 shadow-sm h-fit sticky top-6 p-2">
+        <Card className="rounded-xl border-slate-200 bg-white shadow-sm h-fit p-1.5">
+            <div className="px-2.5 py-1.5 mb-1">
+                <span className="text-xs uppercase font-bold tracking-wider text-slate-400">
+                    Encounter Workflow
+                </span>
+            </div>
             <ScrollArea className="max-h-[70vh]">
-                <div className="space-y-1">
+                <div className="space-y-0.5 relative">
+                    <div className="absolute left-4 top-3 bottom-3 w-px bg-slate-100 pointer-events-none" />
+
                     {ENCOUNTER_STAGES.map((s) => {
                         const done = isStageComplete(s.id, encounter);
                         const active = stage === s.id;
@@ -31,25 +36,33 @@ const EncounterStageSidebar = ({ encounter, stage, onStageChange }: Props) => {
                                 variant="ghost"
                                 onClick={() => onStageChange(s.id)}
                                 className={cn(
-                                    "w-full justify-start gap-2.5 h-10 rounded-xl text-sm font-semibold",
+                                    "w-full justify-start gap-3 h-9 rounded-lg text-xs font-medium transition-all relative z-10",
                                     active
-                                        ? "bg-brand-50 text-brand-700 hover:bg-brand-50"
-                                        : "text-slate-600 hover:bg-slate-50"
+                                        ? "bg-tertiary text-white shadow-sm hover:bg-tertiary/90 hover:text-white"
+                                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                                 )}
                             >
+                                {/* Minimalist Indicator Node */}
                                 <span
                                     className={cn(
-                                        "h-4 w-4 rounded-full border flex items-center justify-center shrink-0 text-[10px]",
+                                        "h-4 w-4 rounded-full border flex items-center justify-center shrink-0 transition-colors",
                                         done
-                                            ? "bg-emerald-50 border-emerald-300 text-emerald-700"
+                                            ? "bg-slate-100 border-slate-300 text-slate-600"
                                             : active
-                                                ? "bg-brand-600 border-brand-600 text-white"
-                                                : "bg-white border-slate-300 text-slate-400"
+                                                ? "bg-white border-white text-slate-900"
+                                                : "bg-white border-slate-200 text-transparent"
                                     )}
                                 >
-                                    {done ? <Check className="h-3 w-3" /> : ""}
+                                    {done ? (
+                                        <Check className="h-2.5 w-2.5 stroke-3 text-tertiary/90" />
+                                    ) : (
+                                        <span className={cn("h-1.5 w-1.5 rounded-full", active ? "bg-tertiary/90" : "bg-slate-300")} />
+                                    )}
                                 </span>
-                                {s.label}
+
+                                <span className={cn("truncate", active ? "font-semibold" : "font-medium")}>
+                                    {s.label}
+                                </span>
                             </Button>
                         );
                     })}
@@ -57,6 +70,6 @@ const EncounterStageSidebar = ({ encounter, stage, onStageChange }: Props) => {
             </ScrollArea>
         </Card>
     );
-}
+};
 
 export default EncounterStageSidebar;

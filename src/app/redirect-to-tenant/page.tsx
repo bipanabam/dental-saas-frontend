@@ -7,10 +7,9 @@ export default async function RedirectPage() {
     const session =
         await auth()
 
-    if (!session?.user?.tenantSlug) {
-        redirect("/login")
+    if (!session?.user?.tenantSlug || session.error) {
+        redirect("/login");
     }
 
-    const url = appConfig.tenantUrl(session.user.tenantSlug);
-    redirect(`${url}/dashboard`);
+    redirect(`${appConfig.tenantUrl(session.user.tenantSlug)}/dashboard`);
 }

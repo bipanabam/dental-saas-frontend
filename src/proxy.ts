@@ -72,12 +72,14 @@ export default auth(function proxy(request) {
   const hostname = request.headers.get("host") ?? "";
   const subdomain = getSubdomain(hostname);
   const session = request.auth;
-  const isAuthenticated = !!session && !session.error;
+  const isAuthenticated =
+  !!session &&
+  session.error !== "RefreshTokenExpired"; // instead of !session.error
 
   // 1. Skip Next.js internals and static files
-  if (pathname === "/redirect-to-tenant") {
-    return NextResponse.next();
-  }
+  // if (pathname === "/redirect-to-tenant") {
+  //   return NextResponse.next();
+  // }
 
   if (shouldSkip(pathname)) {
     return NextResponse.next();
@@ -123,12 +125,18 @@ export default auth(function proxy(request) {
     return NextResponse.redirect(buildLoginUrl(request));
   }
 
+  // Authenticated user navigating to a public page on their subdomain
+  // (e.g. they bookmarked /login on the tenant domain) -> send to dashboard
+  if (isPublicPath(pathname)) {
+    return NextResponse.redirect(
+      new URL("/dashboard", appConfig.tenantUrl(subdomain)),
+    );
+  }
+
   // Wrong tenant: the session belongs to a different clinic
   // This prevents tenant A's token from accessing tenant B's subdomain.
   if (session.user.tenantSlug !== subdomain) {
-    return NextResponse.redirect(
-      buildDashboardUrl(session.user.tenantSlug),
-    );
+    return NextResponse.redirect(buildDashboardUrl(session.user.tenantSlug));
   }
 
   // All good: attach tenant context as headers so server components and
@@ -138,11 +146,12 @@ export default auth(function proxy(request) {
   requestHeaders.set("x-tenant-id", session.user.tenantId);
   requestHeaders.set("x-user-id", session.user.id);
   requestHeaders.set("x-user-role", session.user.role);
+  requestHeaders.set("x-pathname",    pathname);   // useful for active nav state
 
   return NextResponse.next({ request: { headers: requestHeaders } });
 });
 
-// Matcher — run middleware on all routes except static files
+// Matcher -> run middleware on all routes except static files
 export const config = {
   matcher: [
     /*

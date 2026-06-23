@@ -14,27 +14,43 @@ interface Props {
   field: FilterField;
   value: string;
 
-  onChange: (value: string) => void;
+  onChange: (
+    value: string
+  ) => void;
 }
 
-const FilterSelect = ({ field, value, onChange }: Props) => {
+export default function FilterSelect({
+  field,
+  value,
+  onChange,
+}: Props) {
   return (
-    <div className={field.width ?? "w-full"}>
-      <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="rounded-xl bg-brand-50 border-slate-100 shadow-xs">
-          <SelectValue placeholder={field.placeholder ?? field.label} />
-        </SelectTrigger>
+    <Select
+      value={value}
+      onValueChange={onChange}
+    >
+      <SelectTrigger
+        className="w-full rounded-xl border-slate-100 bg-brand-50 shadow-xs"
+      >
+        <SelectValue
+          placeholder={field.placeholder ?? field.label}
+        />
+      </SelectTrigger>
 
-        <SelectContent>
-          {field.options.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
+      <SelectContent>
+        {field.options.map(
+          (option) => (
+            <SelectItem
+              key={option.value}
+              value={
+                option.value
+              }
+            >
               {option.label}
             </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+          )
+        )}
+      </SelectContent>
+    </Select>
   );
 }
-
-export default FilterSelect;

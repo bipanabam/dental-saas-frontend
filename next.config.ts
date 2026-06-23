@@ -2,6 +2,8 @@ import type { NextConfig } from "next"
 import { appConfig } from "@/lib/config/app";
 
 const rootDomain = appConfig.domain;
+const hasSubdomainRouting =
+  process.env.APP_SUBDOMAIN_ROUTING === "true";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: [
@@ -10,7 +12,7 @@ const nextConfig: NextConfig = {
   ],
   async rewrites() {
     // Subdomain rewrites only work with a custom domain
-    if (!appConfig.hasCustomDomain) return { beforeFiles: [] };
+    if (hasSubdomainRouting) return { beforeFiles: [] };
     return {
       beforeFiles: [
         {

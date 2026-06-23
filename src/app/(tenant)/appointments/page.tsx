@@ -29,7 +29,6 @@ import QueueLayout from "@/components/appointments/QueueLayout";
 import VisitWorkflowPanel from "@/components/appointments/VisitWorkFlowPanel";
 import RescheduleDialog from "@/components/appointments/RescheduleDialog";
 import FollowUpDialog from "@/components/appointments/FollowUpDialog";
-import AppointmentSidebar from "@/components/appointments/appointment-sidebar";
 import AppointmentTable from "@/components/appointments/appointment-table";
 
 import type {

@@ -1,3 +1,5 @@
+import { TokenError } from "./types";
+
 type CachedToken = {
   accessToken: string
   refreshToken: string
@@ -6,45 +8,57 @@ type CachedToken = {
   role: string
 }
 
-// userId -> refreshed token (held briefly to absorb concurrent requests)
-const tokenCache = new Map<string, CachedToken>()
-const refreshPromises = new Map<string, Promise<CachedToken | null>>()
+// the refresh token that was used
+type RefreshError = { error: TokenError };
+type RefreshResult = CachedToken | RefreshError | null;
+export function isTokenError(result: RefreshResult): result is RefreshError {
+  return !!result && "error" in result;
+}
+
+function isCachedToken(result: RefreshResult): result is CachedToken {
+  return !!result && "accessToken" in result;
+}
+
+const tokenCache    = new Map<string, CachedToken>();
+const inflightCache = new Map<string, Promise<RefreshResult>>();
 
 export async function getRefreshedToken(
-  userId: string,
   currentRefreshToken: string,
-  doRefresh: () => Promise<CachedToken | null>
-): Promise<CachedToken | null> {
+  doRefresh: () => Promise<RefreshResult>,
+): Promise<RefreshResult> {
 
-  // 1. Return cached result if it's fresh (another request already refreshed)
-  const cached = tokenCache.get(userId)
-  if (cached && Date.now() < cached.accessTokenExpiresAt - 60_000) {
-    console.log("[refresh-cache] returning cached token for", userId)
-    return cached
+
+  // 1. Already refreshed this exact token in the last ~10s -> return result
+  const cached = tokenCache.get(currentRefreshToken);
+  if (cached) {
+    console.log("[refresh-cache] returning cached result for token");
+    return cached;
   }
 
-  // 2. If a refresh is already in-flight, wait for that same promise
-  const inFlight = refreshPromises.get(userId)
+  // 2. A refresh for this exact token is in-flight → join it
+  const inFlight = inflightCache.get(currentRefreshToken);
   if (inFlight) {
-    console.log("[refresh-cache] waiting for in-flight refresh for", userId)
-    return inFlight
+    console.log("[refresh-cache] joining in-flight refresh");
+    return inFlight;
   }
 
-  // 3. We're first — do the refresh
+
+  // 3. First request for this token → do the refresh
   const promise = doRefresh()
     .then((result) => {
       if (result) {
-        tokenCache.set(userId, result)
-        // Clear cache after 10s — long enough to absorb burst, short enough
-        // to not serve stale tokens
-        setTimeout(() => tokenCache.delete(userId), 10_000)
+        if (isCachedToken(result)) {
+          tokenCache.set(currentRefreshToken, result);
+          // Hold long enough to absorb any concurrent requests
+          setTimeout(() => tokenCache.delete(currentRefreshToken), 15_000);
+        }
       }
-      return result
+      return result;
     })
     .finally(() => {
-      refreshPromises.delete(userId)
-    })
+      inflightCache.delete(currentRefreshToken);
+    });
 
-  refreshPromises.set(userId, promise)
-  return promise
+  inflightCache.set(currentRefreshToken, promise);
+  return promise;
 }

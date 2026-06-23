@@ -6,7 +6,7 @@ import { appConfig } from "@/lib/config/app";
 
 import { refreshAccessToken } from "./lib/auth/refresh-token";
 import { decodeJwtPayload } from "./lib/auth/jwt";
-import { getRefreshedToken } from "./lib/auth/refresh-cache";
+import { getRefreshedToken, isTokenError } from "./lib/auth/refresh-cache";
 
 import { LoginSchema } from "@/lib/schemas/auth";
 import type { UserRole } from "@/lib/auth/types";
@@ -70,23 +70,20 @@ declare module "@auth/core/jwt" {
   }
 }
 
-const isProd =
-  appConfig.isProd;
-
-const cookieDomain =
-  appConfig.cookieDomain;
-
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   cookies: {
     sessionToken: {
-      name: isProd ? "__Secure-authjs.session-token" : "authjs.session-token",
+      name: appConfig.isProd
+        ? "__Secure-authjs.session-token"
+        : "authjs.session-token",
       options: {
         httpOnly: true,
         sameSite: "lax",
         path: "/",
-        secure: isProd,
-        domain: cookieDomain,
+        secure: appConfig.isProd,
+        domain: appConfig.cookieDomain,
+        maxAge: 60 * 60 * 24 * 7, // 7 days -> same as backend
       },
     },
   },
@@ -135,20 +132,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig.callbacks,
     async jwt({ token, user }) {
       if (user) {
-        const payload = decodeJwtPayload(user.accessToken);
-        token.userId = payload?.sub ?? "";
-        token.email = user.email ?? "";
-        token.tenantId = payload?.tenant_id ?? "";
-        token.tenantName = payload?.tenant_name ?? "";
-        token.tenantSlug = user.tenantSlug;
-        token.role = payload?.role ?? "";
-        token.accessToken = user.accessToken;
-        token.refreshToken = user.refreshToken;
-        token.accessTokenExpiresAt = user.accessTokenExpiresAt;
-        return token;
+        return{
+          ...token,
+          userId: user.id ?? "",
+          email: user.email ?? "",
+          tenantId: user.tenantId,
+          tenantName: user.tenantName,
+          tenantSlug: user.tenantSlug,
+          role: user.role,
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
+          accessTokenExpiresAt: user.accessTokenExpiresAt,
+          error: undefined,
+        }
       }
 
-      // Already known dead — don't retry a refresh we know will fail.
+      // Already known dead — bail immediately.
       // The session-side error flag + middleware redirect will handle
       // forcing re-login; further refresh attempts here just spam the
       // backend with 401s.
@@ -156,20 +155,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return token;
       }
 
-      if (Date.now() < token.accessTokenExpiresAt - 60_000) {
+      // auth.ts
+      if (Date.now() < token.accessTokenExpiresAt - 120_000) {
         return token;
       }
 
       console.log("[jwt] attempting refresh for user:", token.userId)
 
       const refreshed = await getRefreshedToken(
-        token?.userId,
         token.refreshToken,
         async () => {
-          const result = await refreshAccessToken(token.refreshToken)
-          if (result.error) return null
+          const result = await refreshAccessToken(token.refreshToken);
+          if (result.error) return { error: result.error };
 
-          const payload = decodeJwtPayload(result.accessToken!)
+          const payload = decodeJwtPayload(result.accessToken!);
+          if (!payload) return null;
+
           return {
             accessToken: result.accessToken!,
             refreshToken: result.refreshToken!,
@@ -179,10 +180,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
         }
       )
-
+      
+      // null → unexpected, treat as permanent failure
       if (!refreshed) {
         console.log("[jwt] refresh failed for user:", token.userId)
         return { ...token, error: "RefreshTokenExpired" as const }
+      }
+      if (isTokenError(refreshed)) {
+        if (refreshed.error === "RefreshNetworkError") {
+          // Transient -> keep existing token, retry next request
+          console.log("[jwt] transient refresh error, keeping token");
+          return token;
+        }
+        // Permanent -> force re-login
+        console.log("[jwt] refresh token expired for user:", token.userId);
+        return { ...token, error: "RefreshTokenExpired" as const };
       }
 
       console.log("[jwt] refresh success for user:", token.userId)

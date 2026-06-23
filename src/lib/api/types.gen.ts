@@ -873,6 +873,99 @@ export type EncounterDetail = {
 };
 
 /**
+ * EncounterListItem
+ */
+export type EncounterListItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Appointment Id
+     */
+    appointment_id: string;
+    /**
+     * Patient Id
+     */
+    patient_id: string;
+    /**
+     * Patient Name
+     */
+    patient_name?: string | null;
+    /**
+     * Doctor Id
+     */
+    doctor_id: string | null;
+    /**
+     * Doctor Name
+     */
+    doctor_name?: string | null;
+    status: EncounterStatusEnum;
+    /**
+     * Chief Complaint
+     */
+    chief_complaint: string | null;
+    /**
+     * Started At
+     */
+    started_at: string;
+    /**
+     * Closed At
+     */
+    closed_at: string | null;
+    /**
+     * Completed Stages
+     */
+    completed_stages: number;
+    /**
+     * Total Stages
+     */
+    total_stages?: number;
+    /**
+     * Has Diagnosis
+     */
+    has_diagnosis: boolean;
+    /**
+     * Has Investigation
+     */
+    has_investigation: boolean;
+    /**
+     * Has Treatment Plan
+     */
+    has_treatment_plan: boolean;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * EncounterListResponse
+ */
+export type EncounterListResponse = {
+    /**
+     * Items
+     */
+    items: Array<EncounterListItem>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+    /**
+     * Active Count
+     */
+    active_count: number;
+};
+
+/**
  * EncounterMini
  */
 export type EncounterMini = {
@@ -963,6 +1056,11 @@ export type EncounterOut = {
      */
     updated_at: string;
 };
+
+/**
+ * EncounterStatusEnum
+ */
+export type EncounterStatusEnum = 'IN_PROGRESS' | 'CLOSED' | 'VOID';
 
 /**
  * EncounterUpdate
@@ -4826,6 +4924,56 @@ export type GetPublicDisplayForTokensApiV1QueueDisplayGetResponses = {
      */
     200: unknown;
 };
+
+export type ListEncountersApiV1EncountersGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Skip
+         */
+        skip?: number;
+        /**
+         * Limit
+         */
+        limit?: number;
+        /**
+         * Today
+         */
+        today?: boolean | null;
+        /**
+         * Doctor Id
+         */
+        doctor_id?: string | null;
+        /**
+         * Patient Id
+         */
+        patient_id?: string | null;
+        /**
+         * Status
+         */
+        status?: EncounterStatusEnum | null;
+    };
+    url: '/api/v1/encounters/';
+};
+
+export type ListEncountersApiV1EncountersGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListEncountersApiV1EncountersGetError = ListEncountersApiV1EncountersGetErrors[keyof ListEncountersApiV1EncountersGetErrors];
+
+export type ListEncountersApiV1EncountersGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: EncounterListResponse;
+};
+
+export type ListEncountersApiV1EncountersGetResponse = ListEncountersApiV1EncountersGetResponses[keyof ListEncountersApiV1EncountersGetResponses];
 
 export type GetEncounterByAppointmentApiV1EncountersByAppointmentAppointmentIdGetData = {
     body?: never;

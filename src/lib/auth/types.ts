@@ -2,6 +2,12 @@ export const USER_ROLES = ["admin", "doctor", "receptionist", "accountant"] as c
 
 export type UserRole = (typeof USER_ROLES)[number];
 
+export const AUTH_ERRORS = ["RefreshTokenExpired"] as const;
+export type AuthError = typeof AUTH_ERRORS[number];
+export type TokenError =
+  | "RefreshTokenExpired"   // token is genuinely dead -> force re-login
+  | "RefreshNetworkError";  // transient failure -> retry next request
+
 export function isUserRole(value: unknown): value is UserRole {
   return typeof value === "string" && USER_ROLES.includes(value as UserRole);
 }

@@ -1,7 +1,7 @@
 import { defineConfig } from "@hey-api/openapi-ts";
 
 export default defineConfig({
-  input: "http://localhost:8000/openapi.json",
+  input: `${process.env.API_BASE_URL}/openapi.json`,
 
   output: "src/lib/api",
 

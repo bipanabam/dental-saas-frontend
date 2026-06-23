@@ -8,6 +8,7 @@ import type { EncounterStatusEnum } from "@/lib/api";
 import {
   getEncounterByAppointmentApiV1EncountersByAppointmentAppointmentIdGetOptions,
   listEncountersApiV1EncountersGetOptions,
+  getEncounterApiV1EncountersEncounterIdGetOptions,
 } from "@/lib/api/@tanstack/react-query.gen";
 
 
@@ -65,4 +66,26 @@ export function useListEncounters(params?: QueryParams, options?: { enabled?: bo
     enabled: authStatus === "authenticated" && (options?.enabled ?? true),
     retry: false,
   });
+}
+
+export function useEncounterByEncounterId(
+  encounterId?: string,
+) {
+  const { status } = useSession();
+
+  return useQuery({
+      ...getEncounterApiV1EncountersEncounterIdGetOptions({
+        path: {
+          encounter_id: encounterId ?? "",
+        },
+      }),
+  
+      enabled:
+        status === "authenticated" &&
+        Boolean(encounterId),
+  
+      retry: false,
+  
+      staleTime: 30_000,
+    });
 }

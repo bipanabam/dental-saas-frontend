@@ -602,6 +602,10 @@ export type ClinicalFindingOut = {
      * Notes
      */
     notes: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
 };
 
 /**
@@ -728,6 +732,10 @@ export type DiagnosisOut = {
      * Notes
      */
     notes: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
 };
 
 /**
@@ -797,9 +805,17 @@ export type EncounterDetail = {
      */
     patient_id: string;
     /**
+     * Patient Name
+     */
+    patient_name?: string | null;
+    /**
      * Doctor Id
      */
     doctor_id: string | null;
+    /**
+     * Doctor Name
+     */
+    doctor_name?: string | null;
     /**
      * Status
      */
@@ -1004,9 +1020,17 @@ export type EncounterOut = {
      */
     patient_id: string;
     /**
+     * Patient Name
+     */
+    patient_name?: string | null;
+    /**
      * Doctor Id
      */
     doctor_id: string | null;
+    /**
+     * Doctor Name
+     */
+    doctor_name?: string | null;
     /**
      * Status
      */
@@ -1129,6 +1153,10 @@ export type ExaminationEntryOut = {
      * Value
      */
     value: string;
+    /**
+     * Created At
+     */
+    created_at: string;
 };
 
 /**

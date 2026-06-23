@@ -85,7 +85,6 @@ const EncounterHistoryTable = ({
             onChange={onFiltersChange}
         />
         <Card className="rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-0">
-
             {/* Header */}
             <CardHeader className="p-5 border-b bg-linear-to-r from-brand-50/40 to-transparent">
                 <div className="flex items-center justify-between">
@@ -240,17 +239,33 @@ const EncounterHistoryTable = ({
                                         </TableCell>
 
                                         <TableCell className="text-right">
-                                            <Button
-                                                size="sm"
-                                                variant={active ? "default" : "outline"}
-                                                className="rounded-xl"
-                                                onClick={() =>
-                                                    router.push(`/appointments/${encounter.appointment_id}/encounter`)
-                                                }
-                                            >
-                                                {active ? "Resume" : "Open"}
-                                                <ArrowRight className="h-4 w-4" />
-                                            </Button>
+                                            {active ? 
+                                                <Button
+                                                    size="sm"
+                                                    variant="default"
+                                                    className="rounded-xl"
+                                                    onClick={() =>
+                                                        router.push(`/appointments/${encounter.appointment_id}/encounter`)
+                                                    }
+                                                >
+                                                    Resume
+                                                    <ArrowRight className="h-4 w-4" />
+                                                </Button>
+                                            : 
+                                                <>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="rounded-xl"
+                                                        onClick={() =>
+                                                            router.push(`/encounters/${encounter.id}`)
+                                                        }
+                                                    >
+                                                        Open
+                                                        <ArrowRight className="h-4 w-4" />
+                                                    </Button>
+                                                </>
+                                            }
                                         </TableCell>
 
                                     </TableRow>

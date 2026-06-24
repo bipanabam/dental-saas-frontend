@@ -17,6 +17,8 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import UserFilterSelect from "@/components/settings/users/UserFilterSelect";
 import UserTable from "@/components/settings/users/UserTable";
+import { AddUserButton } from "@/components/settings/users/forms/UserFormSheet";
+
 import { SectionLoader } from "@/components/base/loading-view";
 
 import { useGetAllUsers } from "@/hooks/users/use-staffs";
@@ -74,10 +76,7 @@ export default function UsersSettingsPage() {
                     </p>
                 </div>
 
-                <Button className="rounded-xl bg-brand-700 hover:bg-brand-800 font-bold text-xs shadow-3xs px-4 h-10 gap-1.5">
-                    <UserPlus className="h-4 w-4 stroke-[2.5]" />
-                    Invite User
-                </Button>
+                <AddUserButton />
             </section>
 
             {/* Stats Cards */}

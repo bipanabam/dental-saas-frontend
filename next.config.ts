@@ -1,7 +1,9 @@
 import type { NextConfig } from "next"
-import { appConfig } from "@/lib/config/app";
 
-const rootDomain = appConfig.domain;
+const rootDomain =
+  process.env.BASE_DOMAIN ??
+  "app.local";
+
 const hasSubdomainRouting =
   process.env.APP_SUBDOMAIN_ROUTING === "true";
 
@@ -28,6 +30,7 @@ const nextConfig: NextConfig = {
       ],
     }
   },
+  // output: "standalone",
   reactCompiler: true,
   // experimental: {
   //   turbopackFileSystemCacheForDev: true,

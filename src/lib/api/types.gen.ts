@@ -5,6 +5,16 @@ export type ClientOptions = {
 };
 
 /**
+ * AdminPasswordReset
+ */
+export type AdminPasswordReset = {
+    /**
+     * New Password
+     */
+    new_password: string;
+};
+
+/**
  * AppointmentCancel
  */
 export type AppointmentCancel = {
@@ -3491,6 +3501,34 @@ export type UpdateUserRoleApiV1UsersUserIdRolePutErrors = {
 export type UpdateUserRoleApiV1UsersUserIdRolePutError = UpdateUserRoleApiV1UsersUserIdRolePutErrors[keyof UpdateUserRoleApiV1UsersUserIdRolePutErrors];
 
 export type UpdateUserRoleApiV1UsersUserIdRolePutResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type ResetUserPasswordApiV1UsersUserIdPasswordPutData = {
+    body: AdminPasswordReset;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/password';
+};
+
+export type ResetUserPasswordApiV1UsersUserIdPasswordPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ResetUserPasswordApiV1UsersUserIdPasswordPutError = ResetUserPasswordApiV1UsersUserIdPasswordPutErrors[keyof ResetUserPasswordApiV1UsersUserIdPasswordPutErrors];
+
+export type ResetUserPasswordApiV1UsersUserIdPasswordPutResponses = {
     /**
      * Successful Response
      */

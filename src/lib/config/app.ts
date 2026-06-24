@@ -1,5 +1,5 @@
 const protocol = process.env.APP_PROTOCOL ?? "http";
-const domain   = process.env.APP_DOMAIN ?? "app.local";
+const domain   = process.env.BASE_DOMAIN ?? "app.local";
 const port     = process.env.APP_PORT ? `:${process.env.APP_PORT}` : "";
 
 const hasSubdomainRouting =

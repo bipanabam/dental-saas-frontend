@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   MoreVertical,
   KeyRound,
@@ -8,7 +10,7 @@ import {
   MailCheck,
   MailX,
   Phone,
-  Settings,
+  Settings
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -29,8 +31,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { UserEditDialog } from "./forms/UserFormSheet";
+import { ResetPasswordDialog } from "./forms/ResetPasswordDialog";
+import { RestoreUserDialog } from "./forms/RestoreUserDialog";
+import { DisableUserDialog } from "./forms/DisableUserDialog";
+
 import { ROLE_BADGE_THEMES } from "@/types/user";
+
 import type { UserListItem } from "@/lib/api";
+import { useDisableUser, useRestoreUser } from "@/hooks/users/use-staffs-mutations";
 
 interface TableProps {
   data: UserListItem[];
@@ -79,12 +88,22 @@ const UserTable = ({ data }: TableProps) => {
 export default UserTable;
 
 const UserRow = ({ user }: { user: UserListItem }) => {
+  const [editOpen, setEditOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [disableOpen, setDisableOpen] = useState(false);
+  const [restoreOpen, setRestoreOpen] = useState(false);
+
+  const disable = useDisableUser();
+  const restore = useRestoreUser();
+
   const roleStyle =
     ROLE_BADGE_THEMES[user.role] ??
     "bg-slate-50 text-slate-600 border-slate-100";
   const initials = user.username?.substring(0, 1).toUpperCase() || "US";
 
   return (
+    <>
     <TableRow>
       <TableCell>
         <div className="h-8 w-8 rounded-xl bg-slate-100 text-slate-700 font-bold tracking-tight text-[11px] flex items-center justify-center border border-slate-200/50 shadow-3xs uppercase group-hover:border-brand-200 group-hover:bg-brand-50 group-hover:text-brand-700 transition-colors">
@@ -137,7 +156,7 @@ const UserRow = ({ user }: { user: UserListItem }) => {
       </TableCell>
 
       <TableCell className="text-right">
-        <DropdownMenu>
+        <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -152,34 +171,81 @@ const UserRow = ({ user }: { user: UserListItem }) => {
               Action Panel
             </DropdownMenuLabel>
 
-            <DropdownMenuItem className="gap-2 cursor-pointer">
-              <Settings className="h-4 w-4" />
-              Edit Profile
-            </DropdownMenuItem>
+              <DropdownMenuItem
+                className="gap-2 cursor-pointer h-8 rounded-lg text-xs text-slate-600"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setDropdownOpen(false); // close dropdown first
+                  setEditOpen(true);      // then open dialog
+                }}
+              >
+                <Settings className="h-4 w-4" />
+                Edit Profile
+              </DropdownMenuItem>
 
-            <DropdownMenuItem className="gap-2 cursor-pointer">
-              <KeyRound className="h-4 w-4 text-amber-500" />
-              Reset Password
-            </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setDropdownOpen(false);
+                  setResetOpen(true);
+                }}
+                className="gap-2 cursor-pointer h-8 rounded-lg text-xs text-slate-600"
+              >
+                <KeyRound className="h-4 w-4 text-amber-500" />
+                Reset Password
+              </DropdownMenuItem>
 
             <DropdownMenuSeparator />
 
             <DropdownMenuSeparator className="bg-slate-100" />
-
-            {user.is_active ? (
-              <DropdownMenuItem className="gap-2 font-black text-rose-600 focus:text-rose-700 focus:bg-rose-50 cursor-pointer">
-                <UserX className="h-4 w-4" />
-                Disable User
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem className="gap-2 font-black text-emerald-600 focus:text-emerald-700 focus:bg-emerald-50 cursor-pointer">
-                <UserCheck className="h-4 w-4" />
-                Restore User
-              </DropdownMenuItem>
-            )}
+              {user.is_active ? (
+                <DropdownMenuItem
+                  className="gap-2 px-4 font-black text-rose-600 focus:text-rose-700 focus:bg-rose-50 cursor-pointer"
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setDropdownOpen(false); 
+                    setDisableOpen(true);
+                  }}
+                >
+                  <UserX className="h-4 w-4" />
+                  Disable user
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem
+                  className="gap-2 font-black text-emerald-600 focus:text-emerald-700 focus:bg-emerald-50 cursor-pointer"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setDropdownOpen(false);
+                      setRestoreOpen(true);
+                    }}
+                >
+                  <UserCheck className="h-4 w-4" />
+                  Restore User
+                </DropdownMenuItem>
+              )}
           </DropdownMenuContent>
         </DropdownMenu>
       </TableCell>
     </TableRow>
+    <UserEditDialog
+      user={user}
+      open={editOpen}
+      onOpenChange={setEditOpen}
+    />
+    <ResetPasswordDialog 
+      user={user} 
+      open={resetOpen} 
+      onOpenChange={setResetOpen} />
+    <DisableUserDialog 
+      userId={user.id}
+      open={disableOpen}
+      onOpenChange={setDisableOpen}
+    />
+    <RestoreUserDialog
+      userId={user.id}
+      open={restoreOpen}
+      onOpenChange={setRestoreOpen}
+    />
+    </>
   );
 };

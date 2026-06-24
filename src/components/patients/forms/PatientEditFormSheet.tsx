@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, UserPlus } from "lucide-react";
 
 import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, User, Phone, Clipboard, Pencil } from "lucide-react";
 
 import {
@@ -26,8 +24,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 import {
-    patientCreateFormSchema,
-    type PatientUpdateInputs,
     PatientCategoryEnum,
     BloodGroupEnum,
 } from "@/lib/schemas/patient";

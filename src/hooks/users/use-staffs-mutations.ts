@@ -1,0 +1,160 @@
+"use client";
+
+import { toast } from "sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import {
+  createUserApiV1UsersPost,
+  updateUserApiV1UsersUserIdPut,
+  deleteUserApiV1UsersUserIdDelete,
+  restoreUserApiV1UsersUserIdRestorePut,
+  updateUserRoleApiV1UsersUserIdRolePut,
+  resetUserPasswordApiV1UsersUserIdPasswordPut,
+} from "@/lib/api";
+
+import { getUsersApiV1UsersGetOptions } from "@/lib/api/@tanstack/react-query.gen";
+
+function extractError(err: any, fallback: string): string {
+  return (
+    err?.body?.detail ??
+    err?.error?.detail ?? 
+    err?.detail ??
+    err?.message ??
+    fallback
+  );
+}
+
+export function useCreateUser() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: {
+      email: string;
+      username: string;
+      password: string;
+      phone_number?: string;
+      role: string;
+    }) => {
+      const res = await createUserApiV1UsersPost({ body: payload });
+      if (res.error) throw res.error;
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: getUsersApiV1UsersGetOptions().queryKey,
+      });
+      toast.success("User created successfully.");
+    },
+    onError: (err: any) => toast.error(extractError(err, "Failed to create user")),
+  });
+}
+
+export function useUpdateUser() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      payload,
+    }: {
+      userId: string;
+      payload: {
+        email?: string;
+        username?: string;
+        phone_number?: string;
+        role?: string;
+        is_active?: boolean;
+        is_verified?: boolean;
+      };
+    }) => {
+      const res = await updateUserApiV1UsersUserIdPut({
+        path: { user_id: userId },
+        body: payload,
+      });
+      if (res.error) throw res.error;
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({
+        queryKey: getUsersApiV1UsersGetOptions().queryKey,
+      });
+      toast.success("User updated.");
+    },
+    onError: (err: any) => toast.error(extractError(err, "Failed to update user")),
+  });
+}
+
+export function useDisableUser() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await deleteUserApiV1UsersUserIdDelete({
+        path: { user_id: userId },
+      });
+      if (res.error) throw res.error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: getUsersApiV1UsersGetOptions().queryKey });
+      toast.success("User disabled.");
+    },
+    onError: (err: any) => toast.error(extractError(err, "Failed to disable user")),
+  });
+}
+
+export function useRestoreUser() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await restoreUserApiV1UsersUserIdRestorePut({
+        path: { user_id: userId },
+      });
+      if (res.error) throw res.error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: getUsersApiV1UsersGetOptions().queryKey });
+      toast.success("User restored.");
+    },
+    onError: (err: any) => toast.error(extractError(err, "Failed to restore user")),
+  });
+}
+
+export function useUpdateUserRole() {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
+      const res = await updateUserRoleApiV1UsersUserIdRolePut({
+        path: { user_id: userId },
+        query: { role_name: role },
+      });
+      if (res.error) throw res.error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: getUsersApiV1UsersGetOptions().queryKey });
+      toast.success("Role updated.");
+    },
+    onError: (err: any) => toast.error(extractError(err, "Failed to update role")),
+  });
+}
+
+export function useAdminResetPassword() {
+  return useMutation({
+    mutationFn: async ({
+      userId,
+      newPassword,
+    }: {
+      userId: string;
+      newPassword: string;
+    }) => {
+      const res = await resetUserPasswordApiV1UsersUserIdPasswordPut({
+        path: { user_id: userId },
+        body: { new_password: newPassword },
+      });
+      if (res.error) throw res.error;
+    },
+    onSuccess: () => toast.success("Password reset successfully."),
+    onError: (err: any) => toast.error(extractError(err, "Failed to reset password")),
+  });
+}

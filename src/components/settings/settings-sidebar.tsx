@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 export default function SettingsSidebar() {
   const pathname = usePathname();
   return (
-    <aside className="sticky top-24 xl:block hidden">
+    <aside className="sticky top-24 xl:block hidden xl:items-start">
       <Card className="rounded-2xl border-slate-200 shadow-xs">
         <CardContent className="p-3">
           <div className="mb-3 px-3">

@@ -78,8 +78,9 @@ export default function PatientDetailPage() {
         </div>
         {/* Right */}
         <aside className="lg:col-span-1 space-y-6 sticky top-20 h-fit">
-          {!!summary?.next_actions?.length && (
+          {summary?.next_actions?.length && (
             <NextActionsCard
+             key={patient.id}
               patientId={patient.id}
               actions={summary.next_actions}
             />

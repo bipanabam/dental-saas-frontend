@@ -22,6 +22,14 @@
   --color-brand-100: #cce5e0;
   --color-brand-50: #f0f7f6;
   --color-tertiary: #F4916E;
+  --color-tertiary-50: '#97472a';
+  --color-on-tertiary: '#ffffff';
+  --color-tertiary-container: '#da7c5a';
+  --color-on-tertiary-container: '#571800';
+  --color-tertiary-800: #FFB59B;
+  --color-clinical: #26a69a;
+  --color-admin: #6366f1;
+  --color-warning: #f59e0b;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);

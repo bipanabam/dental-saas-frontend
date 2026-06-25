@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { SectionLoader } from "@/components/base/loading-view";
+import SettingsHeader from "@/components/settings/SettingHeader";
 import { useDoctors } from "@/hooks/users/use-doctors";
 
 export default function DoctorSettingsPage() {
@@ -41,23 +42,18 @@ export default function DoctorSettingsPage() {
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
-      {/* Clinic Header Block */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
-        <div className="space-y-1">
-          <h1 className="flex items-center gap-2 text-xl font-black text-slate-800 tracking-tight">
-            <Stethoscope className="h-5 w-5 text-brand-700" />
-            Medical Staff Registry
-          </h1>
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mt-1">
-            Manage clinician records, system credential statuses, and specific practice permissions.
-          </p>
-        </div>
-
-        <Button className="h-10 rounded-xl bg-brand-700 hover:bg-brand-800 font-bold text-xs shadow-3xs px-4 gap-1.5 self-start sm:self-center">
-          <PlusCircle className="h-4 w-4 stroke-[2.5]" />
-          Add Practitioner
-        </Button>
-      </div>
+      {/* Header */}
+      <SettingsHeader
+        title="Medical Staff Registry"
+        description="Manage clinician records, system credential statuses, and specific practice permissions."
+        icon={Stethoscope}
+        actions={
+          <Button className="h-10 rounded-xl bg-brand-700 hover:bg-brand-800 font-bold text-xs shadow-3xs px-4 gap-1.5 self-start sm:self-center">
+            <PlusCircle className="h-4 w-4 stroke-[2.5]" />
+            Add Practitioner
+          </Button>
+        }
+      />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

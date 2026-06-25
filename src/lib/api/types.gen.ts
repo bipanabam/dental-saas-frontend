@@ -15,6 +15,48 @@ export type AdminPasswordReset = {
 };
 
 /**
+ * AdminProfileUpdate
+ *
+ * Admin can update everything self-service can, plus nothing extra
+ * for now — subclass kept for future admin-only fields (e.g. verified_doctor).
+ */
+export type AdminProfileUpdate = {
+    /**
+     * Bio
+     */
+    bio?: string | null;
+    gender?: GenderEnum | null;
+    /**
+     * Date Of Birth
+     */
+    date_of_birth?: string | null;
+    /**
+     * Address
+     */
+    address?: string | null;
+    /**
+     * Specialization
+     */
+    specialization?: string | null;
+    /**
+     * Nmc Reg No
+     */
+    nmc_reg_no?: string | null;
+    /**
+     * Qualification
+     */
+    qualification?: string | null;
+    /**
+     * Experience Years
+     */
+    experience_years?: number | null;
+    /**
+     * Consultation Fee
+     */
+    consultation_fee?: number | null;
+};
+
+/**
  * AppointmentCancel
  */
 export type AppointmentCancel = {
@@ -631,6 +673,47 @@ export type ClinicalFindingsBulkCreate = {
 };
 
 /**
+ * CurrentUserFullResponse
+ *
+ * Full response for identity + tenant context + profile in one call.
+ */
+export type CurrentUserFullResponse = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * Username
+     */
+    username: string;
+    /**
+     * Phone Number
+     */
+    phone_number: string | null;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+    /**
+     * Is Verified
+     */
+    is_verified: boolean;
+    /**
+     * Role
+     */
+    role: string;
+    /**
+     * Permissions
+     */
+    permissions: Array<string>;
+    profile?: UserProfileOut | null;
+};
+
+/**
  * CurrentUserResponse
  */
 export type CurrentUserResponse = {
@@ -658,6 +741,10 @@ export type CurrentUserResponse = {
      * Is Verified
      */
     is_verified: boolean;
+    /**
+     * Last Active At
+     */
+    last_active_at?: string | null;
     tenant: TenantSummary;
     /**
      * Role
@@ -2249,6 +2336,24 @@ export type PatientUpdate = {
 export type PaymentStatusEnum = 'PENDING' | 'PARTIAL' | 'PAID' | 'REFUNDED';
 
 /**
+ * PermissionResponse
+ */
+export type PermissionResponse = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Description
+     */
+    description: string | null;
+};
+
+/**
  * ProcedureCatalogMini
  */
 export type ProcedureCatalogMini = {
@@ -2605,6 +2710,323 @@ export type RegisterTenantResponse = {
 };
 
 /**
+ * RoleCreateRequest
+ */
+export type RoleCreateRequest = {
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Permission Ids
+     */
+    permission_ids?: Array<string>;
+};
+
+/**
+ * RoleDetailResponse
+ */
+export type RoleDetailResponse = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Tenant Id
+     */
+    tenant_id: string | null;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Is System
+     */
+    is_system: boolean;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+    /**
+     * Permissions
+     */
+    permissions: Array<PermissionResponse>;
+};
+
+/**
+ * RoleListItem
+ */
+export type RoleListItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Tenant Id
+     */
+    tenant_id: string | null;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Is System
+     */
+    is_system: boolean;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+    /**
+     * Permission Count
+     */
+    permission_count?: number;
+};
+
+/**
+ * RoleListResponse
+ */
+export type RoleListResponse = {
+    /**
+     * Items
+     */
+    items: Array<RoleListItem>;
+};
+
+/**
+ * RolePermissionReplaceRequest
+ *
+ * Wholesale replace of a role's permission set.
+ */
+export type RolePermissionReplaceRequest = {
+    /**
+     * Permission Ids
+     */
+    permission_ids: Array<string>;
+};
+
+/**
+ * RolePermissionResponse
+ */
+export type RolePermissionResponse = {
+    /**
+     * Role Id
+     */
+    role_id: string;
+    /**
+     * Permissions
+     */
+    permissions: Array<PermissionResponse>;
+};
+
+/**
+ * RoleUpdateRequest
+ */
+export type RoleUpdateRequest = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Is Active
+     */
+    is_active?: boolean | null;
+    /**
+     * Permission Ids
+     */
+    permission_ids?: Array<string> | null;
+};
+
+/**
+ * TenantIdentityResponse
+ */
+export type TenantIdentityResponse = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+    /**
+     * Slug
+     */
+    slug: string;
+    /**
+     * Legal Name
+     */
+    legal_name: string | null;
+    /**
+     * Registration Number
+     */
+    registration_number: string | null;
+    /**
+     * Tax Number
+     */
+    tax_number: string | null;
+    /**
+     * Status
+     */
+    status: string;
+    /**
+     * Country Code
+     */
+    country_code: string;
+    /**
+     * Currency
+     */
+    currency: string;
+    /**
+     * Timezone
+     */
+    timezone: string;
+    /**
+     * Language
+     */
+    language: string;
+    /**
+     * Logo Url
+     */
+    logo_url: string | null;
+    /**
+     * Favicon Url
+     */
+    favicon_url: string | null;
+    /**
+     * Primary Color
+     */
+    primary_color: string | null;
+    /**
+     * Billing Email
+     */
+    billing_email: string | null;
+    /**
+     * Plan
+     */
+    plan?: string | null;
+    settings: TenantSettingsResponse;
+};
+
+/**
+ * TenantSessionOut
+ */
+export type TenantSessionOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * User Id
+     */
+    user_id: string;
+    /**
+     * Device Name
+     */
+    device_name: string | null;
+    /**
+     * Device Type
+     */
+    device_type: string | null;
+    /**
+     * Ip Address
+     */
+    ip_address: string | null;
+    /**
+     * Last Used At
+     */
+    last_used_at: string | null;
+    /**
+     * Created At Login
+     */
+    created_at_login: string;
+    /**
+     * Is Revoked
+     */
+    is_revoked: boolean;
+    /**
+     * Expires At
+     */
+    expires_at: string;
+    /**
+     * Username
+     */
+    username: string;
+    /**
+     * Email
+     */
+    email: string;
+};
+
+/**
+ * TenantSettingsResponse
+ */
+export type TenantSettingsResponse = {
+    /**
+     * Appointment Duration Minutes
+     */
+    appointment_duration_minutes: number;
+    /**
+     * Enable Sms
+     */
+    enable_sms: boolean;
+    /**
+     * Enable Lab
+     */
+    enable_lab: boolean;
+    /**
+     * Enable Waitlist
+     */
+    enable_waitlist: boolean;
+    /**
+     * Patient Code Prefix
+     */
+    patient_code_prefix: string;
+    /**
+     * Encounter Number Prefix
+     */
+    encounter_number_prefix: string;
+};
+
+/**
+ * TenantSettingsUpdate
+ *
+ * Partial update for clinic operational configuration.
+ */
+export type TenantSettingsUpdate = {
+    /**
+     * Appointment Duration Minutes
+     */
+    appointment_duration_minutes?: number | null;
+    /**
+     * Enable Waitlist
+     */
+    enable_waitlist?: boolean | null;
+    /**
+     * Enable Sms
+     */
+    enable_sms?: boolean | null;
+    /**
+     * Enable Lab
+     */
+    enable_lab?: boolean | null;
+    /**
+     * Patient Code Prefix
+     */
+    patient_code_prefix?: string | null;
+    /**
+     * Encounter Number Prefix
+     */
+    encounter_number_prefix?: string | null;
+    /**
+     * Extra
+     */
+    extra?: {
+        [key: string]: unknown;
+    } | null;
+};
+
+/**
  * TenantSummary
  */
 export type TenantSummary = {
@@ -2620,6 +3042,55 @@ export type TenantSummary = {
      * Slug
      */
     slug: string;
+};
+
+/**
+ * TenantUpdate
+ *
+ * Identity and branding fields only. Settings (enable_sms, appointment
+ * duration, etc.) go through PUT /tenant/me/settings instead
+ */
+export type TenantUpdate = {
+    /**
+     * Name
+     */
+    name?: string | null;
+    /**
+     * Legal Name
+     */
+    legal_name?: string | null;
+    /**
+     * Registration Number
+     */
+    registration_number?: string | null;
+    /**
+     * Tax Number
+     */
+    tax_number?: string | null;
+    /**
+     * Billing Email
+     */
+    billing_email?: string | null;
+    /**
+     * Country Code
+     */
+    country_code?: string | null;
+    /**
+     * Currency
+     */
+    currency?: string | null;
+    /**
+     * Timezone
+     */
+    timezone?: string | null;
+    /**
+     * Language
+     */
+    language?: string | null;
+    /**
+     * Logo Url
+     */
+    logo_url?: string | null;
 };
 
 /**
@@ -2951,6 +3422,10 @@ export type UserDetail = {
      */
     is_verified: boolean;
     /**
+     * Last Active At
+     */
+    last_active_at?: string | null;
+    /**
      * Memberships
      */
     memberships: Array<MembershipSummary>;
@@ -2989,6 +3464,10 @@ export type UserListItem = {
      */
     is_verified: boolean;
     /**
+     * Last Active At
+     */
+    last_active_at?: string | null;
+    /**
      * Role
      */
     role: string;
@@ -3006,6 +3485,144 @@ export type UserListResponse = {
      * Users
      */
     users: Array<UserListItem>;
+};
+
+/**
+ * UserProfileOut
+ */
+export type UserProfileOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * User Id
+     */
+    user_id: string;
+    /**
+     * Bio
+     */
+    bio?: string | null;
+    gender?: GenderEnum | null;
+    /**
+     * Date Of Birth
+     */
+    date_of_birth?: string | null;
+    /**
+     * Address
+     */
+    address?: string | null;
+    /**
+     * Specialization
+     */
+    specialization?: string | null;
+    /**
+     * Nmc Reg No
+     */
+    nmc_reg_no?: string | null;
+    /**
+     * Qualification
+     */
+    qualification?: string | null;
+    /**
+     * Experience Years
+     */
+    experience_years?: number | null;
+    /**
+     * Consultation Fee
+     */
+    consultation_fee?: number | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+};
+
+/**
+ * UserProfileUpdate
+ *
+ * Self-service profile update.
+ */
+export type UserProfileUpdate = {
+    /**
+     * Bio
+     */
+    bio?: string | null;
+    gender?: GenderEnum | null;
+    /**
+     * Date Of Birth
+     */
+    date_of_birth?: string | null;
+    /**
+     * Address
+     */
+    address?: string | null;
+    /**
+     * Specialization
+     */
+    specialization?: string | null;
+    /**
+     * Nmc Reg No
+     */
+    nmc_reg_no?: string | null;
+    /**
+     * Qualification
+     */
+    qualification?: string | null;
+    /**
+     * Experience Years
+     */
+    experience_years?: number | null;
+    /**
+     * Consultation Fee
+     */
+    consultation_fee?: number | null;
+};
+
+/**
+ * UserSessionOut
+ */
+export type UserSessionOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * User Id
+     */
+    user_id: string;
+    /**
+     * Device Name
+     */
+    device_name: string | null;
+    /**
+     * Device Type
+     */
+    device_type: string | null;
+    /**
+     * Ip Address
+     */
+    ip_address: string | null;
+    /**
+     * Last Used At
+     */
+    last_used_at: string | null;
+    /**
+     * Created At Login
+     */
+    created_at_login: string;
+    /**
+     * Is Revoked
+     */
+    is_revoked: boolean;
+    /**
+     * Expires At
+     */
+    expires_at: string;
 };
 
 /**
@@ -3260,6 +3877,47 @@ export type MeApiV1AuthMeGetResponses = {
 
 export type MeApiV1AuthMeGetResponse = MeApiV1AuthMeGetResponses[keyof MeApiV1AuthMeGetResponses];
 
+export type GetMyProfileApiV1AuthProfileGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/profile';
+};
+
+export type GetMyProfileApiV1AuthProfileGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: CurrentUserFullResponse;
+};
+
+export type GetMyProfileApiV1AuthProfileGetResponse = GetMyProfileApiV1AuthProfileGetResponses[keyof GetMyProfileApiV1AuthProfileGetResponses];
+
+export type UpdateMyProfileApiV1AuthProfilePutData = {
+    body: UserProfileUpdate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/profile';
+};
+
+export type UpdateMyProfileApiV1AuthProfilePutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateMyProfileApiV1AuthProfilePutError = UpdateMyProfileApiV1AuthProfilePutErrors[keyof UpdateMyProfileApiV1AuthProfilePutErrors];
+
+export type UpdateMyProfileApiV1AuthProfilePutResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserProfileOut;
+};
+
+export type UpdateMyProfileApiV1AuthProfilePutResponse = UpdateMyProfileApiV1AuthProfilePutResponses[keyof UpdateMyProfileApiV1AuthProfilePutResponses];
+
 export type ChangePasswordApiV1AuthPasswordPostData = {
     body: ChangePasswordRequest;
     path?: never;
@@ -3282,6 +3940,106 @@ export type ChangePasswordApiV1AuthPasswordPostResponses = {
      */
     200: unknown;
 };
+
+export type ListMySessionsApiV1AuthSessionsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/sessions';
+};
+
+export type ListMySessionsApiV1AuthSessionsGetResponses = {
+    /**
+     * Response List My Sessions Api V1 Auth Sessions Get
+     *
+     * Successful Response
+     */
+    200: Array<UserSessionOut>;
+};
+
+export type ListMySessionsApiV1AuthSessionsGetResponse = ListMySessionsApiV1AuthSessionsGetResponses[keyof ListMySessionsApiV1AuthSessionsGetResponses];
+
+export type GetMyTenantApiV1TenantMeGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/tenant/me';
+};
+
+export type GetMyTenantApiV1TenantMeGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: TenantIdentityResponse;
+};
+
+export type GetMyTenantApiV1TenantMeGetResponse = GetMyTenantApiV1TenantMeGetResponses[keyof GetMyTenantApiV1TenantMeGetResponses];
+
+export type UpdateMyTenantApiV1TenantMePutData = {
+    body: TenantUpdate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/tenant/me';
+};
+
+export type UpdateMyTenantApiV1TenantMePutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateMyTenantApiV1TenantMePutError = UpdateMyTenantApiV1TenantMePutErrors[keyof UpdateMyTenantApiV1TenantMePutErrors];
+
+export type UpdateMyTenantApiV1TenantMePutResponses = {
+    /**
+     * Successful Response
+     */
+    200: TenantIdentityResponse;
+};
+
+export type UpdateMyTenantApiV1TenantMePutResponse = UpdateMyTenantApiV1TenantMePutResponses[keyof UpdateMyTenantApiV1TenantMePutResponses];
+
+export type GetMyTenantSettingsApiV1TenantMeSettingsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/tenant/me/settings';
+};
+
+export type GetMyTenantSettingsApiV1TenantMeSettingsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: TenantSettingsResponse;
+};
+
+export type GetMyTenantSettingsApiV1TenantMeSettingsGetResponse = GetMyTenantSettingsApiV1TenantMeSettingsGetResponses[keyof GetMyTenantSettingsApiV1TenantMeSettingsGetResponses];
+
+export type UpdateMyTenantSettingsApiV1TenantMeSettingsPutData = {
+    body: TenantSettingsUpdate;
+    path?: never;
+    query?: never;
+    url: '/api/v1/tenant/me/settings';
+};
+
+export type UpdateMyTenantSettingsApiV1TenantMeSettingsPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateMyTenantSettingsApiV1TenantMeSettingsPutError = UpdateMyTenantSettingsApiV1TenantMeSettingsPutErrors[keyof UpdateMyTenantSettingsApiV1TenantMeSettingsPutErrors];
+
+export type UpdateMyTenantSettingsApiV1TenantMeSettingsPutResponses = {
+    /**
+     * Successful Response
+     */
+    200: TenantSettingsResponse;
+};
+
+export type UpdateMyTenantSettingsApiV1TenantMeSettingsPutResponse = UpdateMyTenantSettingsApiV1TenantMeSettingsPutResponses[keyof UpdateMyTenantSettingsApiV1TenantMeSettingsPutResponses];
 
 export type GetUsersApiV1UsersGetData = {
     body?: never;
@@ -3446,6 +4204,66 @@ export type UpdateUserApiV1UsersUserIdPutResponses = {
 
 export type UpdateUserApiV1UsersUserIdPutResponse = UpdateUserApiV1UsersUserIdPutResponses[keyof UpdateUserApiV1UsersUserIdPutResponses];
 
+export type GetUserProfileApiV1UsersUserIdProfileGetData = {
+    body?: never;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/profile';
+};
+
+export type GetUserProfileApiV1UsersUserIdProfileGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetUserProfileApiV1UsersUserIdProfileGetError = GetUserProfileApiV1UsersUserIdProfileGetErrors[keyof GetUserProfileApiV1UsersUserIdProfileGetErrors];
+
+export type GetUserProfileApiV1UsersUserIdProfileGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserProfileOut;
+};
+
+export type GetUserProfileApiV1UsersUserIdProfileGetResponse = GetUserProfileApiV1UsersUserIdProfileGetResponses[keyof GetUserProfileApiV1UsersUserIdProfileGetResponses];
+
+export type UpdateUserProfileApiV1UsersUserIdProfilePutData = {
+    body: AdminProfileUpdate;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/profile';
+};
+
+export type UpdateUserProfileApiV1UsersUserIdProfilePutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateUserProfileApiV1UsersUserIdProfilePutError = UpdateUserProfileApiV1UsersUserIdProfilePutErrors[keyof UpdateUserProfileApiV1UsersUserIdProfilePutErrors];
+
+export type UpdateUserProfileApiV1UsersUserIdProfilePutResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserProfileOut;
+};
+
+export type UpdateUserProfileApiV1UsersUserIdProfilePutResponse = UpdateUserProfileApiV1UsersUserIdProfilePutResponses[keyof UpdateUserProfileApiV1UsersUserIdProfilePutResponses];
+
 export type RestoreUserApiV1UsersUserIdRestorePutData = {
     body?: never;
     path: {
@@ -3534,6 +4352,24 @@ export type ResetUserPasswordApiV1UsersUserIdPasswordPutResponses = {
      */
     200: unknown;
 };
+
+export type ListTenantSessionsApiV1UsersSessionsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/users/sessions';
+};
+
+export type ListTenantSessionsApiV1UsersSessionsGetResponses = {
+    /**
+     * Response List Tenant Sessions Api V1 Users Sessions Get
+     *
+     * Successful Response
+     */
+    200: Array<TenantSessionOut>;
+};
+
+export type ListTenantSessionsApiV1UsersSessionsGetResponse = ListTenantSessionsApiV1UsersSessionsGetResponses[keyof ListTenantSessionsApiV1UsersSessionsGetResponses];
 
 export type ListCatalogApiV1ProcedureCatalogGetData = {
     body?: never;
@@ -3632,6 +4468,90 @@ export type GetCatalogApiV1ProcedureCatalogCatalogIdGetResponses = {
 };
 
 export type GetCatalogApiV1ProcedureCatalogCatalogIdGetResponse = GetCatalogApiV1ProcedureCatalogCatalogIdGetResponses[keyof GetCatalogApiV1ProcedureCatalogCatalogIdGetResponses];
+
+export type GetTaxonomyApiV1TaxonomyGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/taxonomy';
+};
+
+export type GetTaxonomyApiV1TaxonomyGetResponses = {
+    /**
+     * Full taxonomy dictionary
+     */
+    200: unknown;
+};
+
+export type GetMedicalHistoryTaxonomyApiV1TaxonomyMedicalHistoryGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/taxonomy/medical-history';
+};
+
+export type GetMedicalHistoryTaxonomyApiV1TaxonomyMedicalHistoryGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type GetExaminationTaxonomyApiV1TaxonomyExaminationGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/taxonomy/examination';
+};
+
+export type GetExaminationTaxonomyApiV1TaxonomyExaminationGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type GetFindingsTaxonomyApiV1TaxonomyFindingsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/taxonomy/findings';
+};
+
+export type GetFindingsTaxonomyApiV1TaxonomyFindingsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type GetDiagnosesTaxonomyApiV1TaxonomyDiagnosesGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/taxonomy/diagnoses';
+};
+
+export type GetDiagnosesTaxonomyApiV1TaxonomyDiagnosesGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
+
+export type GetInvestigationsTaxonomyApiV1TaxonomyInvestigationsGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/taxonomy/investigations';
+};
+
+export type GetInvestigationsTaxonomyApiV1TaxonomyInvestigationsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: unknown;
+};
 
 export type ListPatientsApiV1PatientsGetData = {
     body?: never;
@@ -5889,89 +6809,214 @@ export type CancelProcedureApiV1ProceduresProcedureIdCancelPostResponses = {
 
 export type CancelProcedureApiV1ProceduresProcedureIdCancelPostResponse = CancelProcedureApiV1ProceduresProcedureIdCancelPostResponses[keyof CancelProcedureApiV1ProceduresProcedureIdCancelPostResponses];
 
-export type GetTaxonomyApiV1TaxonomyGetData = {
+export type ListPermissionsApiV1SystemPermissionsGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/v1/taxonomy';
+    url: '/api/v1/system/permissions';
 };
 
-export type GetTaxonomyApiV1TaxonomyGetResponses = {
+export type ListPermissionsApiV1SystemPermissionsGetResponses = {
     /**
-     * Full taxonomy dictionary
+     * Response List Permissions Api V1 System Permissions Get
+     *
+     * Successful Response
      */
-    200: unknown;
+    200: Array<PermissionResponse>;
 };
 
-export type GetMedicalHistoryTaxonomyApiV1TaxonomyMedicalHistoryGetData = {
+export type ListPermissionsApiV1SystemPermissionsGetResponse = ListPermissionsApiV1SystemPermissionsGetResponses[keyof ListPermissionsApiV1SystemPermissionsGetResponses];
+
+export type ListRolesApiV1RolesGetData = {
     body?: never;
     path?: never;
     query?: never;
-    url: '/api/v1/taxonomy/medical-history';
+    url: '/api/v1/roles/';
 };
 
-export type GetMedicalHistoryTaxonomyApiV1TaxonomyMedicalHistoryGetResponses = {
+export type ListRolesApiV1RolesGetResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: RoleListResponse;
 };
 
-export type GetExaminationTaxonomyApiV1TaxonomyExaminationGetData = {
-    body?: never;
+export type ListRolesApiV1RolesGetResponse = ListRolesApiV1RolesGetResponses[keyof ListRolesApiV1RolesGetResponses];
+
+export type CreateRoleApiV1RolesPostData = {
+    body: RoleCreateRequest;
     path?: never;
     query?: never;
-    url: '/api/v1/taxonomy/examination';
+    url: '/api/v1/roles/';
 };
 
-export type GetExaminationTaxonomyApiV1TaxonomyExaminationGetResponses = {
+export type CreateRoleApiV1RolesPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateRoleApiV1RolesPostError = CreateRoleApiV1RolesPostErrors[keyof CreateRoleApiV1RolesPostErrors];
+
+export type CreateRoleApiV1RolesPostResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    201: RoleDetailResponse;
 };
 
-export type GetFindingsTaxonomyApiV1TaxonomyFindingsGetData = {
+export type CreateRoleApiV1RolesPostResponse = CreateRoleApiV1RolesPostResponses[keyof CreateRoleApiV1RolesPostResponses];
+
+export type DeleteRoleApiV1RolesRoleIdDeleteData = {
     body?: never;
-    path?: never;
+    path: {
+        /**
+         * Role Id
+         */
+        role_id: string;
+    };
     query?: never;
-    url: '/api/v1/taxonomy/findings';
+    url: '/api/v1/roles/{role_id}';
 };
 
-export type GetFindingsTaxonomyApiV1TaxonomyFindingsGetResponses = {
+export type DeleteRoleApiV1RolesRoleIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteRoleApiV1RolesRoleIdDeleteError = DeleteRoleApiV1RolesRoleIdDeleteErrors[keyof DeleteRoleApiV1RolesRoleIdDeleteErrors];
+
+export type DeleteRoleApiV1RolesRoleIdDeleteResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    204: void;
 };
 
-export type GetDiagnosesTaxonomyApiV1TaxonomyDiagnosesGetData = {
+export type DeleteRoleApiV1RolesRoleIdDeleteResponse = DeleteRoleApiV1RolesRoleIdDeleteResponses[keyof DeleteRoleApiV1RolesRoleIdDeleteResponses];
+
+export type GetRoleDetailApiV1RolesRoleIdGetData = {
     body?: never;
-    path?: never;
+    path: {
+        /**
+         * Role Id
+         */
+        role_id: string;
+    };
     query?: never;
-    url: '/api/v1/taxonomy/diagnoses';
+    url: '/api/v1/roles/{role_id}';
 };
 
-export type GetDiagnosesTaxonomyApiV1TaxonomyDiagnosesGetResponses = {
+export type GetRoleDetailApiV1RolesRoleIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetRoleDetailApiV1RolesRoleIdGetError = GetRoleDetailApiV1RolesRoleIdGetErrors[keyof GetRoleDetailApiV1RolesRoleIdGetErrors];
+
+export type GetRoleDetailApiV1RolesRoleIdGetResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: RoleDetailResponse;
 };
 
-export type GetInvestigationsTaxonomyApiV1TaxonomyInvestigationsGetData = {
-    body?: never;
-    path?: never;
+export type GetRoleDetailApiV1RolesRoleIdGetResponse = GetRoleDetailApiV1RolesRoleIdGetResponses[keyof GetRoleDetailApiV1RolesRoleIdGetResponses];
+
+export type UpdateRoleApiV1RolesRoleIdPutData = {
+    body: RoleUpdateRequest;
+    path: {
+        /**
+         * Role Id
+         */
+        role_id: string;
+    };
     query?: never;
-    url: '/api/v1/taxonomy/investigations';
+    url: '/api/v1/roles/{role_id}';
 };
 
-export type GetInvestigationsTaxonomyApiV1TaxonomyInvestigationsGetResponses = {
+export type UpdateRoleApiV1RolesRoleIdPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateRoleApiV1RolesRoleIdPutError = UpdateRoleApiV1RolesRoleIdPutErrors[keyof UpdateRoleApiV1RolesRoleIdPutErrors];
+
+export type UpdateRoleApiV1RolesRoleIdPutResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: RoleDetailResponse;
 };
+
+export type UpdateRoleApiV1RolesRoleIdPutResponse = UpdateRoleApiV1RolesRoleIdPutResponses[keyof UpdateRoleApiV1RolesRoleIdPutResponses];
+
+export type GetRolePermissionsApiV1RolesRoleIdPermissionsGetData = {
+    body?: never;
+    path: {
+        /**
+         * Role Id
+         */
+        role_id: string;
+    };
+    query?: never;
+    url: '/api/v1/roles/{role_id}/permissions';
+};
+
+export type GetRolePermissionsApiV1RolesRoleIdPermissionsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetRolePermissionsApiV1RolesRoleIdPermissionsGetError = GetRolePermissionsApiV1RolesRoleIdPermissionsGetErrors[keyof GetRolePermissionsApiV1RolesRoleIdPermissionsGetErrors];
+
+export type GetRolePermissionsApiV1RolesRoleIdPermissionsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: RolePermissionResponse;
+};
+
+export type GetRolePermissionsApiV1RolesRoleIdPermissionsGetResponse = GetRolePermissionsApiV1RolesRoleIdPermissionsGetResponses[keyof GetRolePermissionsApiV1RolesRoleIdPermissionsGetResponses];
+
+export type ReplaceRolePermissionsApiV1RolesRoleIdPermissionsPutData = {
+    body: RolePermissionReplaceRequest;
+    path: {
+        /**
+         * Role Id
+         */
+        role_id: string;
+    };
+    query?: never;
+    url: '/api/v1/roles/{role_id}/permissions';
+};
+
+export type ReplaceRolePermissionsApiV1RolesRoleIdPermissionsPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ReplaceRolePermissionsApiV1RolesRoleIdPermissionsPutError = ReplaceRolePermissionsApiV1RolesRoleIdPermissionsPutErrors[keyof ReplaceRolePermissionsApiV1RolesRoleIdPermissionsPutErrors];
+
+export type ReplaceRolePermissionsApiV1RolesRoleIdPermissionsPutResponses = {
+    /**
+     * Successful Response
+     */
+    200: RolePermissionResponse;
+};
+
+export type ReplaceRolePermissionsApiV1RolesRoleIdPermissionsPutResponse = ReplaceRolePermissionsApiV1RolesRoleIdPermissionsPutResponses[keyof ReplaceRolePermissionsApiV1RolesRoleIdPermissionsPutResponses];
 
 export type MeApiV1SuperAdminAuthMeGetData = {
     body?: never;

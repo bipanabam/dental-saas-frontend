@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
     getUsersApiV1UsersGetOptions,
     getUserProfileApiV1UsersUserIdProfileGetOptions,
-    listTenantSessionsApiV1UsersSessionsGetOptions
+    listTenantSessionsApiV1UsersSessionsAllGetOptions,
 } from "@/lib/api/@tanstack/react-query.gen";
 
 export function useGetAllUsers() {
@@ -25,7 +25,7 @@ export function useGetAllUserSessions() {
   const { status } = useSession();
 
   return useQuery({
-    ...listTenantSessionsApiV1UsersSessionsGetOptions(),
+    ...listTenantSessionsApiV1UsersSessionsAllGetOptions(),
 
     enabled: status === "authenticated",
 

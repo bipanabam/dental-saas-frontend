@@ -42,7 +42,7 @@ function MetricLabel({ label, value, icon: Icon }: { label: string; value: numbe
   );
 }
 
-export default function ProcedureCatalogSettingsPage() {
+export default function ProcedureCatalogPage() {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("ALL");
 
@@ -90,7 +90,7 @@ export default function ProcedureCatalogSettingsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Filter catalog directory by keywords or diagnostic code..."
-            className="pl-9 bg-slate-50/50 border-slate-200 text-xs h-9 focus-visible:ring-brand-500"
+            className="pl-9 bg-slate-50/80 border-slate-200 text-xs h-9 focus-visible:ring-2 focus-visible:ring-brand-400"
           />
         </div>
 
@@ -140,7 +140,6 @@ export default function ProcedureCatalogSettingsPage() {
             {isSearching && <span className="font-mono text-slate-400">Search Mode Active</span>}
           </div>
 
-          {/* Clean, Document-Style Ledger Grid */}
           <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">

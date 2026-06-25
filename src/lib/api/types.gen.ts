@@ -2838,6 +2838,42 @@ export type RoleUpdateRequest = {
 };
 
 /**
+ * SessionRevokeResponse
+ */
+export type SessionRevokeResponse = {
+    /**
+     * Revoked Count
+     */
+    revoked_count: number;
+};
+
+/**
+ * StaffSummaryResponse
+ */
+export type StaffSummaryResponse = {
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Active
+     */
+    active: number;
+    /**
+     * Doctors
+     */
+    doctors: number;
+    /**
+     * Inactive
+     */
+    inactive: number;
+    /**
+     * Verified
+     */
+    verified: number;
+};
+
+/**
  * TenantIdentityResponse
  */
 export type TenantIdentityResponse = {
@@ -3368,6 +3404,42 @@ export type TreatmentPlanOut = {
 };
 
 /**
+ * UserAccessResponse
+ */
+export type UserAccessResponse = {
+    /**
+     * User Id
+     */
+    user_id: string;
+    /**
+     * Role Id
+     */
+    role_id: string;
+    /**
+     * Role Name
+     */
+    role_name: string;
+    /**
+     * Permissions
+     */
+    permissions: Array<string>;
+    /**
+     * Is Active
+     */
+    is_active: boolean;
+};
+
+/**
+ * UserAccessUpdateRequest
+ */
+export type UserAccessUpdateRequest = {
+    /**
+     * Role Id
+     */
+    role_id: string;
+};
+
+/**
  * UserCreate
  */
 export type UserCreate = {
@@ -3395,6 +3467,9 @@ export type UserCreate = {
 
 /**
  * UserDetail
+ *
+ * Detail view scoped to the tenant making the request.
+ * `role` / `permissions` reflect the membership in *this* tenant.
  */
 export type UserDetail = {
     /**
@@ -3425,14 +3500,15 @@ export type UserDetail = {
      * Last Active At
      */
     last_active_at?: string | null;
+    role: UserRoleOut;
+    /**
+     * Permissions
+     */
+    permissions: Array<UserPermissionOut>;
     /**
      * Memberships
      */
     memberships: Array<MembershipSummary>;
-    /**
-     * Permissions
-     */
-    permissions: Array<string>;
 };
 
 /**
@@ -3485,6 +3561,80 @@ export type UserListResponse = {
      * Users
      */
     users: Array<UserListItem>;
+};
+
+/**
+ * UserPermissionOut
+ */
+export type UserPermissionOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
+ * UserPreferenceOut
+ */
+export type UserPreferenceOut = {
+    /**
+     * Notify Appointment
+     */
+    notify_appointment: boolean;
+    /**
+     * Notify Waiting
+     */
+    notify_waiting: boolean;
+    /**
+     * Notify Lab Results
+     */
+    notify_lab_results: boolean;
+    /**
+     * Notify Draft Reminder
+     */
+    notify_draft_reminder: boolean;
+    /**
+     * Notify Daily Summary
+     */
+    notify_daily_summary: boolean;
+    /**
+     * Require Otp
+     */
+    require_otp: boolean;
+};
+
+/**
+ * UserPreferenceUpdate
+ */
+export type UserPreferenceUpdate = {
+    /**
+     * Notify Appointment
+     */
+    notify_appointment?: boolean | null;
+    /**
+     * Notify Waiting
+     */
+    notify_waiting?: boolean | null;
+    /**
+     * Notify Lab Results
+     */
+    notify_lab_results?: boolean | null;
+    /**
+     * Notify Draft Reminder
+     */
+    notify_draft_reminder?: boolean | null;
+    /**
+     * Notify Daily Summary
+     */
+    notify_daily_summary?: boolean | null;
+    /**
+     * Require Otp
+     */
+    require_otp?: boolean | null;
 };
 
 /**
@@ -3584,6 +3734,48 @@ export type UserProfileUpdate = {
 };
 
 /**
+ * UserRoleOut
+ */
+export type UserRoleOut = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
+ * UserSecurityResponse
+ */
+export type UserSecurityResponse = {
+    /**
+     * Is Verified
+     */
+    is_verified: boolean;
+    /**
+     * Last Login At
+     */
+    last_login_at: string | null;
+};
+
+/**
+ * UserSessionListResponse
+ */
+export type UserSessionListResponse = {
+    /**
+     * Count
+     */
+    count: number;
+    /**
+     * Sessions
+     */
+    sessions: Array<UserSessionOut>;
+};
+
+/**
  * UserSessionOut
  */
 export type UserSessionOut = {
@@ -3627,6 +3819,8 @@ export type UserSessionOut = {
 
 /**
  * UserUpdate
+ *
+ * Identity-only fields. Role changes go through PUT /users/{id}/access.
  */
 export type UserUpdate = {
     /**
@@ -3641,10 +3835,6 @@ export type UserUpdate = {
      * Phone Number
      */
     phone_number?: string | null;
-    /**
-     * Role
-     */
-    role?: string | null;
     /**
      * Is Active
      */
@@ -3681,6 +3871,16 @@ export type ValidationError = {
     ctx?: {
         [key: string]: unknown;
     };
+};
+
+/**
+ * VerificationUpdateRequest
+ */
+export type VerificationUpdateRequest = {
+    /**
+     * Is Verified
+     */
+    is_verified: boolean;
 };
 
 /**
@@ -4049,6 +4249,18 @@ export type GetUsersApiV1UsersGetData = {
          * Role
          */
         role?: string | null;
+        /**
+         * Active
+         */
+        active?: boolean | null;
+        /**
+         * Verified
+         */
+        verified?: boolean | null;
+        /**
+         * Search
+         */
+        search?: string | null;
     };
     url: '/api/v1/users/';
 };
@@ -4095,6 +4307,40 @@ export type CreateUserApiV1UsersPostResponses = {
 };
 
 export type CreateUserApiV1UsersPostResponse = CreateUserApiV1UsersPostResponses[keyof CreateUserApiV1UsersPostResponses];
+
+export type GetUsersSummaryApiV1UsersSummaryGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/users/summary';
+};
+
+export type GetUsersSummaryApiV1UsersSummaryGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: StaffSummaryResponse;
+};
+
+export type GetUsersSummaryApiV1UsersSummaryGetResponse = GetUsersSummaryApiV1UsersSummaryGetResponses[keyof GetUsersSummaryApiV1UsersSummaryGetResponses];
+
+export type ListTenantSessionsApiV1UsersSessionsAllGetData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/users/sessions/all';
+};
+
+export type ListTenantSessionsApiV1UsersSessionsAllGetResponses = {
+    /**
+     * Response List Tenant Sessions Api V1 Users Sessions All Get
+     *
+     * Successful Response
+     */
+    200: Array<TenantSessionOut>;
+};
+
+export type ListTenantSessionsApiV1UsersSessionsAllGetResponse = ListTenantSessionsApiV1UsersSessionsAllGetResponses[keyof ListTenantSessionsApiV1UsersSessionsAllGetResponses];
 
 export type GetDoctorsApiV1UsersDoctorGetData = {
     body?: never;
@@ -4204,6 +4450,36 @@ export type UpdateUserApiV1UsersUserIdPutResponses = {
 
 export type UpdateUserApiV1UsersUserIdPutResponse = UpdateUserApiV1UsersUserIdPutResponses[keyof UpdateUserApiV1UsersUserIdPutResponses];
 
+export type RestoreUserApiV1UsersUserIdRestorePutData = {
+    body?: never;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/restore';
+};
+
+export type RestoreUserApiV1UsersUserIdRestorePutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RestoreUserApiV1UsersUserIdRestorePutError = RestoreUserApiV1UsersUserIdRestorePutErrors[keyof RestoreUserApiV1UsersUserIdRestorePutErrors];
+
+export type RestoreUserApiV1UsersUserIdRestorePutResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type RestoreUserApiV1UsersUserIdRestorePutResponse = RestoreUserApiV1UsersUserIdRestorePutResponses[keyof RestoreUserApiV1UsersUserIdRestorePutResponses];
+
 export type GetUserProfileApiV1UsersUserIdProfileGetData = {
     body?: never;
     path: {
@@ -4264,7 +4540,7 @@ export type UpdateUserProfileApiV1UsersUserIdProfilePutResponses = {
 
 export type UpdateUserProfileApiV1UsersUserIdProfilePutResponse = UpdateUserProfileApiV1UsersUserIdProfilePutResponses[keyof UpdateUserProfileApiV1UsersUserIdProfilePutResponses];
 
-export type RestoreUserApiV1UsersUserIdRestorePutData = {
+export type GetUserAccessApiV1UsersUserIdAccessGetData = {
     body?: never;
     path: {
         /**
@@ -4273,26 +4549,58 @@ export type RestoreUserApiV1UsersUserIdRestorePutData = {
         user_id: string;
     };
     query?: never;
-    url: '/api/v1/users/{user_id}/restore';
+    url: '/api/v1/users/{user_id}/access';
 };
 
-export type RestoreUserApiV1UsersUserIdRestorePutErrors = {
+export type GetUserAccessApiV1UsersUserIdAccessGetErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type RestoreUserApiV1UsersUserIdRestorePutError = RestoreUserApiV1UsersUserIdRestorePutErrors[keyof RestoreUserApiV1UsersUserIdRestorePutErrors];
+export type GetUserAccessApiV1UsersUserIdAccessGetError = GetUserAccessApiV1UsersUserIdAccessGetErrors[keyof GetUserAccessApiV1UsersUserIdAccessGetErrors];
 
-export type RestoreUserApiV1UsersUserIdRestorePutResponses = {
+export type GetUserAccessApiV1UsersUserIdAccessGetResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: UserAccessResponse;
 };
 
-export type UpdateUserRoleApiV1UsersUserIdRolePutData = {
+export type GetUserAccessApiV1UsersUserIdAccessGetResponse = GetUserAccessApiV1UsersUserIdAccessGetResponses[keyof GetUserAccessApiV1UsersUserIdAccessGetResponses];
+
+export type UpdateUserAccessApiV1UsersUserIdAccessPutData = {
+    body: UserAccessUpdateRequest;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/access';
+};
+
+export type UpdateUserAccessApiV1UsersUserIdAccessPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateUserAccessApiV1UsersUserIdAccessPutError = UpdateUserAccessApiV1UsersUserIdAccessPutErrors[keyof UpdateUserAccessApiV1UsersUserIdAccessPutErrors];
+
+export type UpdateUserAccessApiV1UsersUserIdAccessPutResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserAccessResponse;
+};
+
+export type UpdateUserAccessApiV1UsersUserIdAccessPutResponse = UpdateUserAccessApiV1UsersUserIdAccessPutResponses[keyof UpdateUserAccessApiV1UsersUserIdAccessPutResponses];
+
+export type RevokeAllUserSessionsApiV1UsersUserIdSessionsDeleteData = {
     body?: never;
     path: {
         /**
@@ -4300,32 +4608,123 @@ export type UpdateUserRoleApiV1UsersUserIdRolePutData = {
          */
         user_id: string;
     };
-    query: {
-        /**
-         * Role Name
-         */
-        role_name: string;
-    };
-    url: '/api/v1/users/{user_id}/role';
+    query?: never;
+    url: '/api/v1/users/{user_id}/sessions';
 };
 
-export type UpdateUserRoleApiV1UsersUserIdRolePutErrors = {
+export type RevokeAllUserSessionsApiV1UsersUserIdSessionsDeleteErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type UpdateUserRoleApiV1UsersUserIdRolePutError = UpdateUserRoleApiV1UsersUserIdRolePutErrors[keyof UpdateUserRoleApiV1UsersUserIdRolePutErrors];
+export type RevokeAllUserSessionsApiV1UsersUserIdSessionsDeleteError = RevokeAllUserSessionsApiV1UsersUserIdSessionsDeleteErrors[keyof RevokeAllUserSessionsApiV1UsersUserIdSessionsDeleteErrors];
 
-export type UpdateUserRoleApiV1UsersUserIdRolePutResponses = {
+export type RevokeAllUserSessionsApiV1UsersUserIdSessionsDeleteResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    200: SessionRevokeResponse;
 };
 
-export type ResetUserPasswordApiV1UsersUserIdPasswordPutData = {
+export type RevokeAllUserSessionsApiV1UsersUserIdSessionsDeleteResponse = RevokeAllUserSessionsApiV1UsersUserIdSessionsDeleteResponses[keyof RevokeAllUserSessionsApiV1UsersUserIdSessionsDeleteResponses];
+
+export type ListUserSessionsApiV1UsersUserIdSessionsGetData = {
+    body?: never;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/sessions';
+};
+
+export type ListUserSessionsApiV1UsersUserIdSessionsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListUserSessionsApiV1UsersUserIdSessionsGetError = ListUserSessionsApiV1UsersUserIdSessionsGetErrors[keyof ListUserSessionsApiV1UsersUserIdSessionsGetErrors];
+
+export type ListUserSessionsApiV1UsersUserIdSessionsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserSessionListResponse;
+};
+
+export type ListUserSessionsApiV1UsersUserIdSessionsGetResponse = ListUserSessionsApiV1UsersUserIdSessionsGetResponses[keyof ListUserSessionsApiV1UsersUserIdSessionsGetResponses];
+
+export type RevokeUserSessionApiV1UsersUserIdSessionsSessionIdDeleteData = {
+    body?: never;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+        /**
+         * Session Id
+         */
+        session_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/sessions/{session_id}';
+};
+
+export type RevokeUserSessionApiV1UsersUserIdSessionsSessionIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RevokeUserSessionApiV1UsersUserIdSessionsSessionIdDeleteError = RevokeUserSessionApiV1UsersUserIdSessionsSessionIdDeleteErrors[keyof RevokeUserSessionApiV1UsersUserIdSessionsSessionIdDeleteErrors];
+
+export type RevokeUserSessionApiV1UsersUserIdSessionsSessionIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type RevokeUserSessionApiV1UsersUserIdSessionsSessionIdDeleteResponse = RevokeUserSessionApiV1UsersUserIdSessionsSessionIdDeleteResponses[keyof RevokeUserSessionApiV1UsersUserIdSessionsSessionIdDeleteResponses];
+
+export type GetUserSecurityApiV1UsersUserIdSecurityGetData = {
+    body?: never;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/security';
+};
+
+export type GetUserSecurityApiV1UsersUserIdSecurityGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetUserSecurityApiV1UsersUserIdSecurityGetError = GetUserSecurityApiV1UsersUserIdSecurityGetErrors[keyof GetUserSecurityApiV1UsersUserIdSecurityGetErrors];
+
+export type GetUserSecurityApiV1UsersUserIdSecurityGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserSecurityResponse;
+};
+
+export type GetUserSecurityApiV1UsersUserIdSecurityGetResponse = GetUserSecurityApiV1UsersUserIdSecurityGetResponses[keyof GetUserSecurityApiV1UsersUserIdSecurityGetResponses];
+
+export type ResetUserPasswordApiV1UsersUserIdSecurityPasswordPutData = {
     body: AdminPasswordReset;
     path: {
         /**
@@ -4334,42 +4733,116 @@ export type ResetUserPasswordApiV1UsersUserIdPasswordPutData = {
         user_id: string;
     };
     query?: never;
-    url: '/api/v1/users/{user_id}/password';
+    url: '/api/v1/users/{user_id}/security/password';
 };
 
-export type ResetUserPasswordApiV1UsersUserIdPasswordPutErrors = {
+export type ResetUserPasswordApiV1UsersUserIdSecurityPasswordPutErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type ResetUserPasswordApiV1UsersUserIdPasswordPutError = ResetUserPasswordApiV1UsersUserIdPasswordPutErrors[keyof ResetUserPasswordApiV1UsersUserIdPasswordPutErrors];
+export type ResetUserPasswordApiV1UsersUserIdSecurityPasswordPutError = ResetUserPasswordApiV1UsersUserIdSecurityPasswordPutErrors[keyof ResetUserPasswordApiV1UsersUserIdSecurityPasswordPutErrors];
 
-export type ResetUserPasswordApiV1UsersUserIdPasswordPutResponses = {
+export type ResetUserPasswordApiV1UsersUserIdSecurityPasswordPutResponses = {
     /**
      * Successful Response
      */
-    200: unknown;
+    204: void;
 };
 
-export type ListTenantSessionsApiV1UsersSessionsGetData = {
-    body?: never;
-    path?: never;
+export type ResetUserPasswordApiV1UsersUserIdSecurityPasswordPutResponse = ResetUserPasswordApiV1UsersUserIdSecurityPasswordPutResponses[keyof ResetUserPasswordApiV1UsersUserIdSecurityPasswordPutResponses];
+
+export type UpdateUserVerificationApiV1UsersUserIdSecurityVerificationPutData = {
+    body: VerificationUpdateRequest;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
     query?: never;
-    url: '/api/v1/users/sessions';
+    url: '/api/v1/users/{user_id}/security/verification';
 };
 
-export type ListTenantSessionsApiV1UsersSessionsGetResponses = {
+export type UpdateUserVerificationApiV1UsersUserIdSecurityVerificationPutErrors = {
     /**
-     * Response List Tenant Sessions Api V1 Users Sessions Get
-     *
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateUserVerificationApiV1UsersUserIdSecurityVerificationPutError = UpdateUserVerificationApiV1UsersUserIdSecurityVerificationPutErrors[keyof UpdateUserVerificationApiV1UsersUserIdSecurityVerificationPutErrors];
+
+export type UpdateUserVerificationApiV1UsersUserIdSecurityVerificationPutResponses = {
+    /**
      * Successful Response
      */
-    200: Array<TenantSessionOut>;
+    200: UserSecurityResponse;
 };
 
-export type ListTenantSessionsApiV1UsersSessionsGetResponse = ListTenantSessionsApiV1UsersSessionsGetResponses[keyof ListTenantSessionsApiV1UsersSessionsGetResponses];
+export type UpdateUserVerificationApiV1UsersUserIdSecurityVerificationPutResponse = UpdateUserVerificationApiV1UsersUserIdSecurityVerificationPutResponses[keyof UpdateUserVerificationApiV1UsersUserIdSecurityVerificationPutResponses];
+
+export type GetUserPreferencesApiV1UsersUserIdPreferencesGetData = {
+    body?: never;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/preferences';
+};
+
+export type GetUserPreferencesApiV1UsersUserIdPreferencesGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetUserPreferencesApiV1UsersUserIdPreferencesGetError = GetUserPreferencesApiV1UsersUserIdPreferencesGetErrors[keyof GetUserPreferencesApiV1UsersUserIdPreferencesGetErrors];
+
+export type GetUserPreferencesApiV1UsersUserIdPreferencesGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserPreferenceOut;
+};
+
+export type GetUserPreferencesApiV1UsersUserIdPreferencesGetResponse = GetUserPreferencesApiV1UsersUserIdPreferencesGetResponses[keyof GetUserPreferencesApiV1UsersUserIdPreferencesGetResponses];
+
+export type UpdateUserPreferencesApiV1UsersUserIdPreferencesPutData = {
+    body: UserPreferenceUpdate;
+    path: {
+        /**
+         * User Id
+         */
+        user_id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{user_id}/preferences';
+};
+
+export type UpdateUserPreferencesApiV1UsersUserIdPreferencesPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateUserPreferencesApiV1UsersUserIdPreferencesPutError = UpdateUserPreferencesApiV1UsersUserIdPreferencesPutErrors[keyof UpdateUserPreferencesApiV1UsersUserIdPreferencesPutErrors];
+
+export type UpdateUserPreferencesApiV1UsersUserIdPreferencesPutResponses = {
+    /**
+     * Successful Response
+     */
+    200: UserPreferenceOut;
+};
+
+export type UpdateUserPreferencesApiV1UsersUserIdPreferencesPutResponse = UpdateUserPreferencesApiV1UsersUserIdPreferencesPutResponses[keyof UpdateUserPreferencesApiV1UsersUserIdPreferencesPutResponses];
 
 export type ListCatalogApiV1ProcedureCatalogGetData = {
     body?: never;

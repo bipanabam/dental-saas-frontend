@@ -23,148 +23,16 @@ import { DisableUserDialog } from "@/components/staff/forms/DisableUserDialog";
 import { RestoreUserDialog } from "@/components/staff/forms/RestoreUserDialog";
 
 import StaffProfilePanel from "@/components/staff/StaffProfilePanel";
-import StaffSessionsPanel from "@/components/staff/StaffSessionsPanel";
+import AccessTab from "@/components/staff/tabs/AccessTab";
+import SessionsTab from "@/components/staff/tabs/SessionsTab";
+import PreferencesTab from "@/components/staff/tabs/PreferencesTab";
+import OverviewTab from "@/components/staff/tabs/OverviewTab";
 
-import { useGetAllUsers, useGetAllUserSessions } from "@/hooks/users/use-staffs";
+import { useGetAllUsers } from "@/hooks/users/use-staffs";
+
 import { ROLE_BADGE_THEMES } from "@/types/user";
 
 import type { UserListItem } from "@/lib/api";
-
-
-// Overview tab
-function InfoRow({ label, value, icon: Icon }: { label: string; value?: string | null; icon?: any }) {
-    return (
-        <div className="flex items-center justify-between py-2.5 border-b border-slate-50 last:border-0">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-                {Icon && <Icon className="h-3.5 w-3.5" />}
-                {label}
-            </div>
-            <span className="text-xs font-semibold text-slate-700">{value ?? "—"}</span>
-        </div>
-    );
-}
-
-function OverviewTab({ user }: { user: UserListItem }) {
-    return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Card className="rounded-2xl border-slate-200 shadow-sm">
-                <CardContent className="p-4">
-                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-3">
-                        Contact
-                    </p>
-                    <InfoRow label="Email" value={user.email} icon={Mail} />
-                    <InfoRow label="Phone" value={user.phone_number} icon={Phone} />
-                </CardContent>
-            </Card>
-
-            <Card className="rounded-2xl border-slate-200 shadow-sm">
-                <CardContent className="p-4">
-                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-3">
-                        Account
-                    </p>
-                    <InfoRow label="Username" value={user.username} icon={User} />
-                    <InfoRow label="Role" value={user.role} icon={Shield} />
-                    <InfoRow
-                        label="Last Active"
-                        value={
-                            user.last_active_at
-                                ? new Date(user.last_active_at).toLocaleString()
-                                : "Never"
-                        }
-                        icon={Clock}
-                    />
-                </CardContent>
-            </Card>
-
-            <Card className="rounded-2xl border-slate-200 shadow-sm sm:col-span-2">
-                <CardContent className="p-4">
-                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-3">
-                        Verification Flags
-                    </p>
-                    <div className="flex items-center gap-4">
-                        <div className={`flex items-center gap-2 text-xs font-bold ${user.is_verified ? "text-emerald-700" : "text-slate-400"
-                            }`}>
-                            {user.is_verified
-                                ? <MailCheck className="h-4 w-4 text-emerald-500" />
-                                : <MailX className="h-4 w-4" />}
-                            Email {user.is_verified ? "Verified" : "Not Verified"}
-                        </div>
-                        <div className={`flex items-center gap-2 text-xs font-bold ${user.is_active ? "text-emerald-700" : "text-red-600"
-                            }`}>
-                            {user.is_active
-                                ? <Check className="h-4 w-4 text-emerald-500" />
-                                : <X className="h-4 w-4" />}
-                            Account {user.is_active ? "Active" : "Disabled"}
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-    );
-}
-
-
-// Access tab
-function AccessTab({ user }: { user: UserListItem }) {
-    const roleStyle = ROLE_BADGE_THEMES[user.role] ?? "bg-slate-50 text-slate-600 border-slate-200";
-
-    return (
-        <div className="space-y-4">
-            <Card className="rounded-2xl border-slate-200 shadow-sm">
-                <CardContent className="p-5 space-y-4">
-                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
-                        Assigned Role
-                    </p>
-                    <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center">
-                            <Shield className="h-5 w-5 text-slate-500" />
-                        </div>
-                        <div>
-                            <Badge variant="outline" className={`text-xs font-bold px-3 py-1 capitalize ${roleStyle}`}>
-                                {user.role}
-                            </Badge>
-                            <p className="text-[11px] text-slate-400 mt-1">
-                                Permissions are inherited from this role.
-                            </p>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Card className="rounded-2xl border-slate-200 shadow-sm">
-                <CardContent className="p-5">
-                    <p className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-3">
-                        Security
-                    </p>
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between py-2 border-b border-slate-50">
-                            <div>
-                                <p className="text-sm font-semibold text-slate-700">Password</p>
-                                <p className="text-xs text-slate-400">Last reset: unknown</p>
-                            </div>
-                            <Badge variant="outline" className="text-[10px] text-slate-500">Protected</Badge>
-                        </div>
-                        <div className="flex items-center justify-between py-2">
-                            <div>
-                                <p className="text-sm font-semibold text-slate-700">Account Status</p>
-                                <p className="text-xs text-slate-400">Controls login access</p>
-                            </div>
-                            <Badge
-                                variant="outline"
-                                className={`text-[10px] font-bold ${user.is_active
-                                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                                        : "bg-red-50 text-red-600 border-red-200"
-                                    }`}
-                            >
-                                {user.is_active ? "Active" : "Disabled"}
-                            </Badge>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-    );
-}
 
 
 // Page header
@@ -178,7 +46,7 @@ function StaffDetailHeader({ user }: { user: UserListItem }) {
 
     return (
         <>
-            <Card className="rounded-2xl border-slate-200 shadow-sm">
+            <Card className="rounded-2xl border-slate-200 shadow-sm p-0">
                 <CardContent className="p-5">
                     <div className="flex items-start gap-4 flex-wrap">
                         {/* Avatar */}
@@ -304,7 +172,7 @@ export default function StaffDetailPage() {
             <StaffDetailHeader user={user} />
 
             <Tabs defaultValue="overview">
-                <TabsList className="bg-slate-100 rounded-xl p-1 h-10">
+                <TabsList className="bg-slate-100 rounded-xl p-1 h-10 flex-wrap gap-1">
                     <TabsTrigger value="overview" className="rounded-lg text-xs gap-1.5">
                         <User className="h-3.5 w-3.5" /> Overview
                     </TabsTrigger>
@@ -319,29 +187,20 @@ export default function StaffDetailPage() {
                     <TabsTrigger value="sessions" className="rounded-lg text-xs gap-1.5">
                         <MonitorSmartphone className="h-3.5 w-3.5" /> Sessions
                     </TabsTrigger>
+                    <TabsTrigger value="prefs" className="rounded-lg text-xs gap-1.5">
+                        <Bell className="h-3.5 w-3.5" /> Preferences
+                    </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="overview" className="mt-4">
-                    <OverviewTab user={user} />
-                </TabsContent>
-
-                <TabsContent value="access" className="mt-4">
-                    <AccessTab user={user} />
-                </TabsContent>
-
+                <TabsContent value="overview" className="mt-4"><OverviewTab user={user} /></TabsContent>
+                <TabsContent value="access" className="mt-4"><AccessTab userId={user.id} /></TabsContent>
                 {isDoctor && (
                     <TabsContent value="clinical" className="mt-4">
-                        <StaffProfilePanel
-                            userId={user.id}
-                            username={user.username}
-                            role={user.role}
-                        />
+                        <StaffProfilePanel userId={user.id} username={user.username} role={user.role} />
                     </TabsContent>
                 )}
-
-                <TabsContent value="sessions" className="mt-4">
-                    <StaffSessionsPanel userId={user.id} />
-                </TabsContent>
+                <TabsContent value="sessions" className="mt-4"><SessionsTab userId={user.id} /></TabsContent>
+                <TabsContent value="prefs" className="mt-4"><PreferencesTab userId={user.id} /></TabsContent>
             </Tabs>
         </div>
     );

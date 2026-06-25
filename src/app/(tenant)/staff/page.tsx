@@ -33,9 +33,11 @@ import PageHeader from "@/components/shared/page/PageHeader";
 import { SectionLoader } from "@/components/base/loading-view";
 
 import { useGetAllUsers, useGetAllUserSessions } from "@/hooks/users/use-staffs";
+import { useStaffSummary } from "@/hooks/users/use-staff-detail";
+import type { UserListItem } from "@/lib/api";
+
 import { ROLE_BADGE_THEMES } from "@/types/user";
 
-import type { UserListItem } from "@/lib/api";
 
 // KPI card
 function KpiCard({
@@ -267,6 +269,10 @@ function StaffTable({
 // Page
 export default function StaffPage() {
     const router = useRouter();
+
+    const { data: summary } = useStaffSummary();
+    const counts = (summary as any) ?? { total: 0, active: 0, doctors: 0 };
+
     const { data, isLoading } = useGetAllUsers();
     const { data: sessionsData } = useGetAllUserSessions();
 
@@ -321,14 +327,10 @@ export default function StaffPage() {
 
             {/* KPI row */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <KpiCard icon={Users} iconColor="text-brand-700" iconBg="bg-brand-50"
-                    label="Total Staff" value={users.length} />
-                <KpiCard icon={UserCheck} iconColor="text-emerald-600" iconBg="bg-emerald-50"
-                    label="Active" value={activeCount} />
-                <KpiCard icon={Stethoscope} iconColor="text-indigo-600" iconBg="bg-indigo-50"
-                    label="Doctors" value={doctorCount} />
-                <KpiCard icon={Wifi} iconColor="text-sky-600" iconBg="bg-sky-50"
-                    label="Online Now" value={onlineUserIds.size} />
+                <KpiCard icon={Users} iconColor="text-brand-700" iconBg="bg-brand-50" label="Total Staff" value={counts.total} />
+                <KpiCard icon={UserCheck} iconColor="text-emerald-600" iconBg="bg-emerald-50" label="Active" value={counts.active} />
+                <KpiCard icon={Stethoscope} iconColor="text-indigo-600" iconBg="bg-indigo-50" label="Doctors" value={counts.doctors} />
+                <KpiCard icon={Wifi} iconColor="text-sky-600" iconBg="bg-sky-50" label="Online Now" value={onlineUserIds.size} />
             </div>
 
             {/* Filters */}

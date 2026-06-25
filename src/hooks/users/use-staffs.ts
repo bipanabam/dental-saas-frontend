@@ -5,7 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 
 import {
     getUsersApiV1UsersGetOptions,
-    getUserApiV1UsersUserIdGetOptions,
+    getUserProfileApiV1UsersUserIdProfileGetOptions,
+    listTenantSessionsApiV1UsersSessionsAllGetOptions,
 } from "@/lib/api/@tanstack/react-query.gen";
 
 export function useGetAllUsers() {
@@ -13,6 +14,34 @@ export function useGetAllUsers() {
 
   return useQuery({
     ...getUsersApiV1UsersGetOptions(),
+
+    enabled: status === "authenticated",
+
+    staleTime: 1000 * 60 * 10,
+  });
+}
+
+export function useGetAllUserSessions() {
+  const { status } = useSession();
+
+  return useQuery({
+    ...listTenantSessionsApiV1UsersSessionsAllGetOptions(),
+
+    enabled: status === "authenticated",
+
+    staleTime: 1000 * 60 * 10,
+  });
+}
+
+export function useGetUserProfile(userId: string) {
+  const { status } = useSession();
+
+  return useQuery({
+    ...getUserProfileApiV1UsersUserIdProfileGetOptions(
+      { path: {
+        user_id: userId
+      }}
+    ),
 
     enabled: status === "authenticated",
 

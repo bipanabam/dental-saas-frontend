@@ -96,6 +96,12 @@ export const sidebarItems: SidebarItem[] = [
       },
     ],
   },
+  {
+    title: "Staffs",
+    url: "/staff",
+    icon: Users,
+    roles: ["admin"],
+  },
 
   {
     title: "Settings",

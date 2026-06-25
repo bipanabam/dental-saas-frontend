@@ -17,23 +17,11 @@ export const settingsNav = [
     icon: Settings,
   },
 
-//   {
-//     title: "Clinic",
-//     href: "/settings/clinic",
-//     icon: Building2,
-//   },
-
   {
-    title: "Users",
-    href: "/settings/users",
-    icon: Users,
+    title: "Roles",
+    href: "/settings/roles",
+    icon: Shield,
   },
-
-  // {
-  //   title: "Roles",
-  //   href: "/settings/roles",
-  //   icon: Shield,
-  // },
 
   {
     title: "Doctors",
@@ -47,6 +35,18 @@ export const settingsNav = [
     icon: ClipboardList,
   },
 
+  //   {
+//     title: "Clinic",
+//     href: "/settings/clinic",
+//     icon: Building2,
+//   },
+
+  // {
+  //   title: "Users",
+  //   href: "/settings/users",
+  //   icon: Users,
+  // },
+
   // {
   //   title: "Taxonomy",
   //   href: "/settings/taxonomy",
@@ -59,9 +59,9 @@ export const settingsNav = [
 //     icon: Bell,
 //   },
 
-  {
-    title: "Sessions",
-    href: "/settings/sessions",
-    icon: MonitorSmartphone,
-  },
+  // {
+  //   title: "Sessions",
+  //   href: "/settings/sessions",
+  //   icon: MonitorSmartphone,
+  // },
 ];

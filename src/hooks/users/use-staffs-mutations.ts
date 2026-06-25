@@ -8,11 +8,13 @@ import {
   updateUserApiV1UsersUserIdPut,
   deleteUserApiV1UsersUserIdDelete,
   restoreUserApiV1UsersUserIdRestorePut,
-  updateUserRoleApiV1UsersUserIdRolePut,
-  resetUserPasswordApiV1UsersUserIdPasswordPut,
+  updateUserAccessApiV1UsersUserIdAccessPut,
+  resetUserPasswordApiV1UsersUserIdSecurityPasswordPut,
+  updateUserProfileApiV1UsersUserIdProfilePut,
 } from "@/lib/api";
+import type { GenderEnum } from "@/lib/api";
 
-import { getUsersApiV1UsersGetOptions } from "@/lib/api/@tanstack/react-query.gen";
+import { getUserProfileApiV1UsersUserIdProfileGetOptions, getUsersApiV1UsersGetOptions } from "@/lib/api/@tanstack/react-query.gen";
 
 function extractError(err: any, fallback: string): string {
   return (
@@ -124,10 +126,10 @@ export function useUpdateUserRole() {
   const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: string }) => {
-      const res = await updateUserRoleApiV1UsersUserIdRolePut({
+    mutationFn: async ({ userId, roleId }: { userId: string; roleId: string }) => {
+      const res = await updateUserAccessApiV1UsersUserIdAccessPut({
         path: { user_id: userId },
-        query: { role_name: role },
+        body: { role_id: roleId },
       });
       if (res.error) throw res.error;
     },
@@ -148,7 +150,7 @@ export function useAdminResetPassword() {
       userId: string;
       newPassword: string;
     }) => {
-      const res = await resetUserPasswordApiV1UsersUserIdPasswordPut({
+      const res = await resetUserPasswordApiV1UsersUserIdSecurityPasswordPut({
         path: { user_id: userId },
         body: { new_password: newPassword },
       });
@@ -156,5 +158,42 @@ export function useAdminResetPassword() {
     },
     onSuccess: () => toast.success("Password reset successfully."),
     onError: (err: any) => toast.error(extractError(err, "Failed to reset password")),
+  });
+}
+
+export function useUpdateUserProfile(userId: string) {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: {
+      bio?: string | null;
+      gender?: GenderEnum | null;
+      date_of_birth?: string | null;
+      address?: string | null;
+      specialization?: string | null;
+      nmc_reg_no?: string | null;
+      qualification?: string | null;
+      experience_years?: number | null;
+      consultation_fee?: number | null;
+    }) => {
+      const res = await updateUserProfileApiV1UsersUserIdProfilePut({
+        path: { user_id: userId },
+        body: payload,
+      });
+      if (res.error) throw res.error;
+      return res.data;
+    },
+    onSuccess: (data) => {
+      // Patch directly — no need to refetch
+      qc.setQueryData(
+        getUserProfileApiV1UsersUserIdProfileGetOptions({
+          path: { user_id: userId },
+        }).queryKey,
+        data
+      );
+      toast.success("Profile updated.");
+    },
+    onError: (err: any) =>
+      toast.error(extractError(err, "Failed to update profile")),
   });
 }

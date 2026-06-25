@@ -17,7 +17,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import UserFilterSelect from "@/components/settings/users/UserFilterSelect";
 import UserTable from "@/components/settings/users/UserTable";
-import { AddUserButton } from "@/components/settings/users/forms/UserFormSheet";
+import { AddUserButton } from "@/components/staff/forms/UserFormSheet";
 
 import { SectionLoader } from "@/components/base/loading-view";
 

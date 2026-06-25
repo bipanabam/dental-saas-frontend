@@ -31,15 +31,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { UserEditDialog } from "./forms/UserFormSheet";
-import { ResetPasswordDialog } from "./forms/ResetPasswordDialog";
-import { RestoreUserDialog } from "./forms/RestoreUserDialog";
-import { DisableUserDialog } from "./forms/DisableUserDialog";
+import { UserEditDialog } from "@/components/staff/forms/UserFormSheet";
+import { ResetPasswordDialog } from "@/components/staff/forms/ResetPasswordDialog";
+import { RestoreUserDialog } from "@/components/staff/forms/RestoreUserDialog";
+import { DisableUserDialog } from "@/components/staff/forms/DisableUserDialog";
 
 import { ROLE_BADGE_THEMES } from "@/types/user";
 
 import type { UserListItem } from "@/lib/api";
-import { useDisableUser, useRestoreUser } from "@/hooks/users/use-staffs-mutations";
 
 interface TableProps {
   data: UserListItem[];
@@ -93,9 +92,6 @@ const UserRow = ({ user }: { user: UserListItem }) => {
   const [resetOpen, setResetOpen] = useState(false);
   const [disableOpen, setDisableOpen] = useState(false);
   const [restoreOpen, setRestoreOpen] = useState(false);
-
-  const disable = useDisableUser();
-  const restore = useRestoreUser();
 
   const roleStyle =
     ROLE_BADGE_THEMES[user.role] ??

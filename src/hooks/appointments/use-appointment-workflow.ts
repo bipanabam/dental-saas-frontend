@@ -11,6 +11,7 @@ import {
   markNoShowApiV1AppointmentsAppointmentIdNoShowPost,
   rescheduleAppointmentApiV1AppointmentsAppointmentIdReschedulePost,
   createFollowUpApiV1AppointmentsAppointmentIdFollowUpPost,
+  walkInAppointmentApiV1AppointmentsWalkInPost,
 } from "@/lib/api";
 
 import type {
@@ -177,5 +178,28 @@ export function useCreateFollowUp() {
       toast.success("Follow-up created.");
     },
     onError: (err: any) => toast.error(extractError(err, "Failed to create follow-up")),
+  });
+}
+
+
+export function useWalkInAppointment() {
+  const invalidate = useInvalidateAppointments();
+  return useMutation({
+    mutationFn: async (payload: {
+      patient_id: string;
+      doctor_id?: string;
+      chief_complaint?: string;
+    }) => {
+      const res = await walkInAppointmentApiV1AppointmentsWalkInPost({
+        body: { ...payload, source: "WALK_IN" },
+      });
+      if (res.error) throw res.error;
+      return res.data;
+    },
+    onSuccess: (data) => {
+      invalidate();
+      toast.success(`Walk-in registered — Token #${data?.token_number}`);
+    },
+    onError: (err: any) => toast.error(extractError(err, "Failed to register walk-in")),
   });
 }

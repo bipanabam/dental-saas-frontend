@@ -1,7 +1,6 @@
 "use client";
 
 import AnalyticsGrid from "../shared/analytics/AnalyticsGrid";
-import AnalyticsCard from "../shared/analytics/AnalyticsCard";
 
 import {
     Users,

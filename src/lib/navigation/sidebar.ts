@@ -13,7 +13,6 @@ import type { LucideIcon } from "lucide-react";
 
 import type { UserRole } from "@/lib/auth/types";
 
-
 export type SidebarChild = {
   title: string;
   url: string;
@@ -35,7 +34,7 @@ export const sidebarItems: SidebarItem[] = [
     title: "Dashboard",
     url: "/dashboard",
     icon: LayoutDashboard,
-    roles: ["admin", "receptionist"],
+    roles: ["admin", "receptionist", "accountant", "doctor"],
   },
 
   {
@@ -63,7 +62,8 @@ export const sidebarItems: SidebarItem[] = [
     title: "Queue",
     url: "/queue",
     icon: ListOrdered,
-    roles: ["admin", "doctor"],
+    // receptionist added: check-in/confirm/no-show are front-desk actions
+    roles: ["admin", "doctor", "receptionist"],
   },
 
   {
@@ -77,7 +77,7 @@ export const sidebarItems: SidebarItem[] = [
     title: "Reports",
     url: "/admin/reports",
     icon: ChartNoAxesCombined,
-    roles: ["admin"],
+    roles: ["admin", "accountant"],
   },
 
   {
@@ -97,7 +97,7 @@ export const sidebarItems: SidebarItem[] = [
     ],
   },
   {
-    title: "Staffs",
+    title: "Staff",
     url: "/staff",
     icon: Users,
     roles: ["admin"],

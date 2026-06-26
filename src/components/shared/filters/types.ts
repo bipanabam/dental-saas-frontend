@@ -3,9 +3,13 @@ export interface FilterOption {
   value: string
 }
 
+export type FilterFieldType = "select" | "async-select" | "date-range";
+
 export interface FilterField {
   field: string
   label: string
+
+  type?: FilterFieldType; // defaults to "select"
 
   placeholder?: string
   options: FilterOption[]

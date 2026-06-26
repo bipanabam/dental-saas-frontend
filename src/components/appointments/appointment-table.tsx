@@ -30,7 +30,7 @@ import { getSourceConfig, getStatusConfig } from "@/types/appointments";
 interface Props {
   appointments: AppointmentListItem[];
   isLoading: boolean;
-  range: string;
+  range?: string;
   stats?: AppointmentStats;
 }
 

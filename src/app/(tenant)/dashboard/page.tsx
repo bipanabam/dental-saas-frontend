@@ -2,19 +2,15 @@
 
 import { useTenant } from "@/providers/tenant-provider";
 
-import AdminLayout from "@/components/dashboard/admin-layout";
+import RoleDashboardRouter from "@/components/dashboard/RoleDashboardRouter";
 
-const DashboardPage = () => {
+export default function DashboardPage() {
   const { session } = useTenant();
   const userRole = session?.user?.role || "receptionist";
 
   return (
-    <div>
-      {userRole === "admin" &&
-        <AdminLayout />
-      }
-    </div>
-  )
+    <RoleDashboardRouter
+      role={userRole}
+    />
+  );
 }
-
-export default DashboardPage;

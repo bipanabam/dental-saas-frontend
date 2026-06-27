@@ -1,191 +1,292 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Stethoscope, Clock, Users, CheckCircle2 } from "lucide-react";
+import { Stethoscope, Clock, FileText, Play, Layers, CheckCircle2 } from "lucide-react";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SectionLoader } from "@/components/base/loading-view";
 
-import { useTodaysAppointments, useAppointmentDetail } from "@/hooks/appointments/use-appointments";
+import DashboardSection from "@/components/dashboard/shared/DashboardSection";
+import KpiStrip, { type KpiCardData } from "@/components/dashboard/shared/KpiStrip";
+import TaskRail, { type TaskSection } from "@/components/dashboard/shared/TaskRail";
+
+import PatientQueueRow from "@/components/dashboard/doctor/PatientQueueRow";
+import EncounterSummaryPanel from "@/components/dashboard/doctor/EncounterSummaryPanel";
+
+import { useTodaysAppointments } from "@/hooks/appointments/use-appointments";
 import {
-  useStartAppointment, useCompleteAppointment,
+  useStartAppointment,
+  useCompleteAppointment,
 } from "@/hooks/appointments/use-appointment-workflow";
-
-import VisitWorkflowPanel from "@/components/appointments/VisitWorkFlowPanel";
-
-import type { WorkflowAction, AppointmentItem } from "@/lib/utils/appointment-workflow";
-
-function DoctorStatCard({ icon: Icon, label, value, color }: any) {
-  return (
-    <div className={`rounded-2xl border p-4 flex items-center gap-3 bg-white ${color}`}>
-      <Icon className="h-5 w-5 shrink-0" />
-      <div>
-        <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">{label}</p>
-        <p className="text-xl font-black text-slate-800">{value}</p>
-      </div>
-    </div>
-  );
-}
+import { useClinicalInbox } from "@/hooks/encounter/use-clinical-inbox";
 
 export default function DoctorDashboard() {
   const router = useRouter();
   const { data: session } = useSession();
   const doctorId = (session?.user as any)?.id;
+  const doctorName =
+    (session?.user as any)?.name ??
+    (session?.user as any)?.username ??
+    "Doctor";
 
   const [selectedId, setSelectedId] = useState<string>();
 
-  // Only fetch this doctor's appointments
   const todaysQuery = useTodaysAppointments();
-  const allAppointments = todaysQuery.data?.items ?? [];
+  const allItems = todaysQuery.data?.items ?? [];
 
-  // Filter to only this doctor's appointments client-side
-  // (until backend supports doctor_id filter on /today endpoint)
-  const myAppointments = allAppointments.filter(
-    (a) => a.appointment.assigned_doctor_id === doctorId
+  const myItems = useMemo(
+    () => allItems.filter((a) => a.appointment.assigned_doctor_id === doctorId),
+    [allItems, doctorId]
   );
 
-  const { data: selectedAppointment, isLoading: detailLoading } =
-    useAppointmentDetail(selectedId);
+  const selectedAppointment = useMemo(
+    () => myItems.find((i) => i.appointment.id === selectedId)?.appointment,
+    [myItems, selectedId]
+  );
 
+  const inboxQuery = useClinicalInbox(doctorId, true);
   const startMutation = useStartAppointment();
   const completeMutation = useCompleteAppointment();
 
+  // Auto-select the most urgent patient on load:
+  // IN_PROGRESS first (resume where you left off), then CHECKED_IN (next up),
+  // then fall back to first in list.
   useEffect(() => {
-    if (!selectedId && myAppointments.length > 0) {
-      setSelectedId(myAppointments[0].appointment.id);
+    if (!selectedId && myItems.length > 0) {
+      const inProgress = myItems.find((a) => a.appointment.status === "IN_PROGRESS");
+      const checkedIn = myItems.find((a) => a.appointment.status === "CHECKED_IN");
+      setSelectedId((inProgress ?? checkedIn ?? myItems[0]).appointment.id);
     }
-  }, [myAppointments, selectedId]);
+  }, [myItems, selectedId]);
 
-  const pendingAction =
-    startMutation.isPending ? { id: startMutation.variables, action: "start" as const } :
-      completeMutation.isPending ? { id: completeMutation.variables, action: "complete" as const } :
-        undefined;
+  const waitingCount = myItems.filter((a) => a.appointment.status === "CHECKED_IN").length;
+  const inProgressCount = myItems.filter((a) => a.appointment.status === "IN_PROGRESS").length;
+  const completedCount = myItems.filter((a) => a.appointment.status === "COMPLETED").length;
 
-  const handleWorkflow = async (action: WorkflowAction, item: AppointmentItem) => {
-    if (action === "start") {
-      await startMutation.mutateAsync(item.id);
-      router.push(`/appointments/${item.id}/encounter`);
-    }
-    if (action === "complete") await completeMutation.mutateAsync(item.id);
-    if (action === "open") router.push(`/appointments/${item.id}/encounter`);
-  };
+  const kpis: KpiCardData[] = useMemo(
+    () => [
+      {
+        id: "patients_today",
+        title: "Patients Today",
+        value: myItems.length,
+        icon: Stethoscope,
+        iconBg: "bg-blue-50",
+        iconColor: "text-blue-600",
+      },
+      {
+        id: "waiting",
+        title: "Waiting",
+        value: waitingCount,
+        icon: Clock,
+        iconBg: "bg-amber-50",
+        iconColor: "text-amber-600",
+      },
+      {
+        id: "in_progress",
+        title: "In Progress",
+        value: inProgressCount,
+        icon: Play,
+        iconBg: "bg-violet-50",
+        iconColor: "text-violet-600",
+      },
+      {
+        id: "notes_pending",
+        title: "Notes Pending",
+        // Honest proxy: IN_PROGRESS encounters have open documentation.
+        // Replace with a dedicated count once encounter status is queryable
+        // independently of appointment status.
+        value: inProgressCount,
+        icon: FileText,
+        iconBg: "bg-rose-50",
+        iconColor: "text-rose-600",
+      },
+    ],
+    [myItems.length, waitingCount, inProgressCount]
+  );
 
-  const stats = todaysQuery.data?.stats;
-  const completedCount = myAppointments.filter((a) => a.appointment.status === "COMPLETED").length;
-  const pendingCount = myAppointments.filter((a) => ["BOOKED", "CONFIRMED", "CHECKED_IN"].includes(a.appointment.status)).length;
-  const inProgressCount = myAppointments.filter((a) => a.appointment.status === "IN_PROGRESS").length;
+  const performanceKpis: KpiCardData[] = useMemo(
+    () => [
+      {
+        id: "completed",
+        title: "Completed Today",
+        value: `${completedCount} / ${myItems.length}`,
+        icon: CheckCircle2,
+        iconBg: "bg-emerald-50",
+        iconColor: "text-emerald-600",
+      },
+      {
+        id: "completion_rate",
+        title: "Completion Rate",
+        value: myItems.length > 0
+          ? `${Math.round((completedCount / myItems.length) * 100)}%`
+          : "0%",
+        icon: Layers,
+        iconBg: "bg-brand-50",
+        iconColor: "text-brand-700",
+      },
+    ],
+    [completedCount, myItems.length]
+  );
+
+  const inboxSections: TaskSection[] = useMemo(
+    () => [
+      {
+        key: "investigations",
+        label: "Awaiting Results",
+        items: (inboxQuery.data?.pending_investigations ?? []).map((inv) => ({
+          id: inv.id,
+          title: inv.investigation_name,
+          subtitle: inv.patient_name,
+          onClick: () => router.push(`/appointments/${inv.appointment_id}/encounter`),
+        })),
+      },
+      {
+        key: "deferred",
+        label: "Deferred Treatments",
+        items: (inboxQuery.data?.deferred_treatment_items ?? []).map((item) => ({
+          id: item.id,
+          title: item.procedure_name ?? "Procedure",
+          subtitle: item.patient_name,
+          onClick: () => router.push(`/appointments/${item.appointment_id}/encounter`),
+        })),
+      },
+      // TODO: wire useFollowUpsDue(doctorId) when available.
+      // TaskRail skips sections with items.length === 0, so enabling it early
+      // won't render a ghost header.
+      // {
+      //   key: "follow_ups",
+      //   label: "Follow-ups Due",
+      //   items: (followUpsQuery.data ?? []).map((f) => ({
+      //     id: f.id,
+      //     title: f.patient_name,
+      //     subtitle: new Date(f.appointment_date).toLocaleDateString(),
+      //     tag: "Today",
+      //     tagTone: "warning",
+      //     onClick: () => router.push(`/appointments/${f.id}`),
+      //   })),
+      // },
+    ],
+    [inboxQuery.data, router]
+  );
 
   if (todaysQuery.isLoading) return <SectionLoader message="Loading your schedule..." />;
 
+  const handleStart = async (appointmentId: string) => {
+    await startMutation.mutateAsync(appointmentId);
+    router.push(`/appointments/${appointmentId}/encounter`);
+  };
+
+  const handleComplete = async (appointmentId: string) => {
+    await completeMutation.mutateAsync(appointmentId);
+    setSelectedId(undefined);
+  };
+
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
   return (
     <div className="space-y-5">
-      {/* Doctor-specific stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <DoctorStatCard icon={Users} label="My Patients Today" value={myAppointments.length} color="border-slate-100" />
-        <DoctorStatCard icon={Clock} label="Pending" value={pendingCount} color="border-amber-100" />
-        <DoctorStatCard icon={Stethoscope} label="In Progress" value={inProgressCount} color="border-indigo-100" />
-        <DoctorStatCard icon={CheckCircle2} label="Completed" value={completedCount} color="border-emerald-100" />
+      {/* Header */}
+      <div className="flex items-start justify-between flex-wrap gap-4">
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            Clinical Workspace
+          </p>
+          <h1 className="text-xl font-black text-slate-800 mt-0.5">
+            {greeting}, {doctorName}
+          </h1>
+        </div>
+        <Badge
+          variant="outline"
+          className="text-[10px] font-bold px-3 py-1.5 bg-brand-50 text-brand-700 border-brand-200 flex items-center gap-1.5 self-start"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse inline-block" />
+          Live ·{" "}
+          {new Date().toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "short",
+            day: "numeric",
+          })}
+        </Badge>
       </div>
 
-      <div className="grid lg:grid-cols-[320px_1fr] gap-6">
-        {/* Schedule list — simplified, no secondary actions for doctor view */}
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs font-black uppercase tracking-wider text-slate-500">
-              Today's Schedule
-            </p>
-            <Badge className="bg-white text-slate-700 border-slate-200 text-xs font-bold">
-              {myAppointments.length}
-            </Badge>
-          </div>
+      <KpiStrip items={kpis} columns={4} />
 
-          <ScrollArea className="h-[60vh]">
-            <div className="space-y-2">
-              {myAppointments.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-10">
-                  No appointments scheduled for today.
-                </p>
-              ) : (
-                myAppointments.map((item) => {
-                  const a = item.appointment;
-                  const selected = selectedId === a.id;
-                  const statusColors: Record<string, string> = {
-                    BOOKED: "bg-amber-50 text-amber-700 border-amber-200",
-                    CONFIRMED: "bg-sky-50 text-sky-700 border-sky-200",
-                    CHECKED_IN: "bg-emerald-50 text-emerald-700 border-emerald-200",
-                    IN_PROGRESS: "bg-indigo-50 text-indigo-700 border-indigo-200",
-                    COMPLETED: "bg-slate-50 text-slate-400 border-slate-200",
-                  };
-
-                  return (
-                    <button
-                      key={a.id}
-                      onClick={() => setSelectedId(a.id)}
-                      className={`w-full text-left rounded-xl border p-3 transition-all ${selected
-                          ? "border-brand-300 bg-white shadow-sm"
-                          : "border-transparent bg-white hover:border-slate-200"
-                        }`}
-                    >
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs font-mono text-slate-400">
-                          {new Date(a.appointment_date).toLocaleTimeString([], {
-                            hour: "2-digit", minute: "2-digit",
-                          })}
-                        </span>
-                        <Badge
-                          variant="outline"
-                          className={`text-[9px] font-bold px-1.5 py-0 h-4 ${statusColors[a.status] ?? "bg-slate-50 text-slate-400"
-                            }`}
-                        >
-                          {a.status.replace("_", " ")}
-                        </Badge>
-                      </div>
-                      <p className="text-sm font-bold text-slate-800">
-                        {a.patient.first_name} {a.patient.last_name}
-                      </p>
-                      {a.chief_complaint && (
-                        <p className="text-[11px] text-slate-400 mt-0.5 truncate">
-                          {a.chief_complaint}
-                        </p>
-                      )}
-                      {a.status === "IN_PROGRESS" && (
-                        <Button
-                          size="sm"
-                          className="mt-2 w-full h-7 rounded-lg text-xs bg-indigo-600 gap-1.5"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            router.push(`/appointments/${a.id}/encounter`);
-                          }}
-                        >
-                          <Stethoscope className="h-3.5 w-3.5" />
-                          Resume Encounter
-                        </Button>
-                      )}
-                    </button>
-                  );
-                })
-              )}
-            </div>
-          </ScrollArea>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* LEFT: Patient queue */}
+        <div className="lg:col-span-4">
+          <DashboardSection
+            title="Today's Patients"
+            meta={
+              <Badge className="bg-slate-100 text-slate-600 border-slate-200 text-xs font-bold">
+                {myItems.length}
+              </Badge>
+            }
+          >
+            {myItems.length === 0 ? (
+              <p className="text-xs text-slate-400 text-center py-10">
+                No patients scheduled for today.
+              </p>
+            ) : (
+              <ScrollArea className="max-h-[62vh]">
+                <div className="space-y-1.5 p-0.5">
+                  {myItems.map((item) => (
+                    <PatientQueueRow
+                      key={item.appointment.id}
+                      item={item}
+                      selected={selectedId === item.appointment.id}
+                      onSelect={() => setSelectedId(item.appointment.id)}
+                      onStart={() => handleStart(item.appointment.id)}
+                      onResume={() =>
+                        router.push(`/appointments/${item.appointment.id}/encounter`)
+                      }
+                      isStartPending={
+                        startMutation.isPending &&
+                        startMutation.variables === item.appointment.id
+                      }
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            )}
+          </DashboardSection>
         </div>
 
-        {/* Workflow panel — same component, restricted actions */}
-        <VisitWorkflowPanel
-          appointment={selectedAppointment}
-          loading={detailLoading}
-          onAction={handleWorkflow}
-          pendingAction={
-            pendingAction?.id === selectedAppointment?.id
-              ? pendingAction?.action
-              : undefined
-          }
-        />
+        {/* CENTER: Encounter panel */}
+        <div className="lg:col-span-5">
+          <DashboardSection title="Current Encounter">
+            <EncounterSummaryPanel
+              appointment={selectedAppointment}
+              loading={false}
+              onStart={() => selectedAppointment && handleStart(selectedAppointment.id)}
+              onComplete={() =>
+                selectedAppointment && handleComplete(selectedAppointment.id)
+              }
+              onOpen={() =>
+                selectedAppointment &&
+                router.push(`/appointments/${selectedAppointment.id}/encounter`)
+              }
+              isStartPending={startMutation.isPending}
+              isCompletePending={completeMutation.isPending}
+            />
+          </DashboardSection>
+        </div>
+
+        {/* RIGHT: Clinical inbox */}
+        <div className="lg:col-span-3">
+          <TaskRail
+            title="Clinical Inbox"
+            sections={inboxSections}
+            emptyLabel="Inbox clear."
+          />
+        </div>
       </div>
+
+      <KpiStrip columns={4} items={performanceKpis} />
     </div>
   );
 }

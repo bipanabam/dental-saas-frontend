@@ -292,6 +292,10 @@ export type AppointmentListItem = {
     status: AppointmentStatusEnum;
     payment_status: PaymentStatusEnum;
     /**
+     * Duration Minutes
+     */
+    duration_minutes: number | null;
+    /**
      * Chief Complaint
      */
     chief_complaint: string | null;
@@ -670,6 +674,27 @@ export type ClinicalFindingsBulkCreate = {
      * Findings
      */
     findings: Array<ClinicalFindingCreate>;
+};
+
+/**
+ * ClinicalInboxResponse
+ *
+ * GET /encounters/inbox?doctor_id=...&today=true
+ *
+ * Aggregates pending-action items across a doctor's encounters today —
+ * purpose-built for the Doctor dashboard's Clinical Inbox panel, since
+ * EncounterListItem only exposes has_investigation/has_treatment_plan
+ * boolean flags, not the underlying rows.
+ */
+export type ClinicalInboxResponse = {
+    /**
+     * Pending Investigations
+     */
+    pending_investigations: Array<InboxInvestigationItem>;
+    /**
+     * Deferred Treatment Items
+     */
+    deferred_treatment_items: Array<InboxTreatmentPlanItem>;
 };
 
 /**
@@ -1322,6 +1347,88 @@ export type HttpValidationError = {
      * Detail
      */
     detail?: Array<ValidationError>;
+};
+
+/**
+ * InboxInvestigationItem
+ *
+ * A single ordered-but-not-resulted investigation, with enough
+ * patient/encounter context to deep-link from the inbox without a
+ * second round trip.
+ */
+export type InboxInvestigationItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Investigation Code
+     */
+    investigation_code: string;
+    /**
+     * Investigation Name
+     */
+    investigation_name: string;
+    /**
+     * Requested At
+     */
+    requested_at: string;
+    /**
+     * Encounter Id
+     */
+    encounter_id: string;
+    /**
+     * Appointment Id
+     */
+    appointment_id: string;
+    /**
+     * Patient Id
+     */
+    patient_id: string;
+    /**
+     * Patient Name
+     */
+    patient_name: string;
+};
+
+/**
+ * InboxTreatmentPlanItem
+ *
+ * A single DEFERRED treatment plan item awaiting a future visit.
+ */
+export type InboxTreatmentPlanItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Procedure Catalog Id
+     */
+    procedure_catalog_id: string;
+    /**
+     * Procedure Name
+     */
+    procedure_name?: string | null;
+    /**
+     * Tooth Numbers
+     */
+    tooth_numbers?: Array<number> | null;
+    /**
+     * Encounter Id
+     */
+    encounter_id: string;
+    /**
+     * Appointment Id
+     */
+    appointment_id: string;
+    /**
+     * Patient Id
+     */
+    patient_id: string;
+    /**
+     * Patient Name
+     */
+    patient_name: string;
 };
 
 /**
@@ -6433,6 +6540,40 @@ export type ListEncountersApiV1EncountersGetResponses = {
 };
 
 export type ListEncountersApiV1EncountersGetResponse = ListEncountersApiV1EncountersGetResponses[keyof ListEncountersApiV1EncountersGetResponses];
+
+export type GetClinicalInboxApiV1EncountersInboxGetData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Doctor Id
+         */
+        doctor_id: string;
+        /**
+         * Today
+         */
+        today?: boolean;
+    };
+    url: '/api/v1/encounters/inbox';
+};
+
+export type GetClinicalInboxApiV1EncountersInboxGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetClinicalInboxApiV1EncountersInboxGetError = GetClinicalInboxApiV1EncountersInboxGetErrors[keyof GetClinicalInboxApiV1EncountersInboxGetErrors];
+
+export type GetClinicalInboxApiV1EncountersInboxGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ClinicalInboxResponse;
+};
+
+export type GetClinicalInboxApiV1EncountersInboxGetResponse = GetClinicalInboxApiV1EncountersInboxGetResponses[keyof GetClinicalInboxApiV1EncountersInboxGetResponses];
 
 export type GetEncounterByAppointmentApiV1EncountersByAppointmentAppointmentIdGetData = {
     body?: never;

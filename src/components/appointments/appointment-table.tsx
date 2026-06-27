@@ -32,9 +32,18 @@ interface Props {
   isLoading: boolean;
   range?: string;
   stats?: AppointmentStats;
+  hideDoctorColumn?: boolean;
+  onAppointmentClick?: (appointment: AppointmentListItem) => void;
 }
 
-const AppointmentTable = ({ appointments, isLoading, range, stats }: Props) => {
+const AppointmentTable = ({
+  appointments,
+  isLoading,
+  range,
+  stats,
+  hideDoctorColumn = false,
+  onAppointmentClick,
+}: Props) => {
   const router = useRouter();
 
   return (
@@ -124,6 +133,7 @@ const AppointmentTable = ({ appointments, isLoading, range, stats }: Props) => {
                 return (
                   <TableRow
                     key={appt.id}
+                    onClick={() => onAppointmentClick?.(appt)}
                     className="hover:bg-slate-50/40 border-b border-slate-100 group transition-colors"
                   >
                     <TableCell className="py-3.5 min-w-60">
@@ -160,9 +170,11 @@ const AppointmentTable = ({ appointments, isLoading, range, stats }: Props) => {
                             minute: "2-digit",
                           })}
                         </div>
-                        <div className="text-[11px] font-mono font-medium text-brand-600 truncate max-w-45">
-                          {appt.doctor?.email?.split("@")[0]}
-                        </div>
+                        {!hideDoctorColumn && (
+                          <div className="text-[11px] font-mono font-medium text-brand-600 truncate max-w-45">
+                            {appt.doctor?.email?.split("@")[0]}
+                          </div>
+                        )}
                       </div>
                     </TableCell>
 

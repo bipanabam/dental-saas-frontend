@@ -65,6 +65,7 @@ export function useListEncounters(params?: QueryParams, options?: { enabled?: bo
 
     enabled: authStatus === "authenticated" && (options?.enabled ?? true),
     retry: false,
+    refetchInterval: 60_000, // every minute for lab result polling
   });
 }
 

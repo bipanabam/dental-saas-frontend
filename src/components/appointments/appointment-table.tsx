@@ -20,12 +20,13 @@ import {
 } from "@/components/ui/table";
 
 import { Button } from "@/components/ui/button";
-import { CalendarDays, HeartPulse, Edit3 } from "lucide-react";
+import { CalendarDays, HeartPulse, Edit3, Eye } from "lucide-react";
 
 import { AppointmentListItem } from "@/lib/api";
 import type { AppointmentStats } from "@/lib/api";
 
 import { getSourceConfig, getStatusConfig } from "@/types/appointments";
+import Link from "next/link";
 
 interface Props {
   appointments: AppointmentListItem[];
@@ -196,12 +197,22 @@ const AppointmentTable = ({
                     </TableCell>
 
                     <TableCell className="py-3.5 text-right pr-5">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="hover:bg-slate-100 text-slate-600 rounded-lg"
+                        onClick={() =>
+                          router.push(`/appointments/${appt.id}`)
+                        }
+                      >
+                        <Eye className="h-3 w-3" />
+                      </Button>
                       <Button
                         size="sm"
                         variant="outline"
                         className="rounded-xl border-slate-200 shadow-2xs hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 transition-all font-semibold gap-1.5"
                         onClick={() =>
-                          router.push(`/appointments?id=${appt.id}`)
+                          router.push(`/appointments/${appt.id}/edit`)
                         }
                       >
                         <Edit3 className="h-3 w-3" />

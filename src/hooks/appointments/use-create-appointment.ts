@@ -11,11 +11,9 @@ import {
   createAppointmentApiV1AppointmentsPost
 } from "@/lib/api";
 
-
 import type {
   AppointmentInputs,
 } from "@/lib/schemas/appointment";
-
 
 export function useCreateAppointment() {
   const qc = useQueryClient();

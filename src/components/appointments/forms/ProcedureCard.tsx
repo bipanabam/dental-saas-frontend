@@ -43,7 +43,7 @@ export default function ProcedureCard({
   setValue,
 }: Props){
 
-  const allProcedures = useWatch({ control, name: "procedures" }); // needs `useWatch` import
+  const allProcedures = useWatch({ control, name: "procedures" });
 
   // const teethUsedElsewhere = (allProcedures ?? [])
   //   .filter((_, i) => i !== index)
@@ -87,35 +87,25 @@ export default function ProcedureCard({
               value={
                 field.value
               }
-              onChange={(
-                procedure
-              ) => {
-
-                field.onChange(
-                  procedure.id
-                );
+              onChange={(procedure) => {
+                field.onChange(procedure.id);
 
                 setValue(
                   `procedures.${index}.estimated_cost`,
-                  procedure.default_cost ??
-                  null,
-
-                  {
-                    shouldDirty:
-                      true,
-                  }
+                  procedure.default_cost ?? null,
+                  { shouldDirty: true },
                 );
 
                 setValue(
                   `procedures.${index}.estimated_duration_minutes`,
-                  procedure.default_duration_minutes ??
-                  0
+                  procedure.default_duration_minutes ?? 0,
+                  { shouldDirty: true },
                 );
 
                 setValue(
                   `procedures.${index}.notes`,
-                  procedure.description ??
-                  ""
+                  procedure.description ?? "",
+                  { shouldDirty: true },
                 );
               }}
             />

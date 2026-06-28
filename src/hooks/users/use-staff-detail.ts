@@ -5,15 +5,10 @@ import { useSession } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
-  getUserAccessApiV1UsersUserIdAccessGet,
   updateUserAccessApiV1UsersUserIdAccessPut,
-  listUserSessionsApiV1UsersUserIdSessionsGet,
   revokeUserSessionApiV1UsersUserIdSessionsSessionIdDelete,
   revokeAllUserSessionsApiV1UsersUserIdSessionsDelete,
-  getUserSecurityApiV1UsersUserIdSecurityGet,
-  getUserPreferencesApiV1UsersUserIdPreferencesGet,
   updateUserPreferencesApiV1UsersUserIdPreferencesPut,
-  getUsersSummaryApiV1UsersSummaryGet,
 } from "@/lib/api";
 
 import {
@@ -124,6 +119,20 @@ export function useRevokeAllSessions(userId: string) {
       toast.success("All sessions revoked.");
     },
     onError: (err: any) => toast.error(extractError(err, "Failed to revoke sessions")),
+  });
+}
+
+
+export function useRevokeAnySession() {
+  return useMutation({
+    mutationFn: async ({ sessionId, userId }: { sessionId: string; userId: string }) => {
+      const res = await revokeUserSessionApiV1UsersUserIdSessionsSessionIdDelete({
+        path: { user_id: userId, session_id: sessionId },
+      });
+      if (res.error) throw res.error;
+    },
+    onSuccess: () => toast.success("Session revoked."),
+    onError: (err: any) => toast.error(extractError(err, "Failed to revoke session")),
   });
 }
 

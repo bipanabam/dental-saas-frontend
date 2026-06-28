@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -13,7 +13,10 @@ import {
     Calendar,
     UserCheck,
     Tag,
-    Layers
+    Layers,
+    AlertTriangle,
+    CheckCircle2,
+    Loader2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -39,12 +42,15 @@ import {
 
 import { useDoctors } from "@/hooks/users/use-doctors";
 import { useCreateAppointment } from "@/hooks/appointments/use-create-appointment";
+import { useCheckAppointmentConflict } from "@/hooks/appointments/use-check-conflict";
 
 type Props = {
     patientId: string;
+    /** Pass when editing an existing appointment so it doesn't conflict with itself */
+    excludeAppointmentId?: string;
 };
 
-export default function AppointmentForm({ patientId }: Props) {
+export default function AppointmentForm({ patientId, excludeAppointmentId }: Props) {
     const router = useRouter();
     const { data: doctors, isLoading: isDoctorsLoading } = useDoctors();
     const { mutateAsync: createAppointment, isPending } = useCreateAppointment();
@@ -75,12 +81,26 @@ export default function AppointmentForm({ patientId }: Props) {
     });
     const procedures = watch("procedures");
 
-    // Automatically calculate duration from sub-procedures
+    // Conflict check: watch the three scheduling fields
+    const watchedDoctorId = watch("doctor_id") as string | undefined;
+    const watchedDate = watch("appointment_date") as string | undefined;
+    const watchedDuration = watch("duration_minutes") as number | undefined;
+
+    const {
+        data: conflictResult,
+        isFetching: checkingConflict,
+    } = useCheckAppointmentConflict({
+        doctorId: watchedDoctorId,
+        appointmentDate: watchedDate,
+        durationMinutes: watchedDuration,
+        excludeAppointmentId,
+    });
+
+    // Auto-calculate duration from procedures
     const { totalDuration, totalCost, procedureCount } = useMemo(() => {
         if (!procedures || procedures.length === 0) {
             return { totalDuration: 0, totalCost: 0, procedureCount: 0 };
         }
-
         return procedures.reduce(
             (acc, p) => {
                 const dur = Number(p?.estimated_duration_minutes);
@@ -106,18 +126,22 @@ export default function AppointmentForm({ patientId }: Props) {
 
     async function onSubmit(values: AppointmentInputs) {
         const cleanPayload = Object.fromEntries(
-            Object.entries(values).filter(
-                ([, val]) => val !== "" && val !== undefined,
-            )
+            Object.entries(values).filter(([, val]) => val !== "" && val !== undefined),
         ) as AppointmentInputs;
 
         try {
             const created = await createAppointment(cleanPayload);
             router.push(`/appointments/${created?.id ?? ""}`);
         } catch {
-            // Error boundary handled via mutation hook internally
+            // handled by mutation hook
         }
     }
+
+    // Derived conflict UI state
+    // Only show the availability indicator once all three fields have values.
+    const hasSchedulingInputs = Boolean(
+        watchedDoctorId && watchedDate && watchedDuration && watchedDuration > 0
+    );
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-4xl mx-auto p-1">
@@ -131,7 +155,6 @@ export default function AppointmentForm({ patientId }: Props) {
                     </h3>
                 </div>
 
-                {/* Primary Logistics Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Practitioner Selection */}
                     <div className="space-y-1.5">
@@ -177,7 +200,7 @@ export default function AppointmentForm({ patientId }: Props) {
                         )}
                     </div>
 
-                    {/* Time & Stamp */}
+                    {/* Date & Time */}
                     <div className="space-y-1.5">
                         <Label className="text-xs font-bold text-slate-600">
                             Appointment Date & Time <span className="text-red-500">*</span>
@@ -192,7 +215,7 @@ export default function AppointmentForm({ patientId }: Props) {
                         )}
                     </div>
 
-                    {/* Total Booking Duration */}
+                    {/* Duration -> auto-filled from procedures */}
                     <div className="space-y-1.5">
                         <Label className="text-xs font-bold text-slate-600 flex items-center gap-1">
                             <Clock className="h-3.5 w-3.5 text-slate-400" />
@@ -210,9 +233,19 @@ export default function AppointmentForm({ patientId }: Props) {
                     </div>
                 </div>
 
-                {/* Secondary Metadata Classification Grid */}
+                {/* Conflict / availability indicator */}
+                {hasSchedulingInputs && (
+                    <ConflictBanner
+                        isChecking={checkingConflict}
+                        hasConflict={conflictResult?.has_conflict ?? false}
+                        conflictingPatient={conflictResult?.conflicting_patient_name}
+                        conflictingTime={conflictResult?.conflicting_time}
+                        overlapMinutes={conflictResult?.overlap_minutes}
+                    />
+                )}
+
+                {/* Secondary Metadata */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-slate-100">
-                    {/* Appointment Type */}
                     <div className="space-y-1.5">
                         <Label className="text-xs font-bold text-slate-600 flex items-center gap-1">
                             <Layers className="h-3.5 w-3.5 text-slate-400" />
@@ -241,7 +274,6 @@ export default function AppointmentForm({ patientId }: Props) {
                         )}
                     </div>
 
-                    {/* Acquisition/Intake Source */}
                     <div className="space-y-1.5">
                         <Label className="text-xs font-bold text-slate-600 flex items-center gap-1">
                             <Tag className="h-3.5 w-3.5 text-slate-400" />
@@ -272,7 +304,7 @@ export default function AppointmentForm({ patientId }: Props) {
                 </div>
             </div>
 
-            {/* SECTION II: CLINICAL INTAKE RECORDS */}
+            {/* SECTION II: CLINICAL INTAKE */}
             <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-3xs space-y-4">
                 <div className="flex items-center gap-2 border-b border-slate-50 pb-2">
                     <ClipboardList className="h-4 w-4 text-slate-400" />
@@ -304,7 +336,7 @@ export default function AppointmentForm({ patientId }: Props) {
                 </div>
             </div>
 
-            {/* SECTION III: PLANNED PROCEDURE TREATMENT PLANNER */}
+            {/* SECTION III: PLANNED PROCEDURES */}
             <div className="space-y-3">
                 <div className="flex items-center justify-between border-b border-slate-200 pb-2 px-1">
                     <div className="flex items-center gap-2">
@@ -339,7 +371,6 @@ export default function AppointmentForm({ patientId }: Props) {
                     </Button>
                 </div>
 
-                {/* Dynamic List Rendering Area */}
                 {fields.length === 0 ? (
                     <div className="border border-dashed border-slate-200 rounded-2xl p-8 text-center bg-slate-50/40 select-none">
                         <p className="text-xs font-bold text-slate-400 italic">
@@ -364,6 +395,7 @@ export default function AppointmentForm({ patientId }: Props) {
                 )}
             </div>
 
+            {/* Treatment summary */}
             {procedureCount > 0 && (
                 <div className="bg-brand-50/60 border border-brand-100 rounded-2xl p-4 flex items-center justify-between">
                     <div>
@@ -389,7 +421,7 @@ export default function AppointmentForm({ patientId }: Props) {
                 </div>
             )}
 
-            {/* FINAL FORM DISPATCH ACTION */}
+            {/* Submit */}
             <div className="flex justify-end pt-2">
                 <Button
                     type="submit"
@@ -400,5 +432,75 @@ export default function AppointmentForm({ patientId }: Props) {
                 </Button>
             </div>
         </form>
+    );
+}
+
+// ConflictBanner
+// Extracted so the form's JSX stays readable.
+// Three states: checking (spinner), conflict (amber warning), clear (green tick).
+interface ConflictBannerProps {
+    isChecking: boolean;
+    hasConflict: boolean;
+    conflictingPatient?: string | null;
+    conflictingTime?: string | null;
+    overlapMinutes?: number | null;
+}
+
+function ConflictBanner({
+    isChecking,
+    hasConflict,
+    conflictingPatient,
+    conflictingTime,
+    overlapMinutes,
+}: ConflictBannerProps) {
+    if (isChecking) {
+        return (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 border border-slate-100">
+                <Loader2 className="h-3.5 w-3.5 text-slate-400 animate-spin shrink-0" />
+                <span className="text-[11px] text-slate-400 font-medium">
+                    Checking doctor availability…
+                </span>
+            </div>
+        );
+    }
+
+    if (hasConflict) {
+        const timeStr = conflictingTime
+            ? new Date(conflictingTime).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+            })
+            : null;
+
+        return (
+            <div className="flex items-start gap-2.5 px-3 py-2.5 rounded-lg bg-amber-50 border border-amber-200">
+                <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
+                <div>
+                    <p className="text-[11px] font-bold text-amber-800">
+                        Scheduling conflict detected
+                    </p>
+                    <p className="text-[11px] text-amber-700 mt-0.5">
+                        {conflictingPatient
+                            ? `${conflictingPatient} is already booked with this doctor`
+                            : "This doctor already has an appointment"}
+                        {timeStr && ` at ${timeStr}`}
+                        {overlapMinutes != null && overlapMinutes > 0
+                            ? ` — ${overlapMinutes}m overlap.`
+                            : "."}
+                        {" "}You can still proceed if intended.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    // Clear -> only show when we have a result (not on initial empty state)
+    return (
+        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-50 border border-emerald-100">
+            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+            <span className="text-[11px] text-emerald-700 font-medium">
+                Doctor is available at this time.
+            </span>
+        </div>
     );
 }

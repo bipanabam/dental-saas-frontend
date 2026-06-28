@@ -89,6 +89,32 @@ export type AppointmentCheckInResponse = {
 };
 
 /**
+ * AppointmentConflictResult
+ */
+export type AppointmentConflictResult = {
+    /**
+     * Has Conflict
+     */
+    has_conflict: boolean;
+    /**
+     * Conflicting Appointment Id
+     */
+    conflicting_appointment_id?: string | null;
+    /**
+     * Conflicting Patient Name
+     */
+    conflicting_patient_name?: string | null;
+    /**
+     * Conflicting Time
+     */
+    conflicting_time?: string | null;
+    /**
+     * Overlap Minutes
+     */
+    overlap_minutes?: number | null;
+};
+
+/**
  * AppointmentCreate
  */
 export type AppointmentCreate = {
@@ -5958,6 +5984,48 @@ export type ListTodaysAppointmentsApiV1AppointmentsTodayGetResponses = {
 };
 
 export type ListTodaysAppointmentsApiV1AppointmentsTodayGetResponse = ListTodaysAppointmentsApiV1AppointmentsTodayGetResponses[keyof ListTodaysAppointmentsApiV1AppointmentsTodayGetResponses];
+
+export type CheckAppointmentConflictApiV1AppointmentsCheckConflictGetData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Doctor Id
+         */
+        doctor_id: string;
+        /**
+         * Appointment Date
+         */
+        appointment_date: string;
+        /**
+         * Duration Minutes
+         */
+        duration_minutes: number;
+        /**
+         * Exclude Appointment Id
+         */
+        exclude_appointment_id?: string | null;
+    };
+    url: '/api/v1/appointments/check-conflict';
+};
+
+export type CheckAppointmentConflictApiV1AppointmentsCheckConflictGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CheckAppointmentConflictApiV1AppointmentsCheckConflictGetError = CheckAppointmentConflictApiV1AppointmentsCheckConflictGetErrors[keyof CheckAppointmentConflictApiV1AppointmentsCheckConflictGetErrors];
+
+export type CheckAppointmentConflictApiV1AppointmentsCheckConflictGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: AppointmentConflictResult;
+};
+
+export type CheckAppointmentConflictApiV1AppointmentsCheckConflictGetResponse = CheckAppointmentConflictApiV1AppointmentsCheckConflictGetResponses[keyof CheckAppointmentConflictApiV1AppointmentsCheckConflictGetResponses];
 
 export type WalkInAppointmentApiV1AppointmentsWalkInPostData = {
     body: AppointmentCreateWalkIn;

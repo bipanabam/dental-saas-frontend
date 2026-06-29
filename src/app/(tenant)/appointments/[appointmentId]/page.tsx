@@ -1,9 +1,15 @@
-import React from 'react'
+import AppointmentWorkspacePage from "@/components/appointments/detail/AppointmentWorkspacePage";
 
-const AppointmentDetailPage = () => {
+export default async function AppointmentDetailPage({
+  params,
+}: {
+  params: Promise<{ appointmentId: string }>;
+}) {
+  const { appointmentId } = await params;
+
   return (
-    <div>AppointmentDetailPage</div>
-  )
+    <AppointmentWorkspacePage
+      appointmentId={appointmentId}
+    />
+  );
 }
-
-export default AppointmentDetailPage;

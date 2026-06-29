@@ -1,10 +1,14 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { User, Layers, Stethoscope, Phone } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import QueueWaitBadge from "./QueueWaitBadge";
+
+import { useQueueWaitEstimates } from "@/hooks/queues/use-queue-wait";
 
 import type { NormalizedQueueItem } from "@/lib/queue/normalize-queue";
 
@@ -15,6 +19,18 @@ interface Props {
 const QueueSidebar = ({ queue }: Props) => {
   const activeCase = queue.find((q) => q.status === "IN_PROGRESS");
   const upNextQueue = queue.filter((q) => q.status === "WAITING");
+
+  const { data: waitData, isLoading: waitLoading } =
+    useQueueWaitEstimates();
+
+  const waitMap = useMemo(() => {
+    return Object.fromEntries(
+      (waitData?.items ?? []).map((item) => [
+        item.queue_id,
+        item,
+      ]),
+    );
+  }, [waitData]);
 
   return (
     <div className="space-y-5">
@@ -138,8 +154,9 @@ const QueueSidebar = ({ queue }: Props) => {
 
               <div className="shrink-0 pl-2">
                 <QueueWaitBadge
-                  queueId={patient.queueId}
+                  wait={waitMap[patient.queueId]}
                   fallback={patient.estimatedWaitMins}
+                  isLoading={waitLoading}
                 />
               </div>
             </div>

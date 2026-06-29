@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
   Phone,
   SkipForward,
@@ -16,6 +15,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { SectionLoader } from "../base/loading-view";
+
+import CallPatientButton from "@/components/queue/CallPatientButton";
 
 import type { NormalizedQueueItem } from "@/lib/queue/normalize-queue";
 import { useQueueActions } from "@/hooks/queues/use-queue-actions";
@@ -138,21 +139,12 @@ const QueueBoard = ({ queue, isLoading }: Props) => {
                     <div className="flex items-center gap-1.5 border-t border-slate-100/70 pt-2.5 bg-white">
                       {/* 1. WAITING ACTIONS: Call Announcement */}
                       {row.status === "WAITING" && (
-                        <Button
-                          size="sm"
-                          disabled={loading}
-                          onClick={() =>
-                            callQueue({ path: { queue_id: row.queueId } })
-                          }
+                        <CallPatientButton
+                          queueId={row.queueId}
+                          tokenNumber={row.tokenNumber}
                           className="h-8 rounded-lg text-xs font-bold bg-brand-700 hover:bg-brand-800 text-white gap-1.5 flex-1 shadow-3xs"
-                        >
-                          {loading ? (
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <Phone className="h-3.5 w-3.5" />
-                          )}
-                          <span>Announce Token</span>
-                        </Button>
+                          loading={loading}
+                        />
                       )}
 
                       {/* 2. CALLED ACTIONS: Process Admission / Skip Sequence */}
@@ -161,8 +153,10 @@ const QueueBoard = ({ queue, isLoading }: Props) => {
                           <Button
                             size="sm"
                             disabled={loading}
-                            onClick={() =>
-                              callQueue({ path: { queue_id: row.queueId } })
+                            onClick={async () =>
+                              await callQueue({
+                                path: { queue_id: row.queueId }
+                              })
                             }
                             className="h-8 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 flex-1 shadow-3xs"
                           >

@@ -6,22 +6,15 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 
 interface AnalyticsCardProps {
   title: string;
-
   value: string | number;
-
   icon: LucideIcon;
-
   description?: string;
-
   trend?: {
     value: string;
     direction?: "up" | "down" | "neutral";
   };
-
   className?: string;
-
   loading?: boolean;
-
   priority?: "high" | "critical";
 }
 
@@ -32,10 +25,10 @@ const trendStyles = {
 };
 
 const priorityStyles = {
-    high: "text-red-400",
-    critical: "text-red-700",
-    normal: "text-emerald-600",
-}
+  high: "text-red-400",
+  critical: "text-red-700",
+  normal: "text-emerald-600",
+};
 
 const AnalyticsCard = ({
   title,
@@ -49,66 +42,66 @@ const AnalyticsCard = ({
 }: AnalyticsCardProps) => {
   if (loading) {
     return (
-      <Card className={cn("rounded-2xl", className)}>
-        <CardContent className="p-5 space-y-4">
-          <div className="h-4 w-28 rounded bg-muted animate-pulse" />
-          <div className="h-8 w-24 rounded bg-muted animate-pulse" />
-          <div className="h-3 w-36 rounded bg-muted animate-pulse" />
+      <Card className={cn("rounded-xl", className)}>
+        <CardContent className="p-3.5 space-y-2.5">
+          <div className="h-3 w-20 rounded bg-muted animate-pulse" />
+          <div className="h-6 w-16 rounded bg-muted animate-pulse" />
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className={cn("rounded-2xl border-border/60 shadow-sm", className)}>
-      <CardContent className="p-5">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
+    <Card className={cn("rounded-xl border-border/60 shadow-sm", className)}>
+      <CardContent className="p-3.5">
+        <div className="flex items-start justify-between gap-2">
+          <div className="space-y-0.5 min-w-0">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-semibold truncate">
               {title}
             </p>
-
-            <h3 className="text-3xl font-bold tracking-tight">{value}</h3>
+            <h3 className="text-xl font-bold tracking-tight">{value}</h3>
           </div>
 
-          <div className="rounded-xl bg-brand-50 p-2">
-            <Icon className={cn("h-5 w-5 text-primary",
-            priorityStyles[priority ?? "normal"],
-            )} />
+          <div className="rounded-lg bg-brand-50 p-1.5 shrink-0">
+            <Icon
+              className={cn(
+                "h-3.5 w-3.5 text-primary",
+                priorityStyles[priority ?? "normal"],
+              )}
+            />
           </div>
         </div>
 
         {(trend || description) && (
-          <div className="mt-4 flex items-center gap-2 text-sm">
+          <div className="mt-2 flex items-center gap-1.5 text-[11px]">
             {trend && (
               <div
                 className={cn(
-                  "flex items-center gap-1",
+                  "flex items-center gap-0.5 font-medium",
                   trendStyles[trend.direction ?? "neutral"],
                 )}
               >
-                {trend.direction === "up" && <TrendingUp className="h-4 w-4" />}
-
-                {trend.direction === "down" && (
-                  <TrendingDown className="h-4 w-4" />
-                )}
-
+                {trend.direction === "up" && <TrendingUp className="h-3 w-3" />}
+                {trend.direction === "down" && <TrendingDown className="h-3 w-3" />}
                 {trend.value}
               </div>
             )}
 
             {description && (
-                <span className={cn("text-muted-foreground",
-                    priorityStyles[priority ?? "normal"],
-                )}>
-                    {description}
-                </span>
+              <span
+                className={cn(
+                  "text-muted-foreground truncate",
+                  priorityStyles[priority ?? "normal"],
+                )}
+              >
+                {description}
+              </span>
             )}
           </div>
         )}
       </CardContent>
     </Card>
   );
-}
+};
 
 export default AnalyticsCard;

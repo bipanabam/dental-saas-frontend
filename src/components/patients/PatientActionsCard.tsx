@@ -1,9 +1,15 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
+
 import { Calendar, Receipt, CirclePlus, NotebookPen } from "lucide-react";
 
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 const PatientActionsCard = ({ patient }: any) => {
+    const router = useRouter();
   return (
     <Card>
         <CardHeader>
@@ -16,7 +22,11 @@ const PatientActionsCard = ({ patient }: any) => {
                 Start Encounter
             </Button>
 
-            <Button variant="outline" className="w-full border-brand-600">
+            <Button 
+                variant="outline" 
+                className="w-full border-brand-600"
+                onClick={() => router.push(`/appointments/new?patientId=${patient.id}`)}
+            >
                 <CirclePlus className="text-brand-600" />
                 New Appointment
             </Button>

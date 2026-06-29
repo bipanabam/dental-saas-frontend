@@ -224,10 +224,12 @@ export type AppointmentDetail = {
      * Patient Id
      */
     patient_id: string;
+    patient: PatientMini;
     /**
      * Assigned Doctor Id
      */
     assigned_doctor_id: string | null;
+    doctor: AppSchemasCommonDoctorMini | null;
     appointment_type: AppointmentTypeEnum;
     /**
      * Appointment Date
@@ -268,6 +270,14 @@ export type AppointmentDetail = {
      * Updated At
      */
     updated_at: string;
+    /**
+     * Confirmed At
+     */
+    confirmed_at?: string | null;
+    /**
+     * Checked In At
+     */
+    checked_in_at?: string | null;
 };
 
 /**

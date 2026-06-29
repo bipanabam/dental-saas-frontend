@@ -27,10 +27,10 @@ interface PatientTableActionsProps {
 
 export function PatientTableActions({ patient }: PatientTableActionsProps) {
   const router = useRouter();
-const [openEdit, setOpenEdit] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [open, setOpen] = useState(false);
 
-const { data: patientDetail } = usePatientDetail(patient.id);
+  const { data: patientDetail } = usePatientDetail(patient.id);
 
   const deactivatePatient = useDeactivatePatient();
 

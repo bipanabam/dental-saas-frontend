@@ -14,6 +14,10 @@ import {
   walkInAppointmentApiV1AppointmentsWalkInPost,
 } from "@/lib/api";
 
+import {
+  getAppointmentDetailApiV1AppointmentsAppointmentIdGetOptions,
+} from "@/lib/api/@tanstack/react-query.gen";
+
 import type {
   AppointmentReschedule,
   AppointmentFollowUpCreate,
@@ -21,7 +25,7 @@ import type {
 
 import { appointmentQueryOptions } from "./use-appointments";
 
-// Shared error normalizer — matches your useCreateAppointment pattern
+// Shared error normalizer
 function extractError(err: any, fallback: string) {
   return err?.body?.detail ?? err?.detail ?? err?.message ?? fallback;
 }
@@ -35,7 +39,7 @@ function useInvalidateAppointments() {
     qc.invalidateQueries({ queryKey: query.queryKey });
     if (appointmentId) {
       qc.invalidateQueries({
-        queryKey: ["getAppointmentDetailApiV1AppointmentsAppointmentIdGet", { path: { appointment_id: appointmentId } }],
+        queryKey: [getAppointmentDetailApiV1AppointmentsAppointmentIdGetOptions, { path: { appointment_id: appointmentId } }],
       });
     }
   };
@@ -71,7 +75,7 @@ export function useCheckInAppointment() {
     },
     onSuccess: (data, appointmentId) => {
       invalidate(appointmentId);
-      toast.success(`Checked in — token #${data?.token_number}`);
+      toast.success(`Checked in: token #${data?.token_number}`);
     },
     onError: (err: any) => toast.error(extractError(err, "Failed to check in")),
   });

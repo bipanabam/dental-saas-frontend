@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 interface Props {
   children: React.ReactNode;
   className?: string;
@@ -5,10 +7,10 @@ interface Props {
 
 const AnalyticsGrid = ({ children, className }: Props) => {
   return (
-    <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-4 ${className}`}>
+    <div className={cn("grid gap-3 sm:grid-cols-2 lg:grid-cols-4", className)}>
       {children}
     </div>
   );
-}
+};
 
 export default AnalyticsGrid;

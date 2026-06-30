@@ -11,6 +11,8 @@ export interface NormalizedQueueItem {
   chiefComplaint: string | null;
   appointmentType: string;
   doctorUsername: string | null;
+  calledAt: string | null; 
+  startedAt: string | null;
 }
 
 export function normalizeTodaysItem(item: TodaysQueueListItem): NormalizedQueueItem {
@@ -25,6 +27,8 @@ export function normalizeTodaysItem(item: TodaysQueueListItem): NormalizedQueueI
     chiefComplaint: item.appointment.chief_complaint ?? null,
     appointmentType: item.appointment.appointment_type,
     doctorUsername: item.appointment.doctor?.username ?? null,
+    calledAt: item.queue.called_at ?? null,
+    startedAt: item.queue.started_at ?? null,
   };
 }
 
@@ -40,5 +44,7 @@ export function normalizeDoctorItem(item: DoctorQueueListItem): NormalizedQueueI
     chiefComplaint: item.chief_complaint ?? null,
     appointmentType: item.appointment_type,
     doctorUsername: null,                 // filtered to one doctor already
+    calledAt: item.called_at ?? null,
+    startedAt: item.started_at ?? null,
   };
 }

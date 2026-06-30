@@ -920,6 +920,14 @@ export type DoctorQueueListItem = {
      * Chief Complaint
      */
     chief_complaint: string | null;
+    /**
+     * Called At
+     */
+    called_at: string | null;
+    /**
+     * Started At
+     */
+    started_at: string | null;
 };
 
 /**
@@ -2131,6 +2139,7 @@ export type PatientListResponse = {
      * Items
      */
     items: Array<PatientListItem>;
+    stats: PatientStats;
     /**
      * Total
      */
@@ -2287,6 +2296,32 @@ export type PatientResponse = {
      * Last Visit At
      */
     last_visit_at: string | null;
+};
+
+/**
+ * PatientStats
+ */
+export type PatientStats = {
+    /**
+     * Total
+     */
+    total?: number;
+    /**
+     * Active
+     */
+    active?: number;
+    /**
+     * Inactive
+     */
+    inactive?: number;
+    /**
+     * Blacklisted
+     */
+    blacklisted?: number;
+    /**
+     * New This Month
+     */
+    new_this_month?: number;
 };
 
 /**
@@ -2768,9 +2803,45 @@ export type QueueMini = {
 };
 
 /**
+ * QueueOrderCheckResponse
+ */
+export type QueueOrderCheckResponse = {
+    /**
+     * Is Next In Line
+     */
+    is_next_in_line: boolean;
+    /**
+     * Waiting Ahead Count
+     */
+    waiting_ahead_count: number;
+};
+
+/**
  * QueueStatusEnum
  */
 export type QueueStatusEnum = 'WAITING' | 'CALLED' | 'IN_PROGRESS' | 'COMPLETED' | 'NO_SHOW' | 'CANCELLED' | 'SKIPPED';
+
+/**
+ * QueueWaitEstimateItem
+ */
+export type QueueWaitEstimateItem = {
+    /**
+     * Queue Id
+     */
+    queue_id: string;
+    /**
+     * Token Number
+     */
+    token_number: number;
+    /**
+     * Patients Ahead
+     */
+    patients_ahead: number;
+    /**
+     * Estimated Wait Mins
+     */
+    estimated_wait_mins: number;
+};
 
 /**
  * QueueWaitEstimateResponse
@@ -2788,6 +2859,16 @@ export type QueueWaitEstimateResponse = {
      * Estimated Wait Mins
      */
     estimated_wait_mins: number;
+};
+
+/**
+ * QueueWaitEstimatesResponse
+ */
+export type QueueWaitEstimatesResponse = {
+    /**
+     * Items
+     */
+    items: Array<QueueWaitEstimateItem>;
 };
 
 /**
@@ -5244,6 +5325,36 @@ export type CreatePatientApiV1PatientsPostResponses = {
 
 export type CreatePatientApiV1PatientsPostResponse = CreatePatientApiV1PatientsPostResponses[keyof CreatePatientApiV1PatientsPostResponses];
 
+export type GetPatientStatsApiV1PatientsStatsGetData = {
+    body?: never;
+    path?: never;
+    query: {
+        /**
+         * Query
+         */
+        query: string;
+    };
+    url: '/api/v1/patients/stats';
+};
+
+export type GetPatientStatsApiV1PatientsStatsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetPatientStatsApiV1PatientsStatsGetError = GetPatientStatsApiV1PatientsStatsGetErrors[keyof GetPatientStatsApiV1PatientsStatsGetErrors];
+
+export type GetPatientStatsApiV1PatientsStatsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: PatientStats;
+};
+
+export type GetPatientStatsApiV1PatientsStatsGetResponse = GetPatientStatsApiV1PatientsStatsGetResponses[keyof GetPatientStatsApiV1PatientsStatsGetResponses];
+
 export type SearchPatientsApiV1PatientsSearchGetData = {
     body?: never;
     path?: never;
@@ -6435,6 +6546,36 @@ export type GetQueueForDoctorApiV1QueueDoctorsDoctorIdTodayGetResponses = {
 
 export type GetQueueForDoctorApiV1QueueDoctorsDoctorIdTodayGetResponse = GetQueueForDoctorApiV1QueueDoctorsDoctorIdTodayGetResponses[keyof GetQueueForDoctorApiV1QueueDoctorsDoctorIdTodayGetResponses];
 
+export type CheckCallOrderApiV1QueueQueueIdCheckOrderGetData = {
+    body?: never;
+    path: {
+        /**
+         * Queue Id
+         */
+        queue_id: string;
+    };
+    query?: never;
+    url: '/api/v1/queue/{queue_id}/check-order';
+};
+
+export type CheckCallOrderApiV1QueueQueueIdCheckOrderGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CheckCallOrderApiV1QueueQueueIdCheckOrderGetError = CheckCallOrderApiV1QueueQueueIdCheckOrderGetErrors[keyof CheckCallOrderApiV1QueueQueueIdCheckOrderGetErrors];
+
+export type CheckCallOrderApiV1QueueQueueIdCheckOrderGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: QueueOrderCheckResponse;
+};
+
+export type CheckCallOrderApiV1QueueQueueIdCheckOrderGetResponse = CheckCallOrderApiV1QueueQueueIdCheckOrderGetResponses[keyof CheckCallOrderApiV1QueueQueueIdCheckOrderGetResponses];
+
 export type CallForNextPatientApiV1QueueQueueIdCallPostData = {
     body?: never;
     path: {
@@ -6524,6 +6665,36 @@ export type RecallSkippedTokenApiV1QueueQueueIdRecallPostResponses = {
 };
 
 export type RecallSkippedTokenApiV1QueueQueueIdRecallPostResponse = RecallSkippedTokenApiV1QueueQueueIdRecallPostResponses[keyof RecallSkippedTokenApiV1QueueQueueIdRecallPostResponses];
+
+export type GetWaitEstimatesApiV1QueueWaitEstimatesGetData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Doctor Id
+         */
+        doctor_id?: string | null;
+    };
+    url: '/api/v1/queue/wait-estimates';
+};
+
+export type GetWaitEstimatesApiV1QueueWaitEstimatesGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetWaitEstimatesApiV1QueueWaitEstimatesGetError = GetWaitEstimatesApiV1QueueWaitEstimatesGetErrors[keyof GetWaitEstimatesApiV1QueueWaitEstimatesGetErrors];
+
+export type GetWaitEstimatesApiV1QueueWaitEstimatesGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: QueueWaitEstimatesResponse;
+};
+
+export type GetWaitEstimatesApiV1QueueWaitEstimatesGetResponse = GetWaitEstimatesApiV1QueueWaitEstimatesGetResponses[keyof GetWaitEstimatesApiV1QueueWaitEstimatesGetResponses];
 
 export type GetEstimatedWaitApiV1QueueQueueIdEstimatedWaitGetData = {
     body?: never;

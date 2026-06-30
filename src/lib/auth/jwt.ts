@@ -7,7 +7,7 @@ export type AccessTokenPayload = {
 }
 
 
-// Utility — decode JWT payload without verification (safe: we only use this
+// Utility -> decode JWT payload without verification (safe: we only use this
 // for claims we just received from our own trusted backend).
 export function decodeJwtPayload(
   token: string

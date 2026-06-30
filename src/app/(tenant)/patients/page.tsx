@@ -58,8 +58,9 @@ const PatientsPage = () => {
     data: allPatients,
     isLoading: activeLoading,
   } = usePatients({
-    limit: 20,
-      });
+    limit: 20,});
+
+  const stats = allPatients?.stats;
 
   const {
     data: filteredPatients,
@@ -119,44 +120,30 @@ const PatientsPage = () => {
       <AnalyticsGrid>
         <AnalyticsCard
           title="Total Patients"
-          value={allPatients?.total ?? 0}
+          value={stats?.total ?? 0}
           icon={Users}
-          trend={{
-            value: "+2.4%",
-            direction: "up",
-          }}
-          description="vs last month"
         />
         <AnalyticsCard
           title="New This Month"
-          value={342}
+          value={stats?.new_this_month ?? 0}
           icon={UserPlus}
-          trend={{
-            value: "12 today",
-            direction: "up",
-          }}
         />
         <AnalyticsCard
           title="Active Patients"
-          value={221}
+          value={stats?.active ?? 0}
           icon={Activity}
-          description="Currently in treatment"
         />
-        <AnalyticsCard
+        {/* <AnalyticsCard
           title="Emergency"
           value={12}
           icon={Asterisk}
           description="Action required"
           priority="critical"
-        />
+        /> */}
         <AnalyticsCard
           title="Flagged"
-          value={12}
+          value={stats?.blacklisted ?? 0}
           icon={ShieldAlert}
-          trend={{
-            value: "-3",
-            direction: "down",
-          }}
           priority="high"
         />
       </AnalyticsGrid>

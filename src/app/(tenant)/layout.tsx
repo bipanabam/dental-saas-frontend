@@ -15,7 +15,7 @@ export default async function DashboardLayout({
 }>) {
   const session = await getSession();
 
-  if (!session) {
+  if (!session || session.error === "RefreshTokenExpired") {
     redirect("/login");
   }
 

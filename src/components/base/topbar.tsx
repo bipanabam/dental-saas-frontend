@@ -4,7 +4,7 @@ import { Bell, ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { useTenant } from "@/providers/tenant-provider";
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,6 +14,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useTenant } from "@/providers/tenant-provider";
+import { logout } from "@/app/actions/logout";
+
 const TopBar = () => {
     const { session } = useTenant();
     const userEmail = session?.user?.email || "user@clinic.com";
@@ -21,16 +24,13 @@ const TopBar = () => {
 
     return (
         <header className="sticky top-0 z-40 h-16 w-full border-b bg-white/80 backdrop-blur-md flex items-center justify-between px-6 transition-all">
-            {/* Left side: Tenant Info */}
             <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold bg-brand-50 text-brand-700 px-2.5 py-1 rounded-md border border-brand-100 uppercase tracking-wider">
                     {session?.user?.tenantName || "Clinic"} Workspace
                 </span>
             </div>
 
-            {/* Right side: Actions & Workspace controls */}
             <div className="flex items-center gap-3">
-                {/* Notification Bell */}
                 <Button variant="ghost" size="icon" className="relative text-slate-500 hover:text-slate-900 hover:bg-brand-50 rounded-xl h-10 w-10">
                     <Bell className="h-5 w-5" />
                     <span className="absolute top-2.5 right-2.5 h-2 w-2 rounded-full bg-brand-600 ring-2 ring-white" />
@@ -38,7 +38,6 @@ const TopBar = () => {
 
                 <Separator orientation="vertical" className="h-6 bg-slate-200" />
 
-                {/* User Workspace Profiles */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-11 gap-2.5 px-2 hover:bg-slate-50 rounded-xl transition-all data-[state=open]:bg-slate-50">
@@ -64,8 +63,20 @@ const TopBar = () => {
                         <DropdownMenuItem className="rounded-lg text-slate-700 focus:bg-slate-50 cursor-pointer text-sm py-2">Profile Details</DropdownMenuItem>
                         <DropdownMenuItem className="rounded-lg text-slate-700 focus:bg-slate-50 cursor-pointer text-sm py-2">Clinic Settings</DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-slate-100 my-1" />
-                        <DropdownMenuItem className="rounded-lg text-red-600 focus:bg-red-50 focus:text-red-700 cursor-pointer text-sm py-2">
-                            Sign Out
+                        <DropdownMenuItem
+                            asChild
+                            className="rounded-lg text-red-600 focus:bg-red-50 focus:text-red-700 cursor-pointer text-sm py-2 p-0"
+                            onSelect={(e) => e.preventDefault()}
+                        >
+                            <form action={logout}>
+                                <Button
+                                    type="submit"
+                                    variant="ghost"
+                                    className="w-full justify-start"
+                                >
+                                    Sign Out
+                                </Button>
+                            </form>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

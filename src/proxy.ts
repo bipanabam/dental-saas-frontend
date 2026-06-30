@@ -14,12 +14,17 @@ const PUBLIC_PATHS = [
   "/login",
   "/register",
   "/forgot-password",
-
   "/redirect-to-tenant",
 ];
 
+
 /** Static assets and Next.js internals — skip middleware entirely */
-const SKIP_PREFIXES = ["/_next", "/favicon", "/api/auth"];
+const SKIP_PREFIXES = [
+  "/_next",
+  "/favicon",
+  "/api/auth",
+];
+
 
 // Helpers
 function isPublicPath(pathname: string): boolean {
@@ -32,11 +37,7 @@ function shouldSkip(pathname: string): boolean {
   return SKIP_PREFIXES.some((p) => pathname.startsWith(p));
 }
 
-/**
- * Derive subdomain from the request hostname.
- * Production:  clinic-a.buddhadental.com  →  "clinic-a"
- * Development: clinic-a.app.local:3000    →  "clinic-a"
- */
+/** Derive subdomain from the request hostname.*/
 function getSubdomain(hostname: string): string | null {
   // Strip port
   const host = hostname.split(":")[0];
@@ -48,7 +49,6 @@ function getSubdomain(hostname: string): string | null {
   }
 
   const sub = host.replace(suffix, "");
-
   return sub === "www" ? null : sub;
 }
 
@@ -64,6 +64,28 @@ function buildLoginUrl(request: NextRequest) {
   }
 
   return url.toString();
+}
+
+function clearAuthCookies(
+  response: NextResponse
+) {
+  const names = [
+    "authjs.session-token",
+    "__Secure-authjs.session-token",
+  ];
+
+  for (const name of names) {
+    response.cookies.set(name, "", {
+      expires: new Date(0),
+      path: "/",
+      domain: appConfig.cookieDomain,
+    });
+
+    response.cookies.set(name, "", {
+      expires: new Date(0),
+      path: "/",
+    });
+  }
 }
 
 // Middleware
@@ -85,13 +107,23 @@ export default auth(function proxy(request) {
     return NextResponse.next();
   }
 
+  if (
+    pathname === "/login" &&
+    request.nextUrl.searchParams.has("clearAuth")
+  ) {
+    const response = NextResponse.next();
+
+    clearAuthCookies(response);
+
+    return response;
+  }
+
   // 2. If the session has a refresh token error, force re-login from any page
   if (session?.error === "RefreshTokenExpired") {
     const loginUrl = buildLoginUrl(request);
     const response = NextResponse.redirect(loginUrl);
     // Clear the stale session cookie
-    response.cookies.delete("authjs.session-token");
-    response.cookies.delete("__Secure-authjs.session-token");
+    clearAuthCookies(response);
     return response;
   }
 
@@ -100,8 +132,11 @@ export default auth(function proxy(request) {
     // Authenticated user on login page -> redirect to their tenant dashboard
     if (isAuthenticated && isPublicPath(pathname)) {
       return NextResponse.redirect(
-        buildDashboardUrl(session.user.tenantSlug),
-      );
+      new URL(
+        "/dashboard",
+        appConfig.tenantUrl(session.user.tenantSlug)
+      )
+      )
     }
 
     // Authenticated user at root "/" → redirect to their tenant dashboard

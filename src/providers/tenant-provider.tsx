@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import { useSession } from "next-auth/react";
 
 import type { Session } from "next-auth";
 
@@ -11,18 +12,19 @@ type Context = {
 const TenantContext = createContext<Context | null>(null);
 
 export function TenantProvider({
-  session,
+  session: initialSession,
   children,
 }: {
   session: Session;
   children: React.ReactNode;
 }) {
+  const { data: clientSession } = useSession();
+
+  // Prefer live client session once hydrated, fall back to server-passed initial value
+  const session = clientSession ?? initialSession;
+
   return (
-    <TenantContext.Provider
-      value={{
-        session,
-      }}
-    >
+    <TenantContext.Provider value={{ session }}>
       {children}
     </TenantContext.Provider>
   );

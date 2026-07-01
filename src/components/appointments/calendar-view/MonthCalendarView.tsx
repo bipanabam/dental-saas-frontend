@@ -15,7 +15,7 @@ import {
     startOfWeek,
     subMonths,
 } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -30,6 +30,8 @@ import type { AppointmentListItem } from "@/lib/api";
 interface MonthCalendarViewProps {
     appointments: AppointmentListItem[];
     onAppointmentClick?: (appointment: AppointmentListItem) => void;
+    onRequestBooking?: (date: Date) => void;
+    isFetching?: boolean;
 }
 
 const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -49,6 +51,8 @@ import StatusLegend from "./StatusLegend";
 export default function MonthCalendarView({
     appointments,
     onAppointmentClick,
+    onRequestBooking,
+    isFetching = false,
 }: MonthCalendarViewProps) {
     const [monthAnchor, setMonthAnchor] = useState(() => new Date());
     const [selectedDay, setSelectedDay] = useState<Date | null>(null);
@@ -89,6 +93,11 @@ export default function MonthCalendarView({
     return (
         <>
             <Card className="overflow-hidden">
+                {isFetching && (
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-brand-100 overflow-hidden z-10">
+                        <div className="h-full w-1/3 bg-brand-600 animate-[shimmer_1.2s_ease-in-out_infinite]" />
+                    </div>
+                )}
                 <div className="flex items-center justify-between px-4 py-3 border-b">
                     <div className="flex items-center gap-1">
                         <Button
@@ -147,19 +156,27 @@ export default function MonthCalendarView({
                         const visible = dayAppointments.slice(0, MAX_VISIBLE_PER_DAY);
                         const overflowCount = dayAppointments.length - visible.length;
                         const inCurrentMonth = isSameMonth(day, monthAnchor);
+                        const isEmpty = dayAppointments.length === 0;
 
                         return (
                             <button
                                 key={key}
                                 type="button"
-                                onClick={() => dayAppointments.length > 0 && setSelectedDay(day)}
+                                onClick={() => {
+                                    if (isEmpty) {
+                                        if (inCurrentMonth) onRequestBooking?.(day);
+                                    } else {
+                                        setSelectedDay(day);
+                                    }
+                                }}
                                 className={cn(
                                     "min-h-22.5 border-b border-r p-1.5 text-left flex flex-col gap-1 transition-colors",
                                     "hover:bg-slate-50 disabled:cursor-default",
                                     !inCurrentMonth && "bg-slate-50/50",
+                                    isEmpty && !inCurrentMonth && "cursor-default",
                                 )}
-                                disabled={dayAppointments.length === 0}
                             >
+                                <div className="flex items-center justify-between">
                                 <span
                                     className={cn(
                                         "h-5 w-5 flex items-center justify-center rounded-full text-[11px] font-bold",
@@ -170,6 +187,10 @@ export default function MonthCalendarView({
                                 >
                                     {format(day, "d")}
                                 </span>
+                                {isEmpty && inCurrentMonth && (
+                                    <Plus className="h-3.5 w-3.5 text-slate-300 opacity-0 group-hover:opacity-100 group-hover:text-brand-600 transition-opacity" />
+                                )}
+                                </div>
 
                                 <div className="flex flex-col gap-0.5">
                                     {visible.map((appt) => (
@@ -207,6 +228,7 @@ export default function MonthCalendarView({
                     if (!open) setSelectedDay(null);
                 }}
                 onAppointmentClick={onAppointmentClick}
+                onRequestBooking={onRequestBooking}
             />
         </>
     );

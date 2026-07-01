@@ -18,7 +18,7 @@ import AppointmentBoard from "@/components/dashboard/shared/AppointmentBoard";
 import QueueBoard, { type QueueBoardItem } from "@/components/dashboard/shared/QueueBoard";
 import QuickActions, { type QuickAction } from "@/components/dashboard/shared/QuickActions";
 import PendingTaskRail from "../shared/PendingTaskRail";
-import PatientSelectDialog from "@/components/appointments/PatientSelectDialog";
+import PatientSelectDialog from "@/components/appointments/shared/PatientSelectDialog";
 import WalkInDialog from "../shared/WalkInDialog";
 import RescheduleDialog from "@/components/appointments/RescheduleDialog";
 import FollowUpDialog from "@/components/appointments/FollowUpDialog";

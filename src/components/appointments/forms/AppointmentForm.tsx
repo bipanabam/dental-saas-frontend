@@ -43,6 +43,7 @@ type CreateProps = {
     patientId: string;
     appointmentId?: never;
     initialValues?: never;
+    initialDate?: string; // "YYYY-MM-DD" from calendar-driven booking, optional
     onSuccess?: (id: string) => void;
 };
 
@@ -51,6 +52,7 @@ type EditProps = {
     patientId: string;
     appointmentId: string;
     initialValues: AppointmentDetail;
+    initialDate?: never;
     onSuccess?: (id: string) => void;
 };
 
@@ -60,11 +62,12 @@ type Props = CreateProps | EditProps;
 function toFormValues(
     patientId: string,
     initial?: AppointmentDetail,
+    initialDate?: string,
 ): AppointmentFormInput {
     if (!initial) {
         return {
             patient_id: patientId,
-            appointment_date: "", 
+            appointment_date: initialDate ? `${initialDate}T09:00` : "", 
             duration_minutes: 0,
             appointment_type: "BOOKED",
             source: "FRONT_DESK",
@@ -103,6 +106,7 @@ export default function AppointmentForm({
     patientId,
     appointmentId,
     initialValues,
+    initialDate,
     onSuccess,
 }: Props) {
     const router = useRouter();
@@ -125,7 +129,7 @@ export default function AppointmentForm({
         reset,
     } = useForm<AppointmentFormInput, any, AppointmentInputs>({
         resolver: zodResolver(appointmentSchema),
-        defaultValues: toFormValues(patientId, initialValues),
+        defaultValues: toFormValues(patientId, initialValues, initialDate),
     });
 
     // In edit mode the parent fetches appointment asynchronously, so

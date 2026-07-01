@@ -9,6 +9,8 @@ import {
     User, Phone, ChevronLeft, Loader2,
     Clock, Calendar,
 } from "lucide-react";
+import { z } from "zod";
+import { format } from "date-fns";
 
 import {
     Dialog, DialogContent, DialogHeader,
@@ -28,7 +30,6 @@ import {
     type PatientCreateInputs,
 } from "@/lib/schemas/patient";
 
-import { z } from "zod";
 
 
 // Minimal quick-create schema
@@ -260,9 +261,10 @@ type View = "search" | "create";
 type Props = {
     open: boolean;
     onOpenChange: (v: boolean) => void;
+    initialDate?: Date;
 };
 
-export default function PatientSelectDialog({ open, onOpenChange }: Props) {
+export default function PatientSelectDialog({ open, onOpenChange, initialDate }: Props) {
     const router = useRouter();
     const [view, setView] = useState<View>("search");
     const [query, setQuery] = useState("");
@@ -288,7 +290,11 @@ export default function PatientSelectDialog({ open, onOpenChange }: Props) {
 
     const handleSelect = (patientId: string) => {
         onOpenChange(false);
-        router.push(`/appointments/new?patientId=${patientId}`);
+        const params = new URLSearchParams({ patientId });
+        if (initialDate) {
+            params.set("date", format(initialDate, "yyyy-MM-dd"));
+        }
+        router.push(`/appointments/new?${params.toString()}`);
     };
 
     return (
@@ -301,7 +307,9 @@ export default function PatientSelectDialog({ open, onOpenChange }: Props) {
                     </DialogTitle>
                     <DialogDescription className="text-xs">
                         {view === "search"
-                            ? "Search for an existing patient or register a new one."
+                            ? initialDate
+                                ? `Booking for ${format(initialDate, "EEEE, MMM d")}. Search for an existing patient or register a new one.`
+                                : "Search for an existing patient or register a new one."
                             : "Enter minimum details to register and proceed."}
                     </DialogDescription>
                 </DialogHeader>

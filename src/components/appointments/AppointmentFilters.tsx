@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import DateRangeFilter from "@/components/shared/DateRangeFilter";
 import { useDoctors } from "@/hooks/users/use-doctors";
 import type { AppointmentFilters } from "./types/appointment-filter";
+import { STATUS_FILTER_OPTIONS, SOURCE_FILTER_OPTIONS, TYPE_FILTER_OPTIONS } from "@/types/appointments";
 
 type Props = {
     filters: AppointmentFilters;
@@ -82,13 +83,9 @@ export default function AppointmentFilters({ filters, onChange }: Props) {
                         </SelectTrigger>
                         <SelectContent className="text-xs">
                             <SelectItem value="ALL" className="text-slate-500 font-medium">All Statuses</SelectItem>
-                            <SelectItem value="BOOKED">Booked</SelectItem>
-                            <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-                            <SelectItem value="CHECKED_IN">Checked In</SelectItem>
-                            <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-                            <SelectItem value="COMPLETED">Completed</SelectItem>
-                            <SelectItem value="NO_SHOW">No Show</SelectItem>
-                            <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                            {STATUS_FILTER_OPTIONS.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
 
@@ -102,14 +99,12 @@ export default function AppointmentFilters({ filters, onChange }: Props) {
                         </SelectTrigger>
                         <SelectContent className="text-xs">
                             <SelectItem value="ALL" className="text-slate-500 font-medium">All Sources</SelectItem>
-                            <SelectItem value="ONLINE">Online Portal</SelectItem>
-                            <SelectItem value="PHONE">Phone Call</SelectItem>
-                            <SelectItem value="WALK_IN">Walk-In</SelectItem>
-                            <SelectItem value="WHATSAPP">WhatsApp</SelectItem>
-                            <SelectItem value="INSTAGRAM">Instagram</SelectItem>
-                            <SelectItem value="FRONT_DESK">Front Desk</SelectItem>
+                            {SOURCE_FILTER_OPTIONS.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
+
 
                     {/* Type */}
                     <Select
@@ -121,10 +116,9 @@ export default function AppointmentFilters({ filters, onChange }: Props) {
                         </SelectTrigger>
                         <SelectContent className="text-xs">
                             <SelectItem value="ALL" className="text-slate-500 font-medium">All Types</SelectItem>
-                            <SelectItem value="BOOKED">Standard Booking</SelectItem>
-                            <SelectItem value="WALK_IN">Walk-In Urgent</SelectItem>
-                            <SelectItem value="FOLLOW_UP">Clinical Follow-Up</SelectItem>
-                            <SelectItem value="RESCHEDULED">Rescheduled</SelectItem>
+                            {TYPE_FILTER_OPTIONS.map((opt) => (
+                                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                            ))}
                         </SelectContent>
                     </Select>
 

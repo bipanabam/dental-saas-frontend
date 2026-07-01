@@ -12,6 +12,9 @@ import { Edit3, Phone, Stethoscope, FileText, Tag } from "lucide-react";
 import { useAppointmentDetail } from "@/hooks/appointments/use-appointments";
 import { getStatusConfig, getSourceConfig } from "@/types/appointments";
 import { cn } from "@/lib/utils";
+import { getDoctorDisplayName } from "@/lib/utils/doctor";
+
+import AppointmentActionBar from "../shared/AppointmentActionBar";
 
 import type { AppointmentListItem } from "@/lib/api";
 
@@ -40,15 +43,12 @@ function DetailRow({
         </div>
     );
 }
-
 export default function AppointmentDetailContent({
     appointment,
 }: AppointmentDetailContentProps) {
     const router = useRouter();
 
-    // Silent upgrade: this refetches the full detail in the background.
     const { data: detail } = useAppointmentDetail(appointment.id);
-
     const current = detail ?? appointment;
 
     const apptDate = parseISO(current.appointment_date);
@@ -58,25 +58,19 @@ export default function AppointmentDetailContent({
     return (
         <div className="flex flex-col h-full">
             <div className="flex-1 overflow-y-auto px-1">
-                {/* Patient header */}
-                <div className="pb-4 border-b border-slate-100">
-                    <p className="text-lg font-bold text-slate-900">
-                        {appointment.patient.first_name} {appointment.patient.last_name}
-                    </p>
-                    <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs font-mono text-slate-400">
-                            {appointment.patient.patient_code}
-                        </span>
-                        {appointment.patient.phone && (
-                            <>
-                                <span className="text-slate-300">•</span>
-                                <span className="flex items-center gap-1 text-xs text-slate-500">
-                                    <Phone className="h-3 w-3" />
-                                    {appointment.patient.phone}
-                                </span>
-                            </>
-                        )}
-                    </div>
+                <div className="flex items-center gap-2 pb-4 border-b border-slate-100 text-xs text-slate-500">
+                    <span className="font-mono text-slate-400">
+                        {appointment.patient.patient_code}
+                    </span>
+                    {appointment.patient.phone && (
+                        <>
+                            <span className="text-slate-300">•</span>
+                            <span className="flex items-center gap-1">
+                                <Phone className="h-3 w-3" />
+                                {appointment.patient.phone}
+                            </span>
+                        </>
+                    )}
                 </div>
 
                 {/* Status + source */}
@@ -101,7 +95,7 @@ export default function AppointmentDetailContent({
                 <DetailRow
                     icon={Stethoscope}
                     label="Provider"
-                    value={appointment.doctor?.email?.split("@")[0] ?? "Unassigned"}
+                    value={getDoctorDisplayName(appointment.doctor)}
                 />
 
                 <DetailRow
@@ -134,10 +128,13 @@ export default function AppointmentDetailContent({
             </div>
 
             {/* Footer action */}
-            <div className="pt-4 border-t border-slate-100 mt-4">
+            <div className="pt-4 border-t border-slate-100 mt-4 space-y-3">
+                <AppointmentActionBar appointment={current} />
+
                 <Button
+                    variant="outline"
                     className="w-full gap-2"
-                    onClick={() => router.push(`/appointments?id=${current.id}`)}
+                    onClick={() => router.push(`/appointments/${current.id}/edit`)}
                 >
                     <Edit3 className="h-4 w-4" />
                     Edit Appointment

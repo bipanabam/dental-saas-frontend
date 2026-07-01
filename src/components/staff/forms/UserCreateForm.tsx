@@ -74,6 +74,8 @@ export default function UserCreateForm({ onSuccess, onCancel }: Props) {
     defaultValues: {
       email: "",
       username: "",
+      first_name: "",
+      last_name: "",
       password: "",
       phone_number: "",
       role: "receptionist",
@@ -115,6 +117,23 @@ export default function UserCreateForm({ onSuccess, onCancel }: Props) {
               {...register("email")}
               disabled={disabled}
               placeholder="user@clinic.com"
+            />
+          </Field>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="First Name" error={errors.first_name?.message}>
+            <Input
+              {...register("first_name")}
+              disabled={disabled}
+              placeholder="John"
+            />
+          </Field>
+
+          <Field label="Last Name" error={errors.last_name?.message}>
+            <Input
+              {...register("last_name")}
+              disabled={disabled}
+              placeholder="Doe"
             />
           </Field>
         </div>

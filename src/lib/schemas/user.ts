@@ -59,6 +59,9 @@ export const userCreateFormSchema = z.object({
   email:  requiredEmail,
   username: z.string().trim().min(1, "Username is required"),
 
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+
   password: z.string().min(8, "Password must be at least 8 characters"),
   phone_number: nepalPhoneSchema,
   role: RoleEnum.default("receptionist"),
@@ -71,6 +74,8 @@ export type UserCreateInputs = z.output<typeof userCreateFormSchema>;
 export const userUpdateFormSchema = z.object({
   email: optionalEmail,
   username: z.string().trim().min(1, "Username is required").optional(),
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
   phone_number: nepalPhoneSchema,
   role: RoleEnum.optional(),
   is_active: z.boolean().optional(),

@@ -21,6 +21,7 @@ import {
 import type {
   AppointmentReschedule,
   AppointmentFollowUpCreate,
+  AppointmentStatusEnum,
 } from "@/lib/api";
 
 import { appointmentQueryOptions } from "./use-appointments";
@@ -144,6 +145,7 @@ export function useRescheduleAppointment() {
     }: {
       appointmentId: string;
       payload: AppointmentReschedule;
+      previousStatus?: AppointmentStatusEnum;
     }) => {
       const res = await rescheduleAppointmentApiV1AppointmentsAppointmentIdReschedulePost({
         path: { appointment_id: appointmentId },
@@ -154,7 +156,11 @@ export function useRescheduleAppointment() {
     },
     onSuccess: (_data, vars) => {
       invalidate(vars.appointmentId);
-      toast.success("Appointment rescheduled.");
+      toast.success(
+        vars.previousStatus === "CONFIRMED"
+          ? "Rescheduled — appointment reset to Booked, please reconfirm."
+          : "Appointment rescheduled."
+      );
     },
     onError: (err: any) => toast.error(extractError(err, "Failed to reschedule")),
   });

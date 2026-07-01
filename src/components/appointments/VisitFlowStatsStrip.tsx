@@ -19,9 +19,16 @@ const ITEMS = [
 export default function VisitFlowStatsStrip({ data }: Props) {
     return (
         <div className="flex items-center gap-5 sm:gap-7 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/60 overflow-x-auto">
-            {ITEMS.map(({ key, label, icon: Icon, tone }) => (
+            {ITEMS.map(({ key, label, icon: Icon, tone }) => {
+                const active = (key === "checked_in" || key === "in_progress")
+                return(
                 <div key={key} className="flex items-center gap-2 shrink-0">
-                    <Icon className={cn("h-3.5 w-3.5", tone)} />
+                    <span className="relative flex items-center justify-center">
+                        <Icon className={cn("h-3.5 w-3.5", tone)} />
+                        {active && (
+                            <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                        )}
+                    </span>
                     <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                         {label}
                     </span>
@@ -29,7 +36,7 @@ export default function VisitFlowStatsStrip({ data }: Props) {
                         {data?.[key] ?? 0}
                     </span>
                 </div>
-            ))}
+            )})}
         </div>
     );
 }

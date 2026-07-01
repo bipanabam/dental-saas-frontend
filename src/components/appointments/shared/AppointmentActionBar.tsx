@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     CheckCircle2,
     UserRoundCheck,
@@ -41,9 +42,7 @@ interface AppointmentActionBarProps {
     onActionComplete?: () => void;
 }
 
-const PRIMARY_ACTION_CONFIG: Record<string,
-    { label: string; icon: typeof CheckCircle2 }>
- = {
+const PRIMARY_ACTION_CONFIG: Record<string, { label: string; icon: typeof CheckCircle2 }> = {
     BOOKED: { label: "Confirm", icon: CheckCircle2 },
     CONFIRMED: { label: "Check In", icon: UserRoundCheck },
     CHECKED_IN: { label: "Start Encounter", icon: PlayCircle },
@@ -54,6 +53,7 @@ export default function AppointmentActionBar({
     appointment,
     onActionComplete,
 }: AppointmentActionBarProps) {
+    const router = useRouter();
     const [noShowOpen, setNoShowOpen] = useState(false);
     const [rescheduleOpen, setRescheduleOpen] = useState(false);
 
@@ -81,24 +81,45 @@ export default function AppointmentActionBar({
     const hasSecondaryRow = canReschedule || canNoShow;
 
     const primary = PRIMARY_ACTION_CONFIG[status];
-    const primaryMutation =
-        status === "BOOKED" ? confirmMutation :
-        status === "CONFIRMED" ? checkInMutation :
-        status === "CHECKED_IN" ? startMutation :
-        status === "IN_PROGRESS" ? completeMutation :
-        undefined;
+
+    const handlePrimaryClick = () => {
+        switch (status) {
+            case "BOOKED":
+                confirmMutation.mutate(appointment.id);
+                break;
+            case "CONFIRMED":
+                checkInMutation.mutate(appointment.id);
+                break;
+            case "CHECKED_IN":
+                startMutation.mutate(appointment.id, {
+                    onSuccess: () => {
+                        router.push(`/appointments/${appointment.id}/encounter`);
+                    },
+                });
+                break;
+            case "IN_PROGRESS":
+                completeMutation.mutate(appointment.id);
+                break;
+        }
+    };
+
+    const primaryMutationPending =
+        status === "BOOKED" ? confirmMutation.isPending :
+            status === "CONFIRMED" ? checkInMutation.isPending :
+                status === "CHECKED_IN" ? startMutation.isPending :
+                    status === "IN_PROGRESS" ? completeMutation.isPending :
+                        false;
 
     return (
         <>
             <div className="w-full space-y-2">
-                {/* Primary action — full width, the one thing you probably want to click */}
-                {primary && primaryMutation && (
+                {primary && (
                     <Button
                         className="w-full gap-2"
                         disabled={isPending}
-                        onClick={() => primaryMutation.mutate(appointment.id)}
+                        onClick={handlePrimaryClick}
                     >
-                        {primaryMutation.isPending ? (
+                        {primaryMutationPending ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                             <primary.icon className="h-4 w-4" />
@@ -107,7 +128,6 @@ export default function AppointmentActionBar({
                     </Button>
                 )}
 
-                {/* Secondary action: evenly split, equal width, never wrap oddly */}
                 {hasSecondaryRow && (
                     <div className="grid grid-cols-2 gap-2">
                         {canReschedule && (

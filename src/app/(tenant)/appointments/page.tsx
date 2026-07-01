@@ -87,6 +87,7 @@ function AppointmentsPage() {
                         appointments={appointments}
                         stats={stats}
                         isLoading={isFetching}
+                        onAppointmentClick={setSelectedAppointment}
                     />
                 )}
             </div>

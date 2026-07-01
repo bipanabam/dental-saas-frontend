@@ -26,7 +26,7 @@ export default function AppointmentWorkspacePage({
 }: AppointmentWorkspacePageProps) {
     const router = useRouter();
 
-    // ── Data ──────────────────────────────────────────────────────────────────
+    // Data
     const {
         data: appointment,
         isLoading: apptLoading,
@@ -43,7 +43,7 @@ export default function AppointmentWorkspacePage({
 
     const startMutation = useStartAppointment();
 
-    // ── Derived: total planned cost (for side rail) ────────────────────────────
+    // Derived: total planned cost (for side rail)
     const totalPlannedCost = useMemo(() => {
         return (appointment?.procedures ?? []).reduce(
             (sum, p) => sum + (p.estimated_cost ?? 0),
@@ -51,19 +51,19 @@ export default function AppointmentWorkspacePage({
         );
     }, [appointment?.procedures]);
 
-    // ── Queue entry — present on today's appointments ─────────────────────────
+    // Queue entry — present on today's appointments
     // AppointmentDetail doesn't directly include queue info; it comes from
     // TodaysAppointmentListItem. For now we pass null — wire this when you
     // add a queue lookup or extend AppointmentDetail to include queue status.
     const queueEntry = null;
 
-    // ── Handlers ──────────────────────────────────────────────────────────────
+    // Handlers
     const handleStart = async () => {
         await startMutation.mutateAsync(appointmentId);
         router.push(`/appointments/${appointmentId}/encounter`);
     };
 
-    // ── Loading / error ───────────────────────────────────────────────────────
+    // Loading / error
     if (apptLoading) return <SectionLoader message="Loading appointment…" />;
 
     if (isError || !appointment) {
@@ -82,7 +82,7 @@ export default function AppointmentWorkspacePage({
     return (
         <div className="space-y-4 max-w-5xl mx-auto">
 
-            {/* ── Page header ───────────────────────────────────────────────── */}
+            {/* Page header */}
             <div className="flex items-center justify-between gap-4">
                 <button
                     onClick={() => router.back()}
@@ -111,19 +111,19 @@ export default function AppointmentWorkspacePage({
                 </div>
             </div>
 
-            {/* ── Hero bar — always visible ─────────────────────────────────── */}
+            {/* Hero bar — always visible */}
             <AppointmentHeroBar
                 appointment={appointment}
                 onStart={handleStart}
             />
 
-            {/* ── Timeline — always visible ─────────────────────────────────── */}
+            {/* Timeline — always visible */}
             <AppointmentTimeline
                 appointment={appointment}
                 encounter={encounter ?? null}
             />
 
-            {/* ── Main content grid ─────────────────────────────────────────── */}
+            {/* Main content grid */}
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-4 items-start">
 
                 {/* Left column: primary content */}

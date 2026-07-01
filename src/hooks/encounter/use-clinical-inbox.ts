@@ -36,15 +36,13 @@ export function useClinicalInbox(doctorId?: string, today = true) {
     const { status } = useSession();
     return useQuery({
         ...getClinicalInboxApiV1EncountersInboxGetOptions({
-        query: {
-          doctor_id: doctorId ?? "",
-          today
-        },
-      }),
+            query: {
+            doctor_id: doctorId ?? "",
+            today
+            },
+        }),
   
-        enabled:
-            status === "authenticated" &&
-                !doctorId,
+        enabled: status === "authenticated" && Boolean(doctorId),
         staleTime: 30_000,
     });
 }

@@ -49,6 +49,7 @@ type Props = {
         today?: boolean;
     };
     onFiltersChange: (value: any) => void;
+    showDoctorFilter?: boolean; // NEW
 };
 
 const STATUS_STYLES = {
@@ -69,7 +70,8 @@ const EncounterHistoryTable = ({
     isLoading,
     isFetching,
     filters,
-    onFiltersChange
+    onFiltersChange,
+    showDoctorFilter = true,
 }: Props) => {
     const router = useRouter();
     const rows = encounters ?? [];
@@ -83,6 +85,7 @@ const EncounterHistoryTable = ({
         <EncounterFilters
             filters={filters}
             onChange={onFiltersChange}
+            showDoctorFilter={showDoctorFilter}
         />
         <Card className="rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-0">
             {/* Header */}

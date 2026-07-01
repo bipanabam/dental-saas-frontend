@@ -26,6 +26,8 @@ type Filters = {
 type Props = {
     filters: Filters;
     onChange: (value: Filters) => void;
+    /** Hide the doctor select. */
+    showDoctorFilter?: boolean;
 };
 
 function PatientSearch({
@@ -115,13 +117,13 @@ function PatientSearch({
     );
 }
 
-export default function EncounterFilters({ filters, onChange }: Props) {
+export default function EncounterFilters({ filters, onChange, showDoctorFilter = true, }: Props) {
     const { data: doctorsData } = useDoctors();
     const doctors = (doctorsData as any)?.items ?? doctorsData ?? [];
 
     const activeFilterCount = [
         filters.status,
-        filters.doctor_id,
+        showDoctorFilter ? filters.doctor_id : undefined, // don't count a filter the user can't see/set
         filters.patient_id,
         filters.today,
     ].filter(Boolean).length;
@@ -168,29 +170,31 @@ export default function EncounterFilters({ filters, onChange }: Props) {
                     </SelectContent>
                 </Select>
             </div>
-
-            {/* Doctor — select */}
-            <Select
-                value={filters.doctor_id ?? "all"}
-                onValueChange={(v) =>
-                    onChange({
-                        ...filters,
-                        doctor_id: v === "all" ? undefined : v,
-                    })
-                }
-            >
-                <SelectTrigger className="h-8 rounded-xl text-sm min-w-36 bg-white">
-                    <SelectValue placeholder="All Doctors" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="all">All Doctors</SelectItem>
-                    {doctors.map((d: any) => (
-                        <SelectItem key={d.id} value={d.id}>
-                            {d.username ?? d.email}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+            
+            {/* Doctor — only rendered for admin/receptionist */}
+            {showDoctorFilter && (
+                <Select
+                    value={filters.doctor_id ?? "all"}
+                    onValueChange={(v) =>
+                        onChange({
+                            ...filters,
+                            doctor_id: v === "all" ? undefined : v,
+                        })
+                    }
+                >
+                    <SelectTrigger className="h-8 rounded-xl text-sm min-w-36 bg-white">
+                        <SelectValue placeholder="All Doctors" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Doctors</SelectItem>
+                        {doctors.map((d: any) => (
+                            <SelectItem key={d.id} value={d.id}>
+                                {d.username ?? d.email}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            )}
 
             {/* Patient — search */}
             <PatientSearch

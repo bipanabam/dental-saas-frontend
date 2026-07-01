@@ -63,7 +63,7 @@ export const sidebarItems: SidebarItem[] = [
     url: "/queue",
     icon: ListOrdered,
     // receptionist added: check-in/confirm/no-show are front-desk actions
-    roles: ["admin", "doctor", "receptionist"],
+    roles: ["admin", "receptionist"],
   },
 
   {

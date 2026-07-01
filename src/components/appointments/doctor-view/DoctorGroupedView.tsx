@@ -5,8 +5,10 @@ import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 
 import DoctorGroupCard from "@/components/appointments/doctor-view/DoctorGroupCard";
+import SyncingIndicator from "@/components/appointments/shared/SyncingIndicator";
 
 import type { AppointmentListItem, AppointmentStats } from "@/lib/api";
+import { getDoctorDisplayName } from "@/lib/utils/doctor";
 
 interface DoctorGroupedViewProps {
     appointments: AppointmentListItem[];
@@ -28,7 +30,7 @@ function groupByDoctor(appointments: AppointmentListItem[]): DoctorGroup[] {
 
     for (const appointment of appointments) {
         const doctorId = appointment.assigned_doctor_id ?? UNASSIGNED_KEY;
-        const doctorLabel = appointment.doctor?.email?.split("@")[0] ?? "Unassigned";
+        const doctorLabel = getDoctorDisplayName(appointment.doctor);
 
         const existing = groups.get(doctorId);
         if (existing) {
@@ -55,9 +57,13 @@ function groupByDoctor(appointments: AppointmentListItem[]): DoctorGroup[] {
 
 export default function DoctorGroupedView({
     appointments,
+    isLoading = false,
     onAppointmentClick,
 }: DoctorGroupedViewProps) {
     const groups = useMemo(() => groupByDoctor(appointments), [appointments]);
+    if (isLoading) {
+        return <SyncingIndicator message="Loading provider schedules..." />;
+    }
 
     if (groups.length === 0) {
         return (

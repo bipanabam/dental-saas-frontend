@@ -28,6 +28,8 @@ type ExistingUser = {
     id: string;
     email: string;
     username: string;
+    first_name?: string | null;
+    last_name?: string | null;
     phone_number?: string | null;
     role?: string | null;
     is_active: boolean;
@@ -80,6 +82,8 @@ export default function UserUpdateForm({ user, onSuccess, onCancel }: Props) {
         defaultValues: {
             email: user.email ?? "",
             username: user.username ?? "",
+            first_name: user.first_name ?? "",
+            last_name: user.last_name ?? "",
             phone_number: user.phone_number ?? "",
             role: (user.role as any) ?? "RECEPTIONIST",
             is_active: user.is_active,
@@ -112,6 +116,23 @@ export default function UserUpdateForm({ user, onSuccess, onCancel }: Props) {
                     </Field>
                     <Field label="Email Address" error={errors.email?.message}>
                         <Input type="email" {...register("email")} disabled={disabled} />
+                    </Field>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field label="First Name" error={errors.first_name?.message}>
+                    <Input
+                        {...register("first_name")}
+                        disabled={disabled}
+                        placeholder="John"
+                    />
+                    </Field>
+        
+                    <Field label="Last Name" error={errors.last_name?.message}>
+                    <Input
+                        {...register("last_name")}
+                        disabled={disabled}
+                        placeholder="Doe"
+                    />
                     </Field>
                 </div>
             </div>

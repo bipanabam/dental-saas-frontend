@@ -12,6 +12,7 @@ const AppointmentCreatePage = () => {
     const router = useRouter();
     const params = useSearchParams();
     const patientId = params.get("patientId") || "";
+    const date = params.get("date") || undefined;
 
     const { data: patient } = usePatientDetail(patientId);
 
@@ -30,6 +31,7 @@ const AppointmentCreatePage = () => {
             <AppointmentForm
                 mode="create"
                 patientId={patientId}
+                initialDate={date}
                 onSuccess={(id) => router.push(`/appointments/${id}`)}
             />
         </div>

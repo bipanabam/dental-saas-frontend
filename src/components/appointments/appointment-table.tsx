@@ -26,7 +26,7 @@ import { AppointmentListItem } from "@/lib/api";
 import type { AppointmentStats } from "@/lib/api";
 
 import { getSourceConfig, getStatusConfig } from "@/types/appointments";
-import Link from "next/link";
+import EmptyState from "./shared/EmptyState";
 
 interface Props {
   appointments: AppointmentListItem[];
@@ -116,11 +116,8 @@ const AppointmentTable = ({
 
               {!isLoading && appointments.length === 0 && (
                 <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="h-48 text-center text-sm font-medium text-slate-400"
-                  >
-                    No active appointment slots match this query criteria.
+                  <TableCell colSpan={4} className="h-48">
+                    <EmptyState title="No active appointment slots match this query criteria." />
                   </TableCell>
                 </TableRow>
               )}

@@ -67,7 +67,6 @@ export const refreshAccessTokenApiV1AuthRefreshPost = <ThrowOnError extends bool
  * Logout current device/session.
  */
 export const logoutApiV1AuthLogoutPost = <ThrowOnError extends boolean = false>(options: Options<LogoutApiV1AuthLogoutPostData, ThrowOnError>): RequestResult<LogoutApiV1AuthLogoutPostResponses, LogoutApiV1AuthLogoutPostErrors, ThrowOnError> => (options.client ?? client).post<LogoutApiV1AuthLogoutPostResponses, LogoutApiV1AuthLogoutPostErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/auth/logout',
     ...options,
     headers: {

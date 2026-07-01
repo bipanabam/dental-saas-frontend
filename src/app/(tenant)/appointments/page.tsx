@@ -8,7 +8,6 @@ import PageHeader from "@/components/shared/page/PageHeader";
 import AppointmentTable from "@/components/appointments/appointment-table";
 import AppointmentFilters from "@/components/appointments/AppointmentFilters";
 import AppointmentViewToggle from "@/components/appointments/AppointmentViewToggle";
-import VisitFlowStats from "@/components/appointments/VisitFlowStats";
 import VisitFlowStatsStrip from "@/components/appointments/VisitFlowStatsStrip";
 
 import DoctorGroupedView from "@/components/appointments/doctor-view/DoctorGroupedView";
@@ -18,7 +17,7 @@ import AppointmentDetailSheet from "@/components/appointments/detail/Appointment
 import { Button } from "@/components/ui/button";
 import { SectionLoader } from "@/components/base/loading-view";
 
-import PatientSelectDialog from "@/components/appointments/PatientSelectDialog";
+import PatientSelectDialog from "@/components/appointments/shared/PatientSelectDialog";
 
 import { useAppointments } from "@/hooks/appointments/use-appointments";
 import { useAppointmentView } from "@/hooks/appointments/use-appointment-view";
@@ -27,7 +26,9 @@ import type { AppointmentFilters as Filters } from "@/components/appointments/ty
 import type { AppointmentListItem } from "@/lib/api";
 
 function AppointmentsPage() {
-    const [bookOpen, setBookOpen] = useState(false);
+    const [booking, setBooking] = useState<{ open: boolean; initialDate?: Date }>({
+        open: false,
+    });
     const [filters, setFilters] = useState<Filters>({});
 
     const { view } = useAppointmentView();
@@ -49,7 +50,7 @@ function AppointmentsPage() {
                     actions={
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                             <AppointmentViewToggle />
-                            <Button onClick={() => setBookOpen(true)}>
+                            <Button onClick={() => setBooking({ open: true })}>
                                 <Plus />
                                 Book Intake
                             </Button>
@@ -60,7 +61,7 @@ function AppointmentsPage() {
                 <AppointmentFilters filters={filters} onChange={setFilters} />
 
                 {view === "list" ? (
-                    <VisitFlowStats data={stats} />
+                    <VisitFlowStatsStrip data={stats} />
                 ) : (
                     <VisitFlowStatsStrip data={stats} />
                 )}
@@ -78,6 +79,8 @@ function AppointmentsPage() {
                     <MonthCalendarView
                         appointments={appointments}
                         onAppointmentClick={setSelectedAppointment}
+                        onRequestBooking={(date) => setBooking({ open: true, initialDate: date })}
+                        isFetching= {isFetching}
                     />
                 ) : (
                     <AppointmentTable
@@ -88,7 +91,11 @@ function AppointmentsPage() {
                 )}
             </div>
 
-            <PatientSelectDialog open={bookOpen} onOpenChange={setBookOpen} />
+            <PatientSelectDialog
+                open={booking.open}
+                onOpenChange={(open) => setBooking((s) => ({ ...s, open }))}
+                initialDate={booking.initialDate}
+            />
 
             {/* Detail drawer/sheet, driven by selectedAppointment.*/}
             <AppointmentDetailSheet

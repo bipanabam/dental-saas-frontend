@@ -791,6 +791,14 @@ export type CurrentUserResponse = {
      */
     username: string;
     /**
+     * First Name
+     */
+    first_name?: string | null;
+    /**
+     * Last Name
+     */
+    last_name?: string | null;
+    /**
      * Phone Number
      */
     phone_number?: string | null;
@@ -3676,6 +3684,14 @@ export type UserCreate = {
      */
     username: string;
     /**
+     * First Name
+     */
+    first_name?: string | null;
+    /**
+     * Last Name
+     */
+    last_name?: string | null;
+    /**
      * Password
      */
     password: string;
@@ -3708,6 +3724,14 @@ export type UserDetail = {
      * Username
      */
     username: string;
+    /**
+     * First Name
+     */
+    first_name?: string | null;
+    /**
+     * Last Name
+     */
+    last_name?: string | null;
     /**
      * Phone Number
      */
@@ -3751,6 +3775,14 @@ export type UserListItem = {
      * Username
      */
     username: string;
+    /**
+     * First Name
+     */
+    first_name?: string | null;
+    /**
+     * Last Name
+     */
+    last_name?: string | null;
     /**
      * Phone Number
      */
@@ -4056,6 +4088,14 @@ export type UserUpdate = {
      */
     username?: string | null;
     /**
+     * First Name
+     */
+    first_name?: string | null;
+    /**
+     * Last Name
+     */
+    last_name?: string | null;
+    /**
      * Phone Number
      */
     phone_number?: string | null;
@@ -4157,6 +4197,18 @@ export type AppSchemasCommonDoctorMini = {
      * Email
      */
     email: string;
+    /**
+     * First Name
+     */
+    first_name?: string | null;
+    /**
+     * Last Name
+     */
+    last_name?: string | null;
+    /**
+     * Full Name
+     */
+    readonly full_name: string;
 };
 
 /**
@@ -4171,6 +4223,329 @@ export type AppSchemasQueueDoctorMini = {
      * Username
      */
     username: string;
+};
+
+/**
+ * AppointmentCheckInResponse
+ */
+export type AppointmentCheckInResponseWritable = {
+    appointment: AppointmentListItemWritable;
+    /**
+     * Token Number
+     */
+    token_number: number;
+    /**
+     * Queue Id
+     */
+    queue_id: string;
+    queue_status: QueueStatusEnum;
+};
+
+/**
+ * AppointmentDetail
+ */
+export type AppointmentDetailWritable = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Patient Id
+     */
+    patient_id: string;
+    patient: PatientMini;
+    /**
+     * Assigned Doctor Id
+     */
+    assigned_doctor_id: string | null;
+    doctor: AppSchemasCommonDoctorMiniWritable | null;
+    appointment_type: AppointmentTypeEnum;
+    /**
+     * Appointment Date
+     */
+    appointment_date: string;
+    /**
+     * Duration Minutes
+     */
+    duration_minutes: number;
+    /**
+     * Chief Complaint
+     */
+    chief_complaint: string | null;
+    /**
+     * Notes
+     */
+    notes: string | null;
+    source: AppointmentSourceEnum;
+    status: AppointmentStatusEnum;
+    payment_status: PaymentStatusEnum;
+    /**
+     * Cancellation Reason
+     */
+    cancellation_reason: string | null;
+    /**
+     * Procedures
+     */
+    procedures: Array<AppointmentProcedureResponse>;
+    /**
+     * Created By
+     */
+    created_by: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+    /**
+     * Updated At
+     */
+    updated_at: string;
+    /**
+     * Confirmed At
+     */
+    confirmed_at?: string | null;
+    /**
+     * Checked In At
+     */
+    checked_in_at?: string | null;
+};
+
+/**
+ * AppointmentListItem
+ */
+export type AppointmentListItemWritable = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Patient Id
+     */
+    patient_id: string;
+    patient: PatientMini;
+    /**
+     * Assigned Doctor Id
+     */
+    assigned_doctor_id: string | null;
+    doctor: AppSchemasCommonDoctorMiniWritable | null;
+    /**
+     * Appointment Date
+     */
+    appointment_date: string;
+    appointment_type: AppointmentTypeEnum;
+    status: AppointmentStatusEnum;
+    payment_status: PaymentStatusEnum;
+    /**
+     * Duration Minutes
+     */
+    duration_minutes: number | null;
+    /**
+     * Chief Complaint
+     */
+    chief_complaint: string | null;
+    source: AppointmentSourceEnum;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * AppointmentListResponse
+ */
+export type AppointmentListResponseWritable = {
+    /**
+     * Items
+     */
+    items: Array<AppointmentListItemWritable>;
+    stats: AppointmentStats;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+};
+
+/**
+ * PaginatedResponse[PatientEncounterListItem]
+ */
+export type PaginatedResponsePatientEncounterListItemWritable = {
+    /**
+     * Items
+     */
+    items: Array<PatientEncounterListItemWritable>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+    /**
+     * Has More
+     */
+    has_more: boolean;
+};
+
+/**
+ * PatientAppointmentListItem
+ */
+export type PatientAppointmentListItemWritable = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Assigned Doctor Id
+     */
+    assigned_doctor_id: string | null;
+    doctor: AppSchemasCommonDoctorMiniWritable | null;
+    /**
+     * Appointment Date
+     */
+    appointment_date: string;
+    appointment_type: AppointmentTypeEnum;
+    status: AppointmentStatusEnum;
+    payment_status: PaymentStatusEnum;
+    /**
+     * Chief Complaint
+     */
+    chief_complaint: string | null;
+    source: AppointmentSourceEnum;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * PatientAppointmentListResponse
+ */
+export type PatientAppointmentListResponseWritable = {
+    /**
+     * Items
+     */
+    items: Array<PatientAppointmentListItemWritable>;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+    stats: AppointmentStats;
+};
+
+/**
+ * PatientEncounterListItem
+ */
+export type PatientEncounterListItemWritable = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Appointment Id
+     */
+    appointment_id: string;
+    /**
+     * Status
+     */
+    status: string;
+    doctor: AppSchemasCommonDoctorMiniWritable | null;
+    /**
+     * Chief Complaint
+     */
+    chief_complaint: string | null;
+    /**
+     * Diagnosis Count
+     */
+    diagnosis_count: number;
+    /**
+     * Procedure Count
+     */
+    procedure_count: number;
+    /**
+     * Treatment Plan Status
+     */
+    treatment_plan_status: string | null;
+    /**
+     * Started At
+     */
+    started_at: string;
+    /**
+     * Closed At
+     */
+    closed_at: string | null;
+};
+
+/**
+ * TodaysAppointmentListItem
+ */
+export type TodaysAppointmentListItemWritable = {
+    appointment: AppointmentListItemWritable;
+    queue?: QueueMini | null;
+};
+
+/**
+ * TodaysAppointmentListResponse
+ */
+export type TodaysAppointmentListResponseWritable = {
+    /**
+     * Items
+     */
+    items: Array<TodaysAppointmentListItemWritable>;
+    stats: AppointmentStats;
+    /**
+     * Total
+     */
+    total: number;
+    /**
+     * Skip
+     */
+    skip: number;
+    /**
+     * Limit
+     */
+    limit: number;
+};
+
+/**
+ * DoctorMini
+ */
+export type AppSchemasCommonDoctorMiniWritable = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Email
+     */
+    email: string;
+    /**
+     * First Name
+     */
+    first_name?: string | null;
+    /**
+     * Last Name
+     */
+    last_name?: string | null;
 };
 
 export type RegisterTenantApiV1AuthRegisterTenantPostData = {
@@ -6239,7 +6614,7 @@ export type UpdateAppointmentApiV1AppointmentsAppointmentIdPutData = {
         /**
          * Appointment Id
          */
-        appointment_id: unknown;
+        appointment_id: string;
     };
     query?: never;
     url: '/api/v1/appointments/{appointment_id}';

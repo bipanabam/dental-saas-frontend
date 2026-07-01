@@ -46,6 +46,13 @@ export const statusConfig: Record<AppointmentStatusEnum,
   },
 };
 
+export const typeConfig: Record<AppointmentTypeEnum, { label: string }> = {
+  BOOKED: { label: "Standard Booking" },
+  WALK_IN: { label: "Walk-In" },
+  FOLLOW_UP: { label: "Clinical Follow-Up" },
+  RESCHEDULED: { label: "Rescheduled" },
+};
+
 export const sourceConfig: Record<AppointmentSourceEnum, { label: string; dot: string }> = {
   WALK_IN: { label: "Walk-in", dot: "bg-slate-400" },
   ONLINE: { label: "Online", dot: "bg-indigo-500" },
@@ -70,54 +77,34 @@ export function getSourceConfig(status: string) {
   };
 }
 
+// Derived option lists
+export const STATUS_FILTER_OPTIONS = Object.entries(statusConfig).map(
+  ([value, cfg]) => ({ value, label: cfg.label }),
+);
 
+export const SOURCE_FILTER_OPTIONS = Object.entries(sourceConfig).map(
+  ([value, cfg]) => ({ value, label: cfg.label }),
+);
+
+export const TYPE_FILTER_OPTIONS = Object.entries(typeConfig).map(
+  ([value, cfg]) => ({ value, label: cfg.label }),
+);
+
+// Generic FilterField[] shape, for any shared/reusable filter UI that wants it
 export const appointmentFilters: FilterField[] = [
   {
     field: "status",
     label: "Status",
-
-    options: [
-      { label: "All Status", value: "ALL" },
-
-      { label: "Booked", value: "BOOKED" },
-      { label: "Confirmed", value: "CONFIRMED" },
-      { label: "Checked In", value: "CHECKED_IN" },
-      { label: "In Progress", value: "IN_PROGRESS" },
-      { label: "Completed", value: "COMPLETED" },
-      { label: "Cancelled", value: "CANCELLED" },
-      { label: "No Show", value: "NO_SHOW" },
-    ],
+    options: [{ label: "All Status", value: "ALL" }, ...STATUS_FILTER_OPTIONS],
   },
-
   {
     field: "source",
     label: "Source",
-
-    options: [
-      { label: "All Sources", value: "ALL" },
-
-      { label: "Walk In", value: "WALK_IN" },
-      { label: "Online", value: "ONLINE" },
-      { label: "Phone", value: "PHONE" },
-      { label: "WhatsApp", value: "WHATSAPP" },
-      { label: "Instagram", value: "INSTAGRAM" },
-      { label: "Front Desk", value: "FRONT_DESK" },
-    ],
+    options: [{ label: "All Sources", value: "ALL" }, ...SOURCE_FILTER_OPTIONS],
   },
-
   {
     field: "appointment_type",
     label: "Type",
-
-    options: [
-      { label: "All Types", value: "ALL" },
-
-      { label: "Consultation", value: "CONSULTATION" },
-      { label: "Treatment", value: "TREATMENT" },
-      { label: "Booked", value: "BOOKED" },
-      { label: "Walk In", value: "WALK_IN" },
-      { label: "Rescheduled", value: "RESCHEDULED" },
-      { label: "Follow Up", value: "FOLLOW_UP" },
-    ],
+    options: [{ label: "All Types", value: "ALL" }, ...TYPE_FILTER_OPTIONS],
   },
 ];

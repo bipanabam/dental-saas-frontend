@@ -19,6 +19,8 @@ type ExistingUser = {
     id: string;
     email: string;
     username: string;
+    first_name?: string | null;
+    last_name?: string | null;
     phone_number?: string | null;
     role?: string | null;
     is_active: boolean;
